@@ -1,6 +1,8 @@
-#include "simulation.h"
+#include "sim/simulation.h"
 
 /**
+ * @author Joshua A. Campbell
+ *
  * Driver for Waresim's simulation.
  */
 int main()

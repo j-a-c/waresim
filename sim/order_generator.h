@@ -1,29 +1,32 @@
-#ifndef ORDER_GENERATOR_H
-#define ORDER_GENERATOR_H
+#ifndef SIM_ORDER_GENERATOR_H
+#define SIM_ORDER_GENERATOR_H
 
 #include <condition_variable>
 #include <ctime>
 #include <mutex>
-#include <thread>
 #include <queue>
-#include "order.h"
 
-class OrderGenerator
+#include "order.h"
+#include "simulator.h"
+
+/**
+ * @author Joshua A. Campbell
+ *
+ * Generates orders within the simulation.
+ */
+class OrderGenerator : public Simulator
 {
     public:
         OrderGenerator(time_t, int);
-        // Runs the order generation in a separate thread.
-        void run();
-        // Waits for the order generator to stop generating orders.
-        void join(); 
+ 
         // Returns true if there is an order available.
         bool has_order();
         // Returns the next order or blocks if there are no orders.
         Order get_order();
     private:
-        // Encapsulates the order generation so it can be run in a separate 
-        // thread.
-        void generate();
+        // Override from Simulator.
+        void simulate() override;
+
         // Adds an order to the order queue.
         void add_order(const Order);
         // Thread to generate orders.
@@ -32,7 +35,6 @@ class OrderGenerator
         time_t start_time;
         // The length of the simulation in seconds.
         int sim_length;
-        std::thread generator;
         // Holds the order that were generated.
         std::queue<Order> orders;
         // Mutex for the order queue. Used as a locking point.

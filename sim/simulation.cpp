@@ -1,6 +1,7 @@
 #include <ctime>
 #include <thread>
 
+#include "dispatcher.h"
 #include "order_generator.h"
 #include "simulation.h"
 
@@ -19,28 +20,12 @@ Simulation::Simulation(int sim_length)
 }
 
 /**
- * Private method that encapsulates the simulation so it can be run in a
- * thread.
+ * Destructor.
  */
-void Simulation::simulate()
+Simulation::~Simulation()
 {
-    
-
-    std::cout << "Starting simulation." << std::endl;
-
-    // Continue simulation until sim_length seconds have elapsed.
-    while (difftime(time(nullptr), start_time) < sim_length)
-    {
-        // TODO Implement simulation stuff.
-        if (order_gen->has_order())
-        {
-            std::cout << "has order" << std::endl;
-            order_gen->get_order();
-            sleep(1);
-        }
-    }
-
-    std::cout << "Ending simulation." << std::endl;
+    delete order_gen;
+    delete dispatcher;
 }
 
 /**
@@ -53,11 +38,19 @@ void Simulation::run()
     start_time = time(nullptr);
 
     // Initialize the order generator.
-    order_gen.reset(new OrderGenerator(start_time, sim_length));
+    order_gen = new OrderGenerator(start_time, sim_length);
+    // Initialize workers.
+
+    // Initialize dispatcher.
+    dispatcher = new Dispatcher(start_time, sim_length);
+    //dispatcher.set_factory(factory);
+    dispatcher->set_order_generator(order_gen);
+    //dispatcher.set_workers(workers);
+
 
     // Start the simulation.
-    simulation = std::thread(&Simulation::simulate, this);
     order_gen->run();
+    dispatcher->run();
 }
 
 /**
@@ -67,7 +60,6 @@ void Simulation::run()
 void Simulation::join()
 {
     order_gen->join();
-
-    simulation.join();
+    dispatcher->join();
 }
 

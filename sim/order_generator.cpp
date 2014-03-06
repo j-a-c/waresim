@@ -1,11 +1,13 @@
 #include <condition_variable>
+#include <chrono>
 #include <ctime>
-#include <thread>
 #include <queue>
+
 #include "order.h"
 #include "order_generator.h"
+#include "simulation.h"
 
-// For testing.
+// TODO For debug purposes. Delete later.
 #include <iostream>
 
 /**
@@ -23,12 +25,9 @@ OrderGenerator::OrderGenerator(time_t start_time, int sim_length)
 /**
  * Encapsulates the order generation so it can be run in a separate thread.
  */
-void OrderGenerator::generate()
+void OrderGenerator::simulate()
 {
     std::cout << "Starting order generation." << std::endl;
-
-    // The last time we generated an order.
-    time_t last_gen_time = 0;
 
     time_t now;
 
@@ -36,15 +35,12 @@ void OrderGenerator::generate()
     while (difftime(now=time(nullptr), start_time) < sim_length)
     { 
 
-        // TODO Implement a random scheme.
-        // Generate an order at least every second.
-        if (difftime(now,last_gen_time) > 1)
-        {
-            add_order(Order());
+        // TODO Add a random scheme.
+        // Generate a new order every time step.
+        add_order(Order());
 
-            // Get current time since there are multiple thread.
-            last_gen_time = time(nullptr);
-        }
+        std::this_thread::sleep_for(std::chrono::seconds(TIME_STEP));
+
     }
 
     std::cout << "Ending order generation." << std::endl;
@@ -95,18 +91,3 @@ void OrderGenerator::add_order(const Order order)
 
 }
 
-/**
- * Runs the order generation in a separate thread.
- */
-void OrderGenerator::run()
-{
-    generator = std::thread(&OrderGenerator::generate, this);  
-}
-
-/**
- * Waits for the order generator to stop generating orders.
- */
-void OrderGenerator::join()
-{
-    generator.join();
-}
