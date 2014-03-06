@@ -1,2 +1,3 @@
 all:
-	g++ -std=c++11 waresim.cpp -o waresim
+	clear; clear;
+	g++ -Wall -Wextra waresim.cpp simulation.cpp order_generator.cpp -o waresim -pthread -std=c++11
