@@ -21,11 +21,6 @@ class Simulator
         virtual void simulate() = 0;
         // Thread to run simulate() from.
         std::thread thread;
-
-    protected:
-        // The minimum time in seconds between actions.
-        // Adjust this to change the granularity of the simulations.
-        const int TIME_STEP = 1;
 };
 
 #endif

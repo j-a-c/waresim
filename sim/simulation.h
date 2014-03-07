@@ -3,8 +3,10 @@
 
 #include <ctime>
 #include <memory>
+#include <string>
 #include <thread>
 
+#include "concurrent/barrier.h"
 #include "dispatcher.h"
 #include "order_generator.h"
 
@@ -16,7 +18,7 @@
 class Simulation
 {
     public:
-        Simulation(int);
+        Simulation(int, std::string);
         ~Simulation();
 
         // Runs the simulation.
@@ -24,6 +26,9 @@ class Simulation
         // Waits for the simulation thread to finish.
         void join();
     private:
+        // Returns the number of threads that need to by synchronized.
+        int num_threads();
+
         // The start time of the simulation.
         time_t start_time;
         // The length of the simulation in seconds.
@@ -31,9 +36,13 @@ class Simulation
         // Thread for running the simulation.
         std::thread simulation;
         // Generates orders for this simulation.
-        OrderGenerator *order_gen;
+        OrderGenerator *order_gen = nullptr;
         // Dispatcher for the simulation.
-        Dispatcher *dispatcher;
+        Dispatcher *dispatcher = nullptr;
+        // Factory that the dispatcher will use.
+        Factory factory;
+        // The barrier.
+        Barrier *barrier = nullptr;
 };
 
 #endif

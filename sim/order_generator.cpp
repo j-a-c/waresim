@@ -1,8 +1,8 @@
 #include <condition_variable>
-#include <chrono>
 #include <ctime>
 #include <queue>
 
+#include "concurrent/barrier.h"
 #include "order.h"
 #include "order_generator.h"
 #include "simulation.h"
@@ -39,8 +39,10 @@ void OrderGenerator::simulate()
         // Generate a new order every time step.
         add_order(Order());
 
-        std::this_thread::sleep_for(std::chrono::seconds(TIME_STEP));
+    
+        std::cout << "Order generator is arriving at barrier." << std::endl;
 
+        barrier->arrive();
     }
 
     std::cout << "Ending order generation." << std::endl;
@@ -91,3 +93,10 @@ void OrderGenerator::add_order(const Order order)
 
 }
 
+/**
+ * The barrier to synchronize on.
+ */
+void OrderGenerator::set_barrier(Barrier *b)
+{
+    this->barrier = b;
+}

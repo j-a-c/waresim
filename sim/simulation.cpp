@@ -1,7 +1,10 @@
 #include <ctime>
+#include <string>
 #include <thread>
 
+#include "concurrent/barrier.h"
 #include "dispatcher.h"
+#include "factory.h"
 #include "order_generator.h"
 #include "simulation.h"
 
@@ -13,10 +16,13 @@
  * Constructor.
  *
  * @param sim_length The length of the simulation in seconds.
+ * @param factory_file The file containing the factory representation.
  */
-Simulation::Simulation(int sim_length)
+Simulation::Simulation(int sim_length, std::string factory_file)
 {
     this->sim_length = sim_length;
+
+    this->factory = Factory::parse_default_factory(factory_file);
 }
 
 /**
@@ -24,8 +30,20 @@ Simulation::Simulation(int sim_length)
  */
 Simulation::~Simulation()
 {
+    delete barrier;
     delete order_gen;
     delete dispatcher;
+}
+
+/**
+ * Returns the number of threads that need to be synchronized in this
+ * simulation.
+ */
+int Simulation::num_threads()
+{
+    // TODO
+    // Order generator, dispatcher.
+    return 1 + 1;
 }
 
 /**
@@ -33,20 +51,22 @@ Simulation::~Simulation()
  */
 void Simulation::run()
 {
+    barrier = new Barrier(num_threads());
 
     // Set the start time for this simulation.
     start_time = time(nullptr);
 
     // Initialize the order generator.
     order_gen = new OrderGenerator(start_time, sim_length);
+    order_gen->set_barrier(barrier);
     // Initialize workers.
 
     // Initialize dispatcher.
     dispatcher = new Dispatcher(start_time, sim_length);
-    //dispatcher.set_factory(factory);
+    dispatcher->set_barrier(barrier);
+    dispatcher->set_factory(&factory);
     dispatcher->set_order_generator(order_gen);
     //dispatcher.set_workers(workers);
-
 
     // Start the simulation.
     order_gen->run();

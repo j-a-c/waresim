@@ -6,6 +6,7 @@
 #include <mutex>
 #include <queue>
 
+#include "concurrent/barrier.h"
 #include "order.h"
 #include "simulator.h"
 
@@ -19,6 +20,8 @@ class OrderGenerator : public Simulator
     public:
         OrderGenerator(time_t, int);
  
+        // Set the barrier.
+        void set_barrier(Barrier *);
         // Returns true if there is an order available.
         bool has_order();
         // Returns the next order or blocks if there are no orders.
@@ -41,6 +44,8 @@ class OrderGenerator : public Simulator
         std::mutex orders_mutex;
         // Condition variable. Used for blocking if queue is empty.
         std::condition_variable order_condition;
+        // The barrier.
+        Barrier *barrier = nullptr;
 };
 
 #endif

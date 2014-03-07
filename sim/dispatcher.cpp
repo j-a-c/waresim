@@ -1,6 +1,8 @@
 #include <ctime>
 
+#include "concurrent/barrier.h"
 #include "dispatcher.h"
+#include "factory.h"
 #include "order_generator.h"
 #include "simulator.h"
 
@@ -36,9 +38,20 @@ void Dispatcher::simulate()
             std::cout << "has order" << std::endl;
             order_gen->get_order();
         }
+        
+        std::cout << "Dispatcher is arriving at barrier." << std::endl;
+        barrier->arrive();
     }
 
     std::cout << "Ending dispatch." << std::endl;
+}
+
+/**
+ * Sets the factory used by the dispatcher.
+ */
+void Dispatcher::set_factory(Factory * f)
+{
+    this->factory = f;
 }
 
 /**
@@ -47,4 +60,12 @@ void Dispatcher::simulate()
 void Dispatcher::set_order_generator(OrderGenerator *o)
 {
     this->order_gen = o;
+}
+
+/**
+ * Sets the barrier to synchronize upon.
+ */
+void Dispatcher::set_barrier(Barrier * b)
+{
+    this->barrier = b;
 }
