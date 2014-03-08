@@ -4,6 +4,9 @@
 
 #include "barrier.h"
 
+// TODO Delete later, used for debug.
+#include <iostream>
+
 /**
  * Implementation of a cyclic non-spinning barrier.
  */
@@ -33,6 +36,7 @@ void Barrier::arrive()
 
     if (arrived == total)
     {
+        std::cout << "=== New Step ===" << std::endl;
         // TODO Delete. Creates time between steps.
         std::this_thread::sleep_for(std::chrono::seconds(1));
 

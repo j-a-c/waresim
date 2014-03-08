@@ -4,6 +4,7 @@
 
 #include "constants.h"
 #include "factory.h"
+#include "worker.h"
 
 // TODO Delete later, used for debug.
 #include <iostream>
@@ -97,8 +98,7 @@ Factory Factory::parse_default_factory(std::string factory_file)
                     break;
                 case WORKER_MARKER:
                     layout[pos] = WORKER_LOC;
-                    factory.num_workers++;
-                    factory.worker_locs.push_back(pos);
+                    factory.workers.push_back(Worker(pos));
                     break;
                 case WALL_MARKER:
                     layout[pos] = WALL_LOC;
@@ -119,4 +119,12 @@ Factory Factory::parse_default_factory(std::string factory_file)
     factory.layout = layout;
 
     return factory;
+}
+
+/**
+ * Returns the workers in this factory.
+ */
+std::vector<Worker> Factory::get_workers()
+{
+    return workers;
 }

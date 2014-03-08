@@ -2,6 +2,9 @@
 #include <string>
 
 #include "sim/simulation.h"
+#include "sim/algo/dispatch_algo.h"
+#include "sim/algo/rand_dispatch_algo.h"
+
 
 /**
  * @author Joshua A. Campbell
@@ -21,10 +24,15 @@ int main()
     // deterministic order using std::rand();
     std::srand(seed);
 
-    Simulation sim(sim_length, factory_file);
+    // TODO make a parameter.
+    DispatchAlgo *dispatch_algo = new RandDispatchAlgo(Rand(std::rand()));
+
+    Simulation sim(sim_length, factory_file, dispatch_algo);
 
     sim.run();
     sim.join();
+
+    delete dispatch_algo;
 
     return 0;
 }

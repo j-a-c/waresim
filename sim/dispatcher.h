@@ -3,6 +3,7 @@
 
 #include <ctime>
 
+#include "algo/dispatch_algo.h"
 #include "concurrent/barrier.h"
 #include "factory.h"
 #include "order_generator.h"
@@ -24,6 +25,8 @@ class Dispatcher : public Simulator
         void set_order_generator(OrderGenerator *);
         // Set the barrier.
         void set_barrier(Barrier *);
+        // Set the dispatch algorithm.
+        void set_algo(DispatchAlgo *);
     private:
         // Override from Simulator.
         void simulate() override;
@@ -38,6 +41,8 @@ class Dispatcher : public Simulator
         OrderGenerator *order_gen = nullptr;
         // The barrier.
         Barrier *barrier = nullptr;
+        // Dispatching algorithm.
+        DispatchAlgo *algo = nullptr;
 };
 
 #endif

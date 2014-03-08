@@ -38,13 +38,13 @@ void OrderGenerator::simulate()
 
         // TODO Add a random scheme.
         // Generate a new order every time step.
-        if (rand.rand() < 0.25)
+        double d = rand.rand();
+        std::cout << "Order rand: " << d << std::endl;
+
+        if (d < 0.50)
         {
             add_order(Order());
         }
-
-    
-        std::cout << "Order generator is arriving at barrier." << std::endl;
 
         barrier->arrive();
     }

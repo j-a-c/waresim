@@ -1,5 +1,6 @@
 #include <ctime>
 
+#include "algo/dispatch_algo.h"
 #include "concurrent/barrier.h"
 #include "dispatcher.h"
 #include "factory.h"
@@ -21,6 +22,7 @@ Dispatcher::Dispatcher(time_t start_time, int sim_length)
     this->sim_length = sim_length;
 }
 
+
 /**
  * Private method that encapsulates the dispatch algorithm so it can be run in
  * a thread.
@@ -35,11 +37,9 @@ void Dispatcher::simulate()
         // TODO Implement simulation stuff.
         if (order_gen->has_order())
         {
-            std::cout << "has order" << std::endl;
-            order_gen->get_order();
+            algo->assign_order(this->factory, order_gen->get_order());
         }
         
-        std::cout << "Dispatcher is arriving at barrier." << std::endl;
         barrier->arrive();
     }
 
@@ -68,4 +68,9 @@ void Dispatcher::set_order_generator(OrderGenerator *o)
 void Dispatcher::set_barrier(Barrier * b)
 {
     this->barrier = b;
+}
+
+void Dispatcher::set_algo(DispatchAlgo* a)
+{
+    this->algo = a;
 }

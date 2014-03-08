@@ -6,6 +6,7 @@
 #include <string>
 #include <thread>
 
+#include "algo/dispatch_algo.h"
 #include "concurrent/barrier.h"
 #include "dispatcher.h"
 #include "order_generator.h"
@@ -18,7 +19,7 @@
 class Simulation
 {
     public:
-        Simulation(int, std::string);
+        Simulation(int, std::string, DispatchAlgo *);
         ~Simulation();
 
         // Runs the simulation.
@@ -45,6 +46,8 @@ class Simulation
         Factory factory;
         // The barrier.
         Barrier *barrier = nullptr;
+        // The dispatch algorithm.
+        DispatchAlgo *dispatch_algo = nullptr;
 };
 
 #endif

@@ -3,6 +3,7 @@
 #include <string>
 #include <thread>
 
+#include "algo/rand_dispatch_algo.h"
 #include "concurrent/barrier.h"
 #include "dispatcher.h"
 #include "factory.h"
@@ -20,11 +21,14 @@
  * @param sim_length The length of the simulation in seconds.
  * @param factory_file The file containing the factory representation.
  */
-Simulation::Simulation(int sim_length, std::string factory_file)
+Simulation::Simulation(int sim_length, std::string factory_file, 
+        DispatchAlgo * dispatch_algo)
 {
     this->sim_length = sim_length;
 
     this->factory = Factory::parse_default_factory(factory_file);
+
+    this->dispatch_algo = dispatch_algo;
 }
 
 /**
@@ -69,7 +73,7 @@ void Simulation::run()
     dispatcher->set_barrier(barrier);
     dispatcher->set_factory(&factory);
     dispatcher->set_order_generator(order_gen);
-    //dispatcher.set_workers(workers);
+    dispatcher->set_algo(dispatch_algo);
 
     // Start the simulation.
     order_gen->run();
