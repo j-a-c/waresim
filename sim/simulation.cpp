@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <ctime>
 #include <string>
 #include <thread>
@@ -6,6 +7,7 @@
 #include "dispatcher.h"
 #include "factory.h"
 #include "order_generator.h"
+#include "rand/rand.h"
 #include "simulation.h"
 
 // For testing.
@@ -59,6 +61,7 @@ void Simulation::run()
     // Initialize the order generator.
     order_gen = new OrderGenerator(start_time, sim_length);
     order_gen->set_barrier(barrier);
+    order_gen->set_rand(Rand(std::rand()));
     // Initialize workers.
 
     // Initialize dispatcher.

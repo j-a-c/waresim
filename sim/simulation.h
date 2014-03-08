@@ -33,6 +33,8 @@ class Simulation
         time_t start_time;
         // The length of the simulation in seconds.
         int sim_length;
+        // Seed for the simulation.
+        unsigned int seed;
         // Thread for running the simulation.
         std::thread simulation;
         // Generates orders for this simulation.

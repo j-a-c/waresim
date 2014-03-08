@@ -5,6 +5,7 @@
 #include "concurrent/barrier.h"
 #include "order.h"
 #include "order_generator.h"
+#include "rand/rand.h"
 #include "simulation.h"
 
 // TODO For debug purposes. Delete later.
@@ -37,7 +38,10 @@ void OrderGenerator::simulate()
 
         // TODO Add a random scheme.
         // Generate a new order every time step.
-        add_order(Order());
+        if (rand.rand() < 0.25)
+        {
+            add_order(Order());
+        }
 
     
         std::cout << "Order generator is arriving at barrier." << std::endl;
@@ -94,9 +98,17 @@ void OrderGenerator::add_order(const Order order)
 }
 
 /**
- * The barrier to synchronize on.
+ * Set the barrier to synchronize on.
  */
 void OrderGenerator::set_barrier(Barrier *b)
 {
     this->barrier = b;
+}
+
+/**
+ * Set the random number generator.
+ */
+void OrderGenerator::set_rand(Rand rand)
+{
+    this->rand = rand;
 }

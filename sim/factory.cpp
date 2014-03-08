@@ -100,6 +100,9 @@ Factory Factory::parse_default_factory(std::string factory_file)
                     factory.num_workers++;
                     factory.worker_locs.push_back(pos);
                     break;
+                case WALL_MARKER:
+                    layout[pos] = WALL_LOC;
+                    break;
                 default:
                     std::string msg{"Invalid marker at: ("};
                     msg += x;

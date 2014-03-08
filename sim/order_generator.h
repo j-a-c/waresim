@@ -8,6 +8,7 @@
 
 #include "concurrent/barrier.h"
 #include "order.h"
+#include "rand/rand.h"
 #include "simulator.h"
 
 /**
@@ -22,6 +23,8 @@ class OrderGenerator : public Simulator
  
         // Set the barrier.
         void set_barrier(Barrier *);
+        // Set the random number generator.
+        void set_rand(Rand);
         // Returns true if there is an order available.
         bool has_order();
         // Returns the next order or blocks if there are no orders.
@@ -46,6 +49,8 @@ class OrderGenerator : public Simulator
         std::condition_variable order_condition;
         // The barrier.
         Barrier *barrier = nullptr;
+        // The random number generator.
+        Rand rand;
 };
 
 #endif
