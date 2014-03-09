@@ -1,12 +1,4 @@
-#include <condition_variable>
-#include <ctime>
-#include <queue>
-
-#include "concurrent/barrier.h"
-#include "order.h"
 #include "order_generator.h"
-#include "rand/rand.h"
-#include "simulation.h"
 
 // TODO For debug purposes. Delete later.
 #include <iostream>
@@ -28,12 +20,8 @@ OrderGenerator::OrderGenerator(time_t start_time, int sim_length)
  */
 void OrderGenerator::simulate()
 {
-    std::cout << "Starting order generation." << std::endl;
-
-    time_t now;
-
     // Continue simulation until sim_length seconds have elapsed.
-    while (difftime(now=time(nullptr), start_time) < sim_length)
+    while (difftime(time(nullptr), start_time) < sim_length)
     { 
 
         // TODO Add a random scheme.
@@ -49,7 +37,6 @@ void OrderGenerator::simulate()
         barrier->arrive();
     }
 
-    std::cout << "Ending order generation." << std::endl;
 }
 
 /**

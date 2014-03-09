@@ -36,7 +36,7 @@ void Barrier::arrive()
 
     if (arrived == total)
     {
-        std::cout << "=== New Step ===" << std::endl;
+        std::cout << "=== Ending Step ===" << std::endl;
         // TODO Delete. Creates time between steps.
         std::this_thread::sleep_for(std::chrono::seconds(1));
 

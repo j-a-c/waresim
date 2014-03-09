@@ -1,5 +1,9 @@
 #include "simulator.h"
 
+/**
+ * Implementation for Simulator.
+ */
+
 Simulator::~Simulator(){}
 
 void Simulator::run()

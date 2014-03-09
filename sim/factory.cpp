@@ -4,7 +4,6 @@
 
 #include "constants.h"
 #include "factory.h"
-#include "worker.h"
 
 // TODO Delete later, used for debug.
 #include <iostream>

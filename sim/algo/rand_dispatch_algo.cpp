@@ -37,5 +37,6 @@ void RandDispatchAlgo::assign_order(Factory *factory, Order order)
 
     std::cout << "Assigned to worker # " << index << std::endl;
     
-    // TODO Assign.
+    // Assign job to the worker.
+    workers[index].assign(order);
 }

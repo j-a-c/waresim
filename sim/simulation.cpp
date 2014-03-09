@@ -1,19 +1,16 @@
 #include <cstdlib>
-#include <ctime>
-#include <string>
-#include <thread>
 
 #include "algo/rand_dispatch_algo.h"
-#include "concurrent/barrier.h"
-#include "dispatcher.h"
-#include "factory.h"
-#include "order_generator.h"
 #include "rand/rand.h"
 #include "simulation.h"
 
-// For testing.
+// TODO Delete later, used for testing.
 #include <iostream>
 #include <unistd.h>
+
+/**
+ * Implementation for Simulation.
+ */
 
 /**
  * Constructor.
@@ -39,6 +36,7 @@ Simulation::~Simulation()
     delete barrier;
     delete order_gen;
     delete dispatcher;
+    delete scheduler;
 }
 
 /**
@@ -48,8 +46,8 @@ Simulation::~Simulation()
 int Simulation::num_threads()
 {
     // TODO
-    // Order generator, dispatcher.
-    return 1 + 1;
+    // Order generator, dispatcher, scheduler.
+    return 1 + 1 + 1;
 }
 
 /**
@@ -75,9 +73,15 @@ void Simulation::run()
     dispatcher->set_order_generator(order_gen);
     dispatcher->set_algo(dispatch_algo);
 
+    // Initialize the scheduler.
+    scheduler = new Scheduler(start_time, sim_length);
+    scheduler->set_barrier(barrier);
+    scheduler->set_factory(&factory);
+
     // Start the simulation.
     order_gen->run();
     dispatcher->run();
+    scheduler->run();
 }
 
 /**
@@ -88,5 +92,6 @@ void Simulation::join()
 {
     order_gen->join();
     dispatcher->join();
+    scheduler->join();
 }
 

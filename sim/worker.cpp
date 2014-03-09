@@ -9,3 +9,8 @@ Worker::~Worker()
 {
 
 }
+
+void Worker::assign(Order order)
+{
+    this->orders.push_back(order);
+}

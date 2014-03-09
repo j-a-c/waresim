@@ -9,7 +9,9 @@
 #include "algo/dispatch_algo.h"
 #include "concurrent/barrier.h"
 #include "dispatcher.h"
+#include "factory.h"
 #include "order_generator.h"
+#include "scheduler.h"
 
 /**
  * @author Joshua A. Campbell
@@ -42,6 +44,8 @@ class Simulation
         OrderGenerator *order_gen = nullptr;
         // Dispatcher for the simulation.
         Dispatcher *dispatcher = nullptr;
+        // Scheduler for the simulation.
+        Scheduler *scheduler = nullptr;
         // Factory that the dispatcher will use.
         Factory factory;
         // The barrier.

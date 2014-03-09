@@ -1,11 +1,6 @@
 #include <ctime>
 
-#include "algo/dispatch_algo.h"
-#include "concurrent/barrier.h"
 #include "dispatcher.h"
-#include "factory.h"
-#include "order_generator.h"
-#include "simulator.h"
 
 // TODO For debug purposes. (Delete later)
 #include <iostream>
@@ -29,8 +24,6 @@ Dispatcher::Dispatcher(time_t start_time, int sim_length)
  */
 void Dispatcher::simulate()
 {
-    std::cout << "Starting dispatch." << std::endl;
-
     // Continue simulation until sim_length seconds have elapsed.
     while (difftime(time(nullptr), start_time) < sim_length)
     {
@@ -42,8 +35,6 @@ void Dispatcher::simulate()
         
         barrier->arrive();
     }
-
-    std::cout << "Ending dispatch." << std::endl;
 }
 
 /**
