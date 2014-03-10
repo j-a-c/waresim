@@ -213,6 +213,16 @@ void Scheduler::simulate()
             {
                 // TODO 
                 std::cout << "Worker " << worker.get_id() << " is STILL NOT routed." << std::endl;
+                if (worker.get_drop_status())
+                {
+                    // Proceed to drop location
+                    // TODO
+                }
+                else
+                {
+                    // Go to inital position.
+                    // TODO
+                }
 
             }
             // Find a way to continue the path.
@@ -227,6 +237,7 @@ void Scheduler::simulate()
                 }
 
                 // TODO Check for collisions.
+
                 // Get the old position.
                 int old_pos = worker.get_pos();
                 // Get the path.
