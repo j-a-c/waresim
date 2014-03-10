@@ -11,7 +11,7 @@ class Order
     public:
         Order();
         Order(int);
-        bool operator==(const Order &other) const;
+        bool operator==(const Order &) const;
 
         // Returns the position of this order in the factory.
         int get_pos();

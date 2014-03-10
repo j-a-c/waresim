@@ -13,6 +13,7 @@ class Worker
     public:
         Worker(int);
         ~Worker();
+        bool operator==(const Worker &) const;
 
         // Assign an order to the worker.
         void assign(Order);

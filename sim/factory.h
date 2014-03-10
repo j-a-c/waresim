@@ -18,15 +18,13 @@ class Factory
 
         // Move a worker's marker.
         void move_worker(int, int);
-        // Assign the worker at this index this order.
-        void assign(int, Order);
 
         // Get the height of the factory.
         int get_height();
         // Get the width of the factory.
         int get_width();
         // Get the workers in the factory.
-        std::vector<Worker> get_workers();
+        std::vector<Worker>& get_workers();
         // Get the bin locations in the factory.
         std::vector<int> get_bins();
         // Get the factory layout.

@@ -16,6 +16,14 @@ Worker::~Worker()
 }
 
 /**
+ * == operator. Checks that the ids of the two workers are the same.
+ */
+bool Worker::operator==(const Worker &other) const
+{
+    return my_id == other.my_id;
+}
+
+/**
  * Assigns a new order to this worker.
  */
 void Worker::assign(Order order)

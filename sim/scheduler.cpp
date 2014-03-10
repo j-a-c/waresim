@@ -148,16 +148,18 @@ std::vector<int> Scheduler::shortest_path(int start, int end)
 
     }
 
-    // Calculate the path.
+    // Calculate the path. The path will not include the start index.
     int curr_index = end;
     while (previous[curr_index] != UNDEFINED)
     {
         path.insert(path.begin(), curr_index);
         curr_index = previous[curr_index];
     }
-    // Remove the start element because the worker is currently there.
-    path.erase(path.begin());
     
+    std::cout << "Path found: (" << start << "," << end << ")" << std::endl;
+    for (auto &step : path)
+        std::cout << "\t" << step << std::endl;
+
     return path;
 }
 
@@ -171,7 +173,7 @@ void Scheduler::simulate()
     while (difftime(time(nullptr), start_time) < sim_length)
     {
         // Get the factory workers.
-        auto workers = factory->get_workers();
+        std::vector<Worker>& workers = factory->get_workers();
 
         // Create a randomized scheduling order. This simulates a bunch of
         // multithreaded workers.
@@ -190,7 +192,7 @@ void Scheduler::simulate()
         // not to move) each worker one unit in the factory.
         for (auto &index : sched_order)
         {
-            Worker worker = workers[index]; 
+            Worker& worker = workers[index]; 
 
             std::cout << "Scheduling worker: " << worker.get_id() << std::endl;
 

@@ -3,7 +3,7 @@
 // TODO Delete later, used for debug.
 #include <iostream>
 
-void FCFSRoutingAlgo::route_worker(Factory *factory, Worker worker)
+void FCFSRoutingAlgo::route_worker(Factory *factory, Worker& worker)
 {
     // Get the orders for this worker.
     std::vector<Order> orders = worker.get_orders();
@@ -13,11 +13,15 @@ void FCFSRoutingAlgo::route_worker(Factory *factory, Worker worker)
     if (!orders.empty())
     {
         std::cout << "Routing to " << orders[0].get_pos() << std::endl;
-        // Set the current order.
+        // Set the current order for the worker.
         worker.set_current_order(orders[0]);
-        // Remove the order since we are going to fulfill it now.
+        // Remove the order from the worker since we are going to fulfill it.
         worker.remove_order(orders[0]);
         // This worker has been routed.
         worker.set_routed(true);
+    }
+    else
+    {
+        std::cout << "Orders is empty." << std::endl;
     }
 }

@@ -13,7 +13,7 @@ class RoutingAlgo
     public:
         virtual ~RoutingAlgo();
         // Route the worker.
-        virtual void route_worker(Factory *, Worker) = 0;
+        virtual void route_worker(Factory *, Worker&) = 0;
 };
 
 #endif

@@ -31,12 +31,13 @@ RandDispatchAlgo::~RandDispatchAlgo()
 
 void RandDispatchAlgo::assign_order(Factory *factory, Order order)
 {
-    auto workers = factory->get_workers();
+    std::vector<Worker>& workers = factory->get_workers();
 
     int index = workers.size() * rand.rand();
 
     std::cout << "Assigned to worker # " << workers[index].get_id() << std::endl;
     
     // Assign job to the worker.
-    factory->assign(index, order);
+    Worker& worker = workers[index];
+    worker.assign(order);
 }

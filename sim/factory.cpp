@@ -138,17 +138,9 @@ void Factory::move_worker(int start, int end)
 }
 
 /**
- * Assigns the worker at this index the order.
- */
-void Factory::assign(int index, Order order)
-{
-    workers[index].assign(order);
-}
-
-/**
  * Returns the workers in this factory.
  */
-std::vector<Worker> Factory::get_workers()
+std::vector<Worker>& Factory::get_workers()
 {
     return workers;
 }
