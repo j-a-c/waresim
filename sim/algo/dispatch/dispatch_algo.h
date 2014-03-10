@@ -1,8 +1,8 @@
-#ifndef SIM_ALGO_DISPATCH_ALGO_H
-#define SIM_ALGO_DISPATCH_ALGO_H
+#ifndef SIM_ALGO_DISPATCH_DISPATCH_ALGO_H
+#define SIM_ALGO_DISPATCH_DISPATCH_ALGO_H
 
-#include "../factory.h"
-#include "../order.h"
+#include "../../factory.h"
+#include "../../order.h"
 
 /**
  * Encapsulates an algorithm that determines which worker gets which order.

@@ -6,7 +6,8 @@
 #include <string>
 #include <thread>
 
-#include "algo/dispatch_algo.h"
+#include "algo/dispatch/dispatch_algo.h"
+#include "algo/routing/routing_algo.h"
 #include "concurrent/barrier.h"
 #include "dispatcher.h"
 #include "factory.h"
@@ -21,7 +22,7 @@
 class Simulation
 {
     public:
-        Simulation(int, std::string, DispatchAlgo *);
+        Simulation(int, std::string, DispatchAlgo *, RoutingAlgo *);
         ~Simulation();
 
         // Runs the simulation.
@@ -52,6 +53,8 @@ class Simulation
         Barrier *barrier = nullptr;
         // The dispatch algorithm.
         DispatchAlgo *dispatch_algo = nullptr;
+        // The routing algorithm.
+        RoutingAlgo *routing_algo = nullptr;
 };
 
 #endif

@@ -3,7 +3,7 @@
 
 #include <ctime>
 
-#include "algo/dispatch_algo.h"
+#include "algo/dispatch/dispatch_algo.h"
 #include "concurrent/barrier.h"
 #include "factory.h"
 #include "order_generator.h"

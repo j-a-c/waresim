@@ -17,6 +17,8 @@ class Rand
         ~Rand();
         // Returns the next double in the sequence.
         double rand();
+        // Return the underlying URNG.
+        std::mt19937 get_urng();
     private:
         // Seed this generator. Should only be called once.
         void seed(unsigned int);

@@ -1,9 +1,11 @@
+#include <algorithm>
 #include <fstream>
 #include <string>
 #include <vector>
 
 #include "constants.h"
 #include "factory.h"
+#include "util.h"
 
 // TODO Delete later, used for debug.
 #include <iostream>
@@ -97,6 +99,7 @@ Factory Factory::parse_default_factory(std::string factory_file)
                     break;
                 case WORKER_MARKER:
                     layout[pos] = WORKER_LOC;
+                    factory.worker_locs.push_back(pos);
                     factory.workers.push_back(Worker(pos));
                     break;
                 case WALL_MARKER:
@@ -121,9 +124,63 @@ Factory Factory::parse_default_factory(std::string factory_file)
 }
 
 /**
+ * Move a worker from the start index to the end index. We do not do any error
+ * checking since we assuming valid start and end locations.
+ */
+void Factory::move_worker(int start, int end)
+{
+    // Find the start location.
+    auto it = std::find(worker_locs.begin(), worker_locs.end(), start);
+    // Remove the start location.
+    worker_locs.erase(it);
+    // Add the end location.
+    worker_locs.push_back(end);
+}
+
+/**
+ * Assigns the worker at this index the order.
+ */
+void Factory::assign(int index, Order order)
+{
+    workers[index].assign(order);
+}
+
+/**
  * Returns the workers in this factory.
  */
 std::vector<Worker> Factory::get_workers()
 {
     return workers;
+}
+
+/**
+ * Returns the bins locations in this factory.
+ */
+std::vector<int> Factory::get_bins()
+{
+    return bins;
+}
+
+/**
+ * Returns the layout for the factory.
+ */
+std::vector<int> Factory::get_layout()
+{
+    return layout;
+}
+
+/**
+ * Returns the height of the factory.
+ */
+int Factory::get_height()
+{
+    return height;
+}
+
+/**
+ * Returns the width of the factory.
+ */
+int Factory::get_width()
+{
+    return width;
 }

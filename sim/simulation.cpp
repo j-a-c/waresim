@@ -1,6 +1,5 @@
 #include <cstdlib>
 
-#include "algo/rand_dispatch_algo.h"
 #include "rand/rand.h"
 #include "simulation.h"
 
@@ -19,13 +18,15 @@
  * @param factory_file The file containing the factory representation.
  */
 Simulation::Simulation(int sim_length, std::string factory_file, 
-        DispatchAlgo * dispatch_algo)
+        DispatchAlgo *dispatch_algo, RoutingAlgo *routing_algo)
 {
     this->sim_length = sim_length;
 
     this->factory = Factory::parse_default_factory(factory_file);
 
     this->dispatch_algo = dispatch_algo;
+
+    this->routing_algo = routing_algo;
 }
 
 /**
@@ -64,6 +65,7 @@ void Simulation::run()
     order_gen = new OrderGenerator(start_time, sim_length);
     order_gen->set_barrier(barrier);
     order_gen->set_rand(Rand(std::rand()));
+    order_gen->set_factory(&factory);
     // Initialize workers.
 
     // Initialize dispatcher.
@@ -77,6 +79,8 @@ void Simulation::run()
     scheduler = new Scheduler(start_time, sim_length);
     scheduler->set_barrier(barrier);
     scheduler->set_factory(&factory);
+    scheduler->set_rand(Rand(std::rand()));
+    scheduler->set_algo(routing_algo);
 
     // Start the simulation.
     order_gen->run();

@@ -48,3 +48,11 @@ double Rand::rand()
 {
     return dis(gen);
 }
+
+/**
+ * Returns the underlying URNG.
+ */
+std::mt19937 Rand::get_urng()
+{
+    return gen;
+}

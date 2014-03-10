@@ -30,6 +30,7 @@ void Dispatcher::simulate()
         // TODO Implement simulation stuff.
         if (order_gen->has_order())
         {
+            std::cout << "Dispatch found new order." << std::endl;
             algo->assign_order(this->factory, order_gen->get_order());
         }
         

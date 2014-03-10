@@ -8,7 +8,21 @@
  */
 class Order
 {
+    public:
+        Order();
+        Order(int);
+        bool operator==(const Order &other) const;
 
+        // Returns the position of this order in the factory.
+        int get_pos();
+
+    private:
+        static int curr_id;
+        // ID of this order.
+        int my_id;
+        // Location of this order.
+        int pos;
 };
+
 
 #endif

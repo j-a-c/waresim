@@ -15,16 +15,4 @@ const char DROP_MARKER      = 'D';
 const char WORKER_MARKER    = 'W';
 const char WALL_MARKER      = 'X';
 
-/**
- * Converts an (x,y) coordinate to a position in an array.
- *
- * @param x x-coordinate.
- * @param y y-coordinate.
- * @param w width.
- */
-int coord_to_pos(int x, int y, int w)
-{
-    return (y * w) + x;
-}
-
 #endif

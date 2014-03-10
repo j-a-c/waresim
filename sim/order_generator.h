@@ -7,6 +7,7 @@
 #include <queue>
 
 #include "concurrent/barrier.h"
+#include "factory.h"
 #include "order.h"
 #include "rand/rand.h"
 #include "simulator.h"
@@ -25,6 +26,8 @@ class OrderGenerator : public Simulator
         void set_barrier(Barrier *);
         // Set the random number generator.
         void set_rand(Rand);
+        // Set the factory.
+        void set_factory(Factory *);
         // Returns true if there is an order available.
         bool has_order();
         // Returns the next order or blocks if there are no orders.
@@ -35,7 +38,6 @@ class OrderGenerator : public Simulator
 
         // Adds an order to the order queue.
         void add_order(const Order);
-        // Thread to generate orders.
         
         // The start time of the simulation.
         time_t start_time;
@@ -51,6 +53,8 @@ class OrderGenerator : public Simulator
         Barrier *barrier = nullptr;
         // The random number generator.
         Rand rand;
+        // The factory to choose bins from.
+        Factory *factory;
 };
 
 #endif

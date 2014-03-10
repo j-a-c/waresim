@@ -31,7 +31,13 @@ void OrderGenerator::simulate()
 
         if (d < 0.50)
         {
-            add_order(Order());
+            auto bins = factory->get_bins();
+
+            int index = rand.rand() * bins.size();
+
+            std::cout << "Creating new order: " << bins[index] << std::endl;
+
+            add_order(Order(bins[index]));
         }
 
         barrier->arrive();
@@ -98,4 +104,9 @@ void OrderGenerator::set_barrier(Barrier *b)
 void OrderGenerator::set_rand(Rand rand)
 {
     this->rand = rand;
+}
+
+void OrderGenerator::set_factory(Factory *factory)
+{
+    this->factory = factory;
 }

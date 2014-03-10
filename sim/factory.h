@@ -16,8 +16,21 @@ class Factory
         // found in the given file.
         static Factory parse_default_factory(std::string);
 
+        // Move a worker's marker.
+        void move_worker(int, int);
+        // Assign the worker at this index this order.
+        void assign(int, Order);
+
+        // Get the height of the factory.
+        int get_height();
+        // Get the width of the factory.
+        int get_width();
         // Get the workers in the factory.
         std::vector<Worker> get_workers();
+        // Get the bin locations in the factory.
+        std::vector<int> get_bins();
+        // Get the factory layout.
+        std::vector<int> get_layout();
     private:
         // Reads the file and returns a vector containing its lines.
         static std::vector<std::string> read_file(std::string);
@@ -28,6 +41,8 @@ class Factory
         std::vector<int> bins{};
         // The workers in the factory.
         std::vector<Worker> workers{};
+        // The locations of the workers in the factory.
+        std::vector<int> worker_locs{};
         // Drop-off locations in the factory.
         std::vector<int> drops{};
         // The height and width of the factory.
