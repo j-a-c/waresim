@@ -7,14 +7,14 @@
 #include "concurrent/barrier.h"
 #include "factory.h"
 #include "order_generator.h"
-#include "simulator.h"
+#include "thread/thread.h"
 
 /**
  * @author Joshua A. Campbell
  *
  * Calculates the dispatching algorithm for the simulation.
  */
-class Dispatcher : public Simulator
+class Dispatcher : public Thread
 {
     public:
         Dispatcher(time_t, int);
@@ -28,8 +28,8 @@ class Dispatcher : public Simulator
         // Set the dispatch algorithm.
         void set_algo(DispatchAlgo *);
     private:
-        // Override from Simulator.
-        void simulate() override;
+        // Override from Thread.
+        void run() override;
 
         // The start time of the simulation.
         time_t start_time;

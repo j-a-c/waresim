@@ -4,7 +4,6 @@
 #include <ctime>
 #include <memory>
 #include <string>
-#include <thread>
 
 #include "algo/dispatch/dispatch_algo.h"
 #include "algo/routing/routing_algo.h"
@@ -13,6 +12,7 @@
 #include "factory.h"
 #include "order_generator.h"
 #include "scheduler.h"
+#include "view/view.h"
 
 /**
  * @author Joshua A. Campbell
@@ -22,13 +22,18 @@
 class Simulation
 {
     public:
-        Simulation(int, std::string, DispatchAlgo *, RoutingAlgo *);
+        Simulation(int, std::string);
         ~Simulation();
 
-        // Runs the simulation.
-        void run();
+        // Starts the simulation.
+        void start();
         // Waits for the simulation thread to finish.
         void join();
+
+        void set_dispatch_algo(DispatchAlgo *);
+        void set_routing_algo(RoutingAlgo *);
+        void set_view(View *);
+
     private:
         // Returns the number of threads that need to by synchronized.
         int num_threads();
@@ -39,8 +44,6 @@ class Simulation
         int sim_length;
         // Seed for the simulation.
         unsigned int seed;
-        // Thread for running the simulation.
-        std::thread simulation;
         // Generates orders for this simulation.
         OrderGenerator *order_gen = nullptr;
         // Dispatcher for the simulation.
@@ -55,6 +58,8 @@ class Simulation
         DispatchAlgo *dispatch_algo = nullptr;
         // The routing algorithm.
         RoutingAlgo *routing_algo = nullptr;
+        // The view to render the factory.
+        View *view = nullptr;
 };
 
 #endif

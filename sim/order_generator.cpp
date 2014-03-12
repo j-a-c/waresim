@@ -18,7 +18,7 @@ OrderGenerator::OrderGenerator(time_t start_time, int sim_length)
 /**
  * Encapsulates the order generation so it can be run in a separate thread.
  */
-void OrderGenerator::simulate()
+void OrderGenerator::run()
 {
     // Continue simulation until sim_length seconds have elapsed.
     while (difftime(time(nullptr), start_time) < sim_length)

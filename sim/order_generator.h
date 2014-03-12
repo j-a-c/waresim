@@ -10,14 +10,14 @@
 #include "factory.h"
 #include "order.h"
 #include "rand/rand.h"
-#include "simulator.h"
+#include "thread/thread.h"
 
 /**
  * @author Joshua A. Campbell
  *
  * Generates orders within the simulation.
  */
-class OrderGenerator : public Simulator
+class OrderGenerator : public Thread
 {
     public:
         OrderGenerator(time_t, int);
@@ -33,8 +33,8 @@ class OrderGenerator : public Simulator
         // Returns the next order or blocks if there are no orders.
         Order get_order();
     private:
-        // Override from Simulator.
-        void simulate() override;
+        // Override from Thread.
+        void run() override;
 
         // Adds an order to the order queue.
         void add_order(const Order);

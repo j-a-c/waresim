@@ -167,7 +167,7 @@ std::vector<int> Scheduler::shortest_path(int start, int end)
  * Private method that encapsulates the scheduling algorithm so it can be run in
  * a thread.
  */
-void Scheduler::simulate()
+void Scheduler::run()
 {
     // Continue simulation until sim_length seconds have elapsed.
     while (difftime(time(nullptr), start_time) < sim_length)

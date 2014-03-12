@@ -8,12 +8,12 @@
 #include "concurrent/barrier.h"
 #include "factory.h"
 #include "rand/rand.h"
-#include "simulator.h"
+#include "thread/thread.h"
 
 /**
  * Reponsible for scheduling the worker's movements in the factory.
  */
-class Scheduler : public Simulator
+class Scheduler : public Thread
 {
     public:
         Scheduler(time_t, int);
@@ -28,8 +28,8 @@ class Scheduler : public Simulator
         void set_algo(RoutingAlgo *);
 
     private:
-        // Override from Simulator
-        void simulate() override;
+        // Override from Thread
+        void run() override;
         // Returns a integer in the range [0, int).
         int rand_int(int);
         // Returns the shortest path between the two positions.

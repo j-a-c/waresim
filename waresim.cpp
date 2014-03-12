@@ -1,12 +1,13 @@
 #include <cstdlib>
 #include <string>
 
-#include "sim/simulation.h"
 #include "sim/algo/dispatch/dispatch_algo.h"
 #include "sim/algo/dispatch/rand_dispatch_algo.h"
 #include "sim/algo/routing/routing_algo.h"
 #include "sim/algo/routing/fcfs_routing_algo.h"
-
+#include "sim/simulation.h"
+#include "sim/view/opengl_view.h"
+#include "sim/view/view.h"
 
 /**
  * @author Joshua A. Campbell
@@ -30,14 +31,21 @@ int main()
     DispatchAlgo *dispatch_algo = new RandDispatchAlgo(Rand(std::rand()));
     // TODO Make a parameter.
     RoutingAlgo *routing_algo = new FCFSRoutingAlgo();
+    // TODO Make a parameter.
+    View *view = new OpenGLView();
 
-    Simulation sim(sim_length, factory_file, dispatch_algo, routing_algo);
 
-    sim.run();
+    Simulation sim(sim_length, factory_file);
+    sim.set_dispatch_algo(dispatch_algo);
+    sim.set_routing_algo(routing_algo);
+    sim.set_view(view);
+
+    sim.start();
     sim.join();
 
     delete dispatch_algo;
     delete routing_algo;
+    delete view;
 
     return 0;
 }

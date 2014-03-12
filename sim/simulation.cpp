@@ -17,16 +17,32 @@
  * @param sim_length The length of the simulation in seconds.
  * @param factory_file The file containing the factory representation.
  */
-Simulation::Simulation(int sim_length, std::string factory_file, 
-        DispatchAlgo *dispatch_algo, RoutingAlgo *routing_algo)
+Simulation::Simulation(int sim_length, std::string factory_file) 
 {
     this->sim_length = sim_length;
 
     this->factory = Factory::parse_default_factory(factory_file);
+}
 
+/**
+ * Sets the dispatch algorithm to be used in this simulation.
+ */
+void Simulation::set_dispatch_algo(DispatchAlgo* dispatch_algo)
+{
     this->dispatch_algo = dispatch_algo;
+}
 
+/**
+ * Sets the routing algorithm to be used in the simulation.
+ */
+void Simulation::set_routing_algo(RoutingAlgo *routing_algo)
+{
     this->routing_algo = routing_algo;
+}
+
+void Simulation::set_view(View * view)
+{
+    this->view = view;
 }
 
 /**
@@ -54,8 +70,9 @@ int Simulation::num_threads()
 /**
  * Starts the simulation in a separate thread.
  */
-void Simulation::run()
+void Simulation::start()
 {
+
     barrier = new Barrier(num_threads());
 
     // Set the start time for this simulation.
@@ -83,9 +100,9 @@ void Simulation::run()
     scheduler->set_algo(routing_algo);
 
     // Start the simulation.
-    order_gen->run();
-    dispatcher->run();
-    scheduler->run();
+    order_gen->start();
+    dispatcher->start();
+    scheduler->start();
 }
 
 /**

@@ -22,7 +22,7 @@ Dispatcher::Dispatcher(time_t start_time, int sim_length)
  * Private method that encapsulates the dispatch algorithm so it can be run in
  * a thread.
  */
-void Dispatcher::simulate()
+void Dispatcher::run()
 {
     // Continue simulation until sim_length seconds have elapsed.
     while (difftime(time(nullptr), start_time) < sim_length)

@@ -8,17 +8,17 @@
  *
  * Defines a object that is part of a simulation.
  */
-class Simulator
+class Thread
 {
     public:
-        virtual ~Simulator();
+        virtual ~Thread();
         // Runs the simulation specified in simulate();
-        void run();
+        void start();
         // Waits for the simulation to finish.
         void join();
     private:
         // This method will be run from the thread.
-        virtual void simulate() = 0;
+        virtual void run() = 0;
         // Thread to run simulate() from.
         std::thread thread;
 };
