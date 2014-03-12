@@ -99,10 +99,16 @@ void Simulation::start()
     scheduler->set_rand(Rand(std::rand()));
     scheduler->set_algo(routing_algo);
 
+
+    // Initial the render view.
+    view->set_sim_params(start_time, sim_length);
+    view->set_factory(&factory);
+
     // Start the simulation.
     order_gen->start();
     dispatcher->start();
     scheduler->start();
+    view->run();
 }
 
 /**
@@ -114,5 +120,6 @@ void Simulation::join()
     order_gen->join();
     dispatcher->join();
     scheduler->join();
+    //view->join();
 }
 

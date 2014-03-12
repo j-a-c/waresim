@@ -23,17 +23,18 @@ int main()
     unsigned int seed = 1000;
     // End config
     
+    // TODO Make a parameter.
+    View *view = new OpenGLView();
+
     // Set random seed. All other random generators should be seeded in a
-    // deterministic order using std::rand();
+    // deterministic order using std::rand(). We reset the seed because the
+    // view might set the seed for itself.
     std::srand(seed);
 
     // TODO Make a parameter.
     DispatchAlgo *dispatch_algo = new RandDispatchAlgo(Rand(std::rand()));
     // TODO Make a parameter.
     RoutingAlgo *routing_algo = new FCFSRoutingAlgo();
-    // TODO Make a parameter.
-    View *view = new OpenGLView();
-
 
     Simulation sim(sim_length, factory_file);
     sim.set_dispatch_algo(dispatch_algo);
