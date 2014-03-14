@@ -7,82 +7,13 @@
 #include <cmath>
 
 
+#include "opengl_box.h"
 #include "glext.h"
 #include "opengl_view.h"
 #include "../util/util.h"
 
 // Delete after debug.
 #include <iostream>
-
-        // Cube.
-        //    v6----- v5
-        //   /|      /|
-        //  v1------v0|
-        //  | |     | |
-        //  | |v7---|-|v4
-        //  |/      |/
-        //  v2------v3 
-
-        // Dimensions are defined in terms of UNITs.
-        const float UNIT = 1.0f;
-
-        // Vertex array for a cube.
-        GLfloat cube_vertices[]  = { UNIT/2, UNIT/2, UNIT/2,  -UNIT/2, UNIT/2, UNIT/2,  -UNIT/2,-UNIT/2, UNIT/2,      // v0-v1-v2 (front)
-                               -UNIT/2,-UNIT/2, UNIT/2,   UNIT/2,-UNIT/2, UNIT/2,   UNIT/2, UNIT/2, UNIT/2,      // v2-v3-v0
-
-                                UNIT/2, UNIT/2, UNIT/2,   UNIT/2,-UNIT/2, UNIT/2,   UNIT/2,-UNIT/2,-UNIT/2,      // v0-v3-v4 (right)
-                                UNIT/2,-UNIT/2,-UNIT/2,   UNIT/2, UNIT/2,-UNIT/2,   UNIT/2, UNIT/2, UNIT/2,      // v4-v5-v0
-
-                                UNIT/2, UNIT/2, UNIT/2,   UNIT/2, UNIT/2,-UNIT/2,  -UNIT/2, UNIT/2,-UNIT/2,      // v0-v5-v6 (top)
-                               -UNIT/2, UNIT/2,-UNIT/2,  -UNIT/2, UNIT/2, UNIT/2,   UNIT/2, UNIT/2, UNIT/2,      // v6-v1-v0
-
-                               -UNIT/2, UNIT/2, UNIT/2,  -UNIT/2, UNIT/2,-UNIT/2,  -UNIT/2,-UNIT/2,-UNIT/2,      // v1-v6-v7 (left)
-                               -UNIT/2,-UNIT/2,-UNIT/2,  -UNIT/2,-UNIT/2, UNIT/2,  -UNIT/2, UNIT/2, UNIT/2,      // v7-v2-v1
-
-                               -UNIT/2,-UNIT/2,-UNIT/2,   UNIT/2,-UNIT/2,-UNIT/2,   UNIT/2,-UNIT/2, UNIT/2,      // v7-v4-v3 (bottom)
-                                UNIT/2,-UNIT/2, UNIT/2,  -UNIT/2,-UNIT/2, UNIT/2,  -UNIT/2,-UNIT/2,-UNIT/2,      // v3-v2-v7
-
-                                UNIT/2,-UNIT/2,-UNIT/2,  -UNIT/2,-UNIT/2,-UNIT/2,  -UNIT/2, UNIT/2,-UNIT/2,      // v4-v7-v6 (back)
-                               -UNIT/2, UNIT/2,-UNIT/2,   UNIT/2, UNIT/2,-UNIT/2,   UNIT/2,-UNIT/2,-UNIT/2 };    // v6-v5-v4
-
-        // Normal array for a cube.
-        GLfloat cube_normals[]   = { 0, 0, 1,   0, 0, 1,   0, 0, 1,      // v0-v1-v2 (front)
-                                0, 0, 1,   0, 0, 1,   0, 0, 1,      // v2-v3-v0
-
-                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v0-v3-v4 (right)
-                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v4-v5-v0
-
-                                0, 1, 0,   0, 1, 0,   0, 1, 0,      // v0-v5-v6 (top)
-                                0, 1, 0,   0, 1, 0,   0, 1, 0,      // v6-v1-v0
-
-                               -1, 0, 0,  -1, 0, 0,  -1, 0, 0,      // v1-v6-v7 (left)
-                               -1, 0, 0,  -1, 0, 0,  -1, 0, 0,      // v7-v2-v1
-
-                                0,-1, 0,   0,-1, 0,   0,-1, 0,      // v7-v4-v3 (bottom)
-                                0,-1, 0,   0,-1, 0,   0,-1, 0,      // v3-v2-v7
-
-                                0, 0,-1,   0, 0,-1,   0, 0,-1,      // v4-v7-v6 (back)
-                                0, 0,-1,   0, 0,-1,   0, 0,-1 };    // v6-v5-v4
-
-        // Color array for a worker's cube.
-        GLfloat worker_colors[]    = { 1, 0, 0,   1, 0, 0,   1, 0, 0,      // v0-v1-v2 (front)
-                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v2-v3-v0
-
-                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v0-v3-v4 (right)
-                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v4-v5-v0
-
-                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v0-v5-v6 (top)
-                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v6-v1-v0
-
-                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v1-v6-v7 (left)
-                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v7-v2-v1
-
-                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v7-v4-v3 (bottom)
-                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v3-v2-v7
-
-                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v4-v7-v6 (back)
-                                1, 0, 0,   1, 0, 0,   1, 0, 0 };    // v6-v5-v4
-
 
 /**
  * Constructor.
@@ -217,22 +148,42 @@ void OpenGLView::render()
     // Translate away from the camera.
     glTranslated(-x_pos, -y_pos, -z_pos);
 
-    // TODO This is where we would render the simulation.
-
-    // Bind VBOs with IDs and set the buffer offsets of the bound VBOs
-    // When buffer object is bound with its ID, all pointers in gl*Pointer()
-    // are treated as offset instead of real pointer.
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, workerVBO);
-
     // Enable vertex arrays
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
     glEnableClientState(GL_VERTEX_ARRAY);
 
-    // Before draw, specify vertex and index arrays with their offsets
-    glNormalPointer(GL_FLOAT, 0, (void*)sizeof(cube_vertices));
-    glColorPointer(3, GL_FLOAT, 0, (void*)(sizeof(cube_vertices)+sizeof(cube_normals)));
+    /*
+     * Render the factory.
+     */
+
+    // Bind the factory VBO.
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, factoryVBO);
+
+    // Set the pointers.
     glVertexPointer(3, GL_FLOAT, 0, 0);
+    glNormalPointer(GL_FLOAT, 0, (void*) factory_vert_len);
+    glColorPointer(3, GL_FLOAT, 0, 
+            (void*) (factory_vert_len + factory_norm_len));
+
+    glPushMatrix();
+    glTranslated(0,0,-factory->get_height());
+    glDrawArrays(GL_TRIANGLES, 0, num_factory_tris);
+    glPopMatrix();
+
+    
+    /*
+     * Render the workers.
+     */
+
+    // Bind the workers VBO.
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, workerVBO);
+ 
+    // Set the pointers.
+    glVertexPointer(3, GL_FLOAT, 0, 0);
+    glNormalPointer(GL_FLOAT, 0, (void*) worker_vert_len);
+    glColorPointer(3, GL_FLOAT, 0, 
+            (void*) (worker_vert_len + worker_norm_len));
 
     // Render the workers.
     for (auto& pos : factory->get_worker_locs())
@@ -246,8 +197,8 @@ void OpenGLView::render()
         
         // Move to the worker's location and draw the worker.
         glPushMatrix();
-        glTranslated(-x,0,-z);
-        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glTranslated(x,0,z);
+        glDrawArrays(GL_TRIANGLES, 0, num_worker_tris);
         glPopMatrix();
     }
 
@@ -384,20 +335,157 @@ void OpenGLView::initVBOs()
     glGenBuffersARB(1, &factoryVBO);
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, factoryVBO);
 
-    // TODO Find the minimal number of faces necessary.
+    std::vector<GLfloat> factory_verts{};
+    std::vector<GLfloat> factory_norms{};
+    std::vector<GLfloat> factory_colors{};
+
+    // Add the factory floor. We use 'top' so we can see the floor.
+    // We move the top -1 units down (so it acts as a floor) and re-align it.
+    auto floor = OpenGLBox::get_top_vertices(factory->get_width(), 
+            1, factory->get_height(), factory->get_width()/2.0f-0.5f, -1, 
+            factory->get_height()/2.0f-0.5f);
+    factory_verts.insert(factory_verts.end(), floor.begin(), floor.end());
+    auto floorn = OpenGLBox::get_top_normals();
+    factory_norms.insert(factory_norms.end(), floorn.begin(), floorn.end());
+    for (int i = 0; i < 2; i++)
+    {
+        factory_colors.insert(factory_colors.end(), default_factory_color.begin(), 
+                default_factory_color.end());
+    }
+    num_factory_tris += 2;
+
+    // Add each wall.
+    for (auto& pos : factory->get_walls())
+    {
+        num_factory_tris += 36;
+
+        // Translate the worker's position to a coordinate.
+        int x,z;
+        pos_to_coord(&x, &z, pos, factory->get_width());
+
+         // Form vertices
+        auto ffront = OpenGLBox::get_front_vertices(1, 1, 1, x, 0, z);
+        auto fback = OpenGLBox::get_back_vertices(1, 1, 1, x, 0, z);
+        auto ftop = OpenGLBox::get_top_vertices(1, 1, 1, x, 0, z);
+        auto fbot = OpenGLBox::get_bot_vertices(1, 1, 1, x, 0, z);
+        auto fleft = OpenGLBox::get_left_vertices(1, 1, 1, x, 0, z);
+        auto fright = OpenGLBox::get_right_vertices(1, 1, 1, x, 0, z);
+
+        factory_verts.insert(factory_verts.end(), ffront.begin(), ffront.end());
+        factory_verts.insert(factory_verts.end(), fback.begin(), fback.end());
+        factory_verts.insert(factory_verts.end(), ftop.begin(), ftop.end());
+        factory_verts.insert(factory_verts.end(), fbot.begin(), fbot.end());
+        factory_verts.insert(factory_verts.end(), fleft.begin(), fleft.end());
+        factory_verts.insert(factory_verts.end(), fright.begin(), fright.end());
+
+        // Form normals
+        auto fnfront = OpenGLBox::get_front_normals();
+        auto fnback = OpenGLBox::get_back_normals();
+        auto fntop = OpenGLBox::get_top_normals();
+        auto fnbot = OpenGLBox::get_bot_normals();
+        auto fnleft = OpenGLBox::get_left_normals();
+        auto fnright = OpenGLBox::get_right_normals();
+
+        factory_norms.insert(factory_norms.end(), fnfront.begin(), fnfront.end());
+        factory_norms.insert(factory_norms.end(), fnback.begin(), fnback.end());
+        factory_norms.insert(factory_norms.end(), fntop.begin(), fntop.end());
+        factory_norms.insert(factory_norms.end(), fnbot.begin(), fnbot.end());
+        factory_norms.insert(factory_norms.end(), fnleft.begin(), fnleft.end());
+        factory_norms.insert(factory_norms.end(), fnright.begin(), fnright.end());
+
+        // Form colors
+        // Insert twice for each face because each face is two triangles.
+        for (int i = 0; i < 12; i++)
+        {
+            factory_colors.insert(factory_colors.end(), 
+                    default_factory_color.begin(), default_factory_color.end());
+        }   
+    }
+
+    // Add each bin.
+
+    // Add drop offs.
+    
+    // Store lengths index lengths.
+    factory_vert_len = sizeof(&factory_verts[0]) * factory_verts.size();
+    factory_norm_len = sizeof(&factory_norms[0]) * factory_norms.size();
+    factory_color_len = sizeof(&factory_colors[0]) * factory_colors.size();
+
+    // Target, size, data, usage.
+    glBufferDataARB(GL_ARRAY_BUFFER_ARB, 
+            factory_vert_len + factory_norm_len + factory_color_len, 
+            0, GL_STATIC_DRAW_ARB);
+    // Copy vertices starting from 0 offest.
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, factory_vert_len, &factory_verts[0]); 
+    // Copy normals after vertices.
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, factory_vert_len, factory_norm_len, 
+            &factory_norms[0]); 
+    // Copy colors after normals.
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, factory_vert_len + factory_norm_len, 
+            factory_color_len, &factory_colors[0]);
 
 
     // Create the worker VBO.
     glGenBuffersARB(1, &workerVBO);
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, workerVBO);
+
+    std::vector<GLfloat> worker_verts{}; 
+    std::vector<GLfloat> worker_norms{}; 
+    std::vector<GLfloat> worker_colors{}; 
+
+    // Form vertices
+    auto wfront = OpenGLBox::get_front_vertices(1, 1, 1, 0, 0, 0);
+    auto wback = OpenGLBox::get_back_vertices(1, 1, 1, 0, 0, 0);
+    auto wtop = OpenGLBox::get_top_vertices(1, 1, 1, 0, 0, 0);
+    auto wbot = OpenGLBox::get_bot_vertices(1, 1, 1, 0, 0, 0);
+    auto wleft = OpenGLBox::get_left_vertices(1, 1, 1, 0, 0, 0);
+    auto wright = OpenGLBox::get_right_vertices(1, 1, 1, 0, 0, 0);
+
+    worker_verts.insert(worker_verts.end(), wfront.begin(), wfront.end());
+    worker_verts.insert(worker_verts.end(), wback.begin(), wback.end());
+    worker_verts.insert(worker_verts.end(), wtop.begin(), wtop.end());
+    worker_verts.insert(worker_verts.end(), wbot.begin(), wbot.end());
+    worker_verts.insert(worker_verts.end(), wleft.begin(), wleft.end());
+    worker_verts.insert(worker_verts.end(), wright.begin(), wright.end());
+
+    // Form normals
+    auto wnfront = OpenGLBox::get_front_normals();
+    auto wnback = OpenGLBox::get_back_normals();
+    auto wntop = OpenGLBox::get_top_normals();
+    auto wnbot = OpenGLBox::get_bot_normals();
+    auto wnleft = OpenGLBox::get_left_normals();
+    auto wnright = OpenGLBox::get_right_normals();
+
+    worker_norms.insert(worker_norms.end(), wnfront.begin(), wnfront.end());
+    worker_norms.insert(worker_norms.end(), wnback.begin(), wnback.end());
+    worker_norms.insert(worker_norms.end(), wntop.begin(), wntop.end());
+    worker_norms.insert(worker_norms.end(), wnbot.begin(), wnbot.end());
+    worker_norms.insert(worker_norms.end(), wnleft.begin(), wnleft.end());
+    worker_norms.insert(worker_norms.end(), wnright.begin(), wnright.end());
+
+    // Form colors
+    // Insert twice for each face because each face is two triangles.
+    for (int i = 0; i < 12; i++)
+    {
+        worker_colors.insert(worker_colors.end(), 
+                worker_color.begin(), worker_color.end());
+    }
+
+    // Store lengths index lengths.
+    worker_vert_len = sizeof(&worker_verts[0]) * worker_verts.size();
+    worker_norm_len = sizeof(&worker_norms[0]) * worker_norms.size();
+    worker_color_len = sizeof(&worker_colors[0]) * worker_colors.size();
+
     // Target, size, data, usage.
-    glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(cube_vertices)+sizeof(cube_normals)+sizeof(worker_colors), nullptr, GL_STATIC_DRAW_ARB);
+    glBufferDataARB(GL_ARRAY_BUFFER_ARB, 
+            worker_vert_len+worker_norm_len+worker_color_len, 
+            0, GL_STATIC_DRAW_ARB);
     // Copy vertices starting from 0 offest.
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(cube_vertices), cube_vertices); 
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, worker_vert_len, &worker_verts[0]); 
     // Copy normals after vertices.
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, sizeof(cube_vertices), sizeof(cube_normals), cube_normals); 
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, worker_vert_len, worker_norm_len, &worker_norms[0]); 
     // Copy colors after normals.
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, sizeof(cube_vertices)+sizeof(cube_normals), sizeof(worker_colors), worker_colors);
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, worker_vert_len+worker_norm_len, worker_color_len, &worker_colors[0]);
 
 }
 

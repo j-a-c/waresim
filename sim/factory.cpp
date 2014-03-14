@@ -104,6 +104,7 @@ Factory Factory::parse_default_factory(std::string factory_file)
                     break;
                 case WALL_MARKER:
                     layout[pos] = WALL_LOC;
+                    factory.walls.push_back(pos);
                     break;
                 default:
                     std::string msg{"Invalid marker at: ("};
@@ -183,4 +184,12 @@ int Factory::get_width()
 std::vector<int> Factory::get_worker_locs()
 {
     return worker_locs;
+}
+
+/**
+ * Return the wall locations.
+ */
+std::vector<int> Factory::get_walls()
+{
+    return walls;
 }

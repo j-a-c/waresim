@@ -29,6 +29,8 @@ class Factory
         std::vector<int> get_worker_locs();
         // Get the bin locations in the factory.
         std::vector<int> get_bins();
+        // Get the wall locations.
+        std::vector<int> get_walls();
         // Get the factory layout.
         std::vector<int> get_layout();
     private:
@@ -43,6 +45,8 @@ class Factory
         std::vector<Worker> workers{};
         // The locations of the workers in the factory.
         std::vector<int> worker_locs{};
+        // The walls in the factory.
+        std::vector<int> walls{};
         // Drop-off locations in the factory.
         std::vector<int> drops{};
         // The height and width of the factory.
