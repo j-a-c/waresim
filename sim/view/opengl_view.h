@@ -1,10 +1,9 @@
 #ifndef RENDER_OPENGL_VIEW_H
 #define RENDER_OPENGL_VIEW_H
 
-#include "view.h"
+#include <GL/gl.h>
 
-// TODO Used for testing.
-#include "Block.h"
+#include "view.h"
 
 /**
  * Renders the simulation using OpenGL.
@@ -47,8 +46,11 @@ class OpenGLView : public View
         // The legnth of the simulation in seconds.
         int sim_length;
 
-        // The sensitivity of the mouse.
-        float mouse_sensitivity = 0.01;
+        // Constant to convert degrees to radians.
+        const float DEG2RAD = 3.141593f / 180;
+
+        // Rotation speed of the camera.
+        const float ROTATE_SPEED = 2.0f;
 
         // The max speed of the camera.
         float max_speed = 6;
@@ -60,10 +62,12 @@ class OpenGLView : public View
         // The x, y and z position (in OpenGL coordinates).
         float x_pos = 0.0f;
         float y_pos = 0.0f;
-        float z_pos = 0.0f;
+        float z_pos = 10.0f;
 
-        // TODO Delete, used for testing.
-        Block b;
+        // Holds the static factory VBO.
+        GLuint factoryVBP = 0; 
+        // Holds a cube VBO.
+        GLuint cubeVBO = 0;
 };
 
 #endif
