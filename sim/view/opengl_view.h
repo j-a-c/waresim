@@ -23,6 +23,9 @@ class OpenGLView : public View
     private:
         // Override from Thread.
         //void run() override;
+        
+        // Initialize the VBOs we will render.
+        void initVBOs();
 
         // Initialize parameters.
         void init();
@@ -65,9 +68,9 @@ class OpenGLView : public View
         float z_pos = 10.0f;
 
         // Holds the static factory VBO.
-        GLuint factoryVBP = 0; 
-        // Holds a cube VBO.
-        GLuint cubeVBO = 0;
+        GLuint factoryVBO = 0; 
+        // Holds the worker VBO.
+        GLuint workerVBO = 0;
 };
 
 #endif

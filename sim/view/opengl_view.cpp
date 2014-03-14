@@ -9,6 +9,10 @@
 
 #include "glext.h"
 #include "opengl_view.h"
+#include "../util/util.h"
+
+// Delete after debug.
+#include <iostream>
 
         // Cube.
         //    v6----- v5
@@ -17,33 +21,32 @@
         //  | |     | |
         //  | |v7---|-|v4
         //  |/      |/
-        //  v2------v3
+        //  v2------v3 
 
-        // vertex coords array for glDrawArrays() =====================================
-        // A cube has 6 sides and each side has 2 triangles, therefore, a cube consists
-        // of 36 vertices (6 sides * 2 tris * 3 vertices = 36 vertices). And, each
-        // vertex is 3 components (x,y,z) of floats, therefore, the size of vertex
-        // array is 108 floats (36 * 3 = 108).
-        GLfloat vertices[]  = { 1, 1, 1,  -1, 1, 1,  -1,-1, 1,      // v0-v1-v2 (front)
-                               -1,-1, 1,   1,-1, 1,   1, 1, 1,      // v2-v3-v0
+        // Dimensions are defined in terms of UNITs.
+        const float UNIT = 1.0f;
 
-                                1, 1, 1,   1,-1, 1,   1,-1,-1,      // v0-v3-v4 (right)
-                                1,-1,-1,   1, 1,-1,   1, 1, 1,      // v4-v5-v0
+        // Vertex array for a cube.
+        GLfloat cube_vertices[]  = { UNIT/2, UNIT/2, UNIT/2,  -UNIT/2, UNIT/2, UNIT/2,  -UNIT/2,-UNIT/2, UNIT/2,      // v0-v1-v2 (front)
+                               -UNIT/2,-UNIT/2, UNIT/2,   UNIT/2,-UNIT/2, UNIT/2,   UNIT/2, UNIT/2, UNIT/2,      // v2-v3-v0
 
-                                1, 1, 1,   1, 1,-1,  -1, 1,-1,      // v0-v5-v6 (top)
-                               -1, 1,-1,  -1, 1, 1,   1, 1, 1,      // v6-v1-v0
+                                UNIT/2, UNIT/2, UNIT/2,   UNIT/2,-UNIT/2, UNIT/2,   UNIT/2,-UNIT/2,-UNIT/2,      // v0-v3-v4 (right)
+                                UNIT/2,-UNIT/2,-UNIT/2,   UNIT/2, UNIT/2,-UNIT/2,   UNIT/2, UNIT/2, UNIT/2,      // v4-v5-v0
 
-                               -1, 1, 1,  -1, 1,-1,  -1,-1,-1,      // v1-v6-v7 (left)
-                               -1,-1,-1,  -1,-1, 1,  -1, 1, 1,      // v7-v2-v1
+                                UNIT/2, UNIT/2, UNIT/2,   UNIT/2, UNIT/2,-UNIT/2,  -UNIT/2, UNIT/2,-UNIT/2,      // v0-v5-v6 (top)
+                               -UNIT/2, UNIT/2,-UNIT/2,  -UNIT/2, UNIT/2, UNIT/2,   UNIT/2, UNIT/2, UNIT/2,      // v6-v1-v0
 
-                               -1,-1,-1,   1,-1,-1,   1,-1, 1,      // v7-v4-v3 (bottom)
-                                1,-1, 1,  -1,-1, 1,  -1,-1,-1,      // v3-v2-v7
+                               -UNIT/2, UNIT/2, UNIT/2,  -UNIT/2, UNIT/2,-UNIT/2,  -UNIT/2,-UNIT/2,-UNIT/2,      // v1-v6-v7 (left)
+                               -UNIT/2,-UNIT/2,-UNIT/2,  -UNIT/2,-UNIT/2, UNIT/2,  -UNIT/2, UNIT/2, UNIT/2,      // v7-v2-v1
 
-                                1,-1,-1,  -1,-1,-1,  -1, 1,-1,      // v4-v7-v6 (back)
-                               -1, 1,-1,   1, 1,-1,   1,-1,-1 };    // v6-v5-v4
+                               -UNIT/2,-UNIT/2,-UNIT/2,   UNIT/2,-UNIT/2,-UNIT/2,   UNIT/2,-UNIT/2, UNIT/2,      // v7-v4-v3 (bottom)
+                                UNIT/2,-UNIT/2, UNIT/2,  -UNIT/2,-UNIT/2, UNIT/2,  -UNIT/2,-UNIT/2,-UNIT/2,      // v3-v2-v7
 
-        // normal array
-        GLfloat normals[]   = { 0, 0, 1,   0, 0, 1,   0, 0, 1,      // v0-v1-v2 (front)
+                                UNIT/2,-UNIT/2,-UNIT/2,  -UNIT/2,-UNIT/2,-UNIT/2,  -UNIT/2, UNIT/2,-UNIT/2,      // v4-v7-v6 (back)
+                               -UNIT/2, UNIT/2,-UNIT/2,   UNIT/2, UNIT/2,-UNIT/2,   UNIT/2,-UNIT/2,-UNIT/2 };    // v6-v5-v4
+
+        // Normal array for a cube.
+        GLfloat cube_normals[]   = { 0, 0, 1,   0, 0, 1,   0, 0, 1,      // v0-v1-v2 (front)
                                 0, 0, 1,   0, 0, 1,   0, 0, 1,      // v2-v3-v0
 
                                 1, 0, 0,   1, 0, 0,   1, 0, 0,      // v0-v3-v4 (right)
@@ -61,24 +64,24 @@
                                 0, 0,-1,   0, 0,-1,   0, 0,-1,      // v4-v7-v6 (back)
                                 0, 0,-1,   0, 0,-1,   0, 0,-1 };    // v6-v5-v4
 
-        // color array
-        GLfloat colors[]    = { 1, 1, 1,   1, 1, 0,   1, 0, 0,      // v0-v1-v2 (front)
-                                1, 0, 0,   1, 0, 1,   1, 1, 1,      // v2-v3-v0
+        // Color array for a worker's cube.
+        GLfloat worker_colors[]    = { 1, 0, 0,   1, 0, 0,   1, 0, 0,      // v0-v1-v2 (front)
+                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v2-v3-v0
 
-                                1, 1, 1,   1, 0, 1,   0, 0, 1,      // v0-v3-v4 (right)
-                                0, 0, 1,   0, 1, 1,   1, 1, 1,      // v4-v5-v0
+                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v0-v3-v4 (right)
+                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v4-v5-v0
 
-                                1, 1, 1,   0, 1, 1,   0, 1, 0,      // v0-v5-v6 (top)
-                                0, 1, 0,   1, 1, 0,   1, 1, 1,      // v6-v1-v0
+                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v0-v5-v6 (top)
+                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v6-v1-v0
 
-                                1, 1, 0,   0, 1, 0,   0, 0, 0,      // v1-v6-v7 (left)
-                                0, 0, 0,   1, 0, 0,   1, 1, 0,      // v7-v2-v1
+                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v1-v6-v7 (left)
+                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v7-v2-v1
 
-                                0, 0, 0,   0, 0, 1,   1, 0, 1,      // v7-v4-v3 (bottom)
-                                1, 0, 1,   1, 0, 0,   0, 0, 0,      // v3-v2-v7
+                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v7-v4-v3 (bottom)
+                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v3-v2-v7
 
-                                0, 0, 1,   0, 0, 0,   0, 1, 0,      // v4-v7-v6 (back)
-                                0, 1, 0,   0, 1, 1,   0, 0, 1 };    // v6-v5-v4
+                                1, 0, 0,   1, 0, 0,   1, 0, 0,      // v4-v7-v6 (back)
+                                1, 0, 0,   1, 0, 0,   1, 0, 0 };    // v6-v5-v4
 
 
 /**
@@ -96,7 +99,9 @@ OpenGLView::OpenGLView()
 OpenGLView::~OpenGLView()
 {
     // We need to delete the VBO.
-    glDeleteBuffersARB(1, &cubeVBO);
+    glDeleteBuffersARB(1, &workerVBO);
+    glDeleteBuffersARB(1, &factoryVBO);
+
 }
 
 /**
@@ -212,44 +217,51 @@ void OpenGLView::render()
     // Translate away from the camera.
     glTranslated(-x_pos, -y_pos, -z_pos);
 
-    glPushMatrix();
-
     // TODO This is where we would render the simulation.
 
-    // bind VBOs with IDs and set the buffer offsets of the bound VBOs
+    // Bind VBOs with IDs and set the buffer offsets of the bound VBOs
     // When buffer object is bound with its ID, all pointers in gl*Pointer()
     // are treated as offset instead of real pointer.
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, cubeVBO);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, workerVBO);
 
-    // enable vertex arrays
+    // Enable vertex arrays
     glEnableClientState(GL_NORMAL_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
     glEnableClientState(GL_VERTEX_ARRAY);
 
-    // before draw, specify vertex and index arrays with their offsets
-    glNormalPointer(GL_FLOAT, 0, (void*)sizeof(vertices));
-    glColorPointer(3, GL_FLOAT, 0, (void*)(sizeof(vertices)+sizeof(normals)));
+    // Before draw, specify vertex and index arrays with their offsets
+    glNormalPointer(GL_FLOAT, 0, (void*)sizeof(cube_vertices));
+    glColorPointer(3, GL_FLOAT, 0, (void*)(sizeof(cube_vertices)+sizeof(cube_normals)));
     glVertexPointer(3, GL_FLOAT, 0, 0);
 
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    // Render the workers.
+    for (auto& pos : factory->get_worker_locs())
+    {
+        // Translate the worker's position to a coordinate.
+        int x,z;
+        pos_to_coord(&x, &z, pos, factory->get_width());
+ 
+        // Translate the 'y' coordinate to OpenGL's z coordinate.
+        z -= factory->get_height();
+        
+        // Move to the worker's location and draw the worker.
+        glPushMatrix();
+        glTranslated(-x,0,-z);
+        glDrawArrays(GL_TRIANGLES, 0, 36);
+        glPopMatrix();
+    }
 
-    glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays
+    // Disable vertex arrays.
+    glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
     glDisableClientState(GL_NORMAL_ARRAY);
 
-    // it is good idea to release VBOs with ID 0 after use.
-    // Once bound with 0, all pointers in gl*Pointer() behave as real
-    // pointer, so, normal vertex array operations are re-activated
+    // Release VBOs after use.
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
-
-
-    glPopMatrix();
 
     // Swap back and front buffers
     glfwSwapBuffers();
 }
-
-#include <iostream>
 
 /**
  * Look around.
@@ -349,6 +361,9 @@ void OpenGLView::move(double delta)
 
 }
 
+/**
+ * Update the state of the world.
+ */
 void OpenGLView::update(double dt)
 {
     look_around();
@@ -357,10 +372,44 @@ void OpenGLView::update(double dt)
 
 
 /**
+ * Initialize all the VBOs beforehand.
+ */
+void OpenGLView::initVBOs()
+{
+    // Create VBOs. These need to be deleted when the program exits.
+    // We put vertex, normals, and colors in the same object.
+    // Calling glBufferDataARB with NULL pointer reserves only memory space.
+
+    // Create the factory VBO.
+    glGenBuffersARB(1, &factoryVBO);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, factoryVBO);
+
+    // TODO Find the minimal number of faces necessary.
+
+
+    // Create the worker VBO.
+    glGenBuffersARB(1, &workerVBO);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, workerVBO);
+    // Target, size, data, usage.
+    glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(cube_vertices)+sizeof(cube_normals)+sizeof(worker_colors), nullptr, GL_STATIC_DRAW_ARB);
+    // Copy vertices starting from 0 offest.
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(cube_vertices), cube_vertices); 
+    // Copy normals after vertices.
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, sizeof(cube_vertices), sizeof(cube_normals), cube_normals); 
+    // Copy colors after normals.
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, sizeof(cube_vertices)+sizeof(cube_normals), sizeof(worker_colors), worker_colors);
+
+}
+
+
+/**
  * Encapsulates the method that occurs when this class is run in a Thread.
  */
 void OpenGLView::run()
 {
+    // Initialize the VBOs.
+    initVBOs();
+
     const double dt = 0.01;
 
     double prevTime = glfwGetTime();
@@ -405,21 +454,6 @@ void OpenGLView::run()
 void OpenGLView::set_factory(Factory *factory)
 {
     this->factory = factory;
-
-    // Create static factory VBO. This needs to be deleted when the program exits.
-    // We put vertex, normals, and colors in the same object.
-    // Calling glBufferDataARB with NULL pointer reserves only memory space.
-    glGenBuffersARB(1, &cubeVBO);
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, cubeVBO);
-    // Target, size, data, usage.
-    glBufferDataARB(GL_ARRAY_BUFFER_ARB, sizeof(vertices)+sizeof(normals)+sizeof(colors), nullptr, GL_STATIC_DRAW_ARB);
-    // Copy vertices starting from 0 offest.
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, sizeof(vertices), vertices); 
-    // Copy normals after vertices.
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, sizeof(vertices), sizeof(normals), normals); 
-    // Copy colors after normals.
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, sizeof(vertices)+sizeof(normals), sizeof(colors), colors);
-
 }
 
 /**

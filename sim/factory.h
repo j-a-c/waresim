@@ -25,6 +25,8 @@ class Factory
         int get_width();
         // Get the workers in the factory.
         std::vector<Worker>& get_workers();
+        // Get the worker locations.
+        std::vector<int> get_worker_locs();
         // Get the bin locations in the factory.
         std::vector<int> get_bins();
         // Get the factory layout.

@@ -5,7 +5,7 @@
 
 #include "constants.h"
 #include "factory.h"
-#include "util.h"
+#include "util/util.h"
 
 // TODO Delete later, used for debug.
 #include <iostream>
@@ -175,4 +175,12 @@ int Factory::get_height()
 int Factory::get_width()
 {
     return width;
+}
+
+/**
+ * Returns the worker locations.
+ */
+std::vector<int> Factory::get_worker_locs()
+{
+    return worker_locs;
 }
