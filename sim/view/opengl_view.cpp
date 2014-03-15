@@ -325,7 +325,7 @@ void OpenGLView::update(double dt)
 /**
  * Initialize all the VBOs beforehand.
  */
-void OpenGLView::initVBOs()
+void OpenGLView::setup()
 {
     // Create VBOs. These need to be deleted when the program exits.
     // We put vertex, normals, and colors in the same object.
@@ -354,16 +354,20 @@ void OpenGLView::initVBOs()
     }
     num_factory_tris += 2;
 
+    // Note: the loops for adding the walls, bins, and drop locs is very
+    // similar. However, we leave them separated in case we decide to render
+    // each entity with a different representation than a box.
+
     // Add each wall.
     for (auto& pos : factory->get_walls())
     {
         num_factory_tris += 36;
 
-        // Translate the worker's position to a coordinate.
+        // Translate the position to a coordinate.
         int x,z;
         pos_to_coord(&x, &z, pos, factory->get_width());
 
-         // Form vertices
+         // Form vertices.
         auto ffront = OpenGLBox::get_front_vertices(1, 1, 1, x, 0, z);
         auto fback = OpenGLBox::get_back_vertices(1, 1, 1, x, 0, z);
         auto ftop = OpenGLBox::get_top_vertices(1, 1, 1, x, 0, z);
@@ -371,6 +375,7 @@ void OpenGLView::initVBOs()
         auto fleft = OpenGLBox::get_left_vertices(1, 1, 1, x, 0, z);
         auto fright = OpenGLBox::get_right_vertices(1, 1, 1, x, 0, z);
 
+        // Add the vertices.
         factory_verts.insert(factory_verts.end(), ffront.begin(), ffront.end());
         factory_verts.insert(factory_verts.end(), fback.begin(), fback.end());
         factory_verts.insert(factory_verts.end(), ftop.begin(), ftop.end());
@@ -378,7 +383,7 @@ void OpenGLView::initVBOs()
         factory_verts.insert(factory_verts.end(), fleft.begin(), fleft.end());
         factory_verts.insert(factory_verts.end(), fright.begin(), fright.end());
 
-        // Form normals
+        // Form normals.
         auto fnfront = OpenGLBox::get_front_normals();
         auto fnback = OpenGLBox::get_back_normals();
         auto fntop = OpenGLBox::get_top_normals();
@@ -386,6 +391,7 @@ void OpenGLView::initVBOs()
         auto fnleft = OpenGLBox::get_left_normals();
         auto fnright = OpenGLBox::get_right_normals();
 
+        // Add the normals.
         factory_norms.insert(factory_norms.end(), fnfront.begin(), fnfront.end());
         factory_norms.insert(factory_norms.end(), fnback.begin(), fnback.end());
         factory_norms.insert(factory_norms.end(), fntop.begin(), fntop.end());
@@ -393,7 +399,7 @@ void OpenGLView::initVBOs()
         factory_norms.insert(factory_norms.end(), fnleft.begin(), fnleft.end());
         factory_norms.insert(factory_norms.end(), fnright.begin(), fnright.end());
 
-        // Form colors
+        // Add the colors.
         // Insert twice for each face because each face is two triangles.
         for (int i = 0; i < 12; i++)
         {
@@ -403,8 +409,104 @@ void OpenGLView::initVBOs()
     }
 
     // Add each bin.
+    for (auto& pos : factory->get_bins())
+    {
+        num_factory_tris += 36;
+
+        // Translate the position to a coordinate.
+        int x,z;
+        pos_to_coord(&x, &z, pos, factory->get_width());
+
+         // Form vertices.
+        auto ffront = OpenGLBox::get_front_vertices(1, 1, 1, x, 0, z);
+        auto fback = OpenGLBox::get_back_vertices(1, 1, 1, x, 0, z);
+        auto ftop = OpenGLBox::get_top_vertices(1, 1, 1, x, 0, z);
+        auto fbot = OpenGLBox::get_bot_vertices(1, 1, 1, x, 0, z);
+        auto fleft = OpenGLBox::get_left_vertices(1, 1, 1, x, 0, z);
+        auto fright = OpenGLBox::get_right_vertices(1, 1, 1, x, 0, z);
+
+        // Add vertices.
+        factory_verts.insert(factory_verts.end(), ffront.begin(), ffront.end());
+        factory_verts.insert(factory_verts.end(), fback.begin(), fback.end());
+        factory_verts.insert(factory_verts.end(), ftop.begin(), ftop.end());
+        factory_verts.insert(factory_verts.end(), fbot.begin(), fbot.end());
+        factory_verts.insert(factory_verts.end(), fleft.begin(), fleft.end());
+        factory_verts.insert(factory_verts.end(), fright.begin(), fright.end());
+
+        // Form normals.
+        auto fnfront = OpenGLBox::get_front_normals();
+        auto fnback = OpenGLBox::get_back_normals();
+        auto fntop = OpenGLBox::get_top_normals();
+        auto fnbot = OpenGLBox::get_bot_normals();
+        auto fnleft = OpenGLBox::get_left_normals();
+        auto fnright = OpenGLBox::get_right_normals();
+
+        // Add the normals.
+        factory_norms.insert(factory_norms.end(), fnfront.begin(), fnfront.end());
+        factory_norms.insert(factory_norms.end(), fnback.begin(), fnback.end());
+        factory_norms.insert(factory_norms.end(), fntop.begin(), fntop.end());
+        factory_norms.insert(factory_norms.end(), fnbot.begin(), fnbot.end());
+        factory_norms.insert(factory_norms.end(), fnleft.begin(), fnleft.end());
+        factory_norms.insert(factory_norms.end(), fnright.begin(), fnright.end());
+
+        // Add colors.
+        // Insert twice for each face because each face is two triangles.
+        for (int i = 0; i < 12; i++)
+        {
+            factory_colors.insert(factory_colors.end(), 
+                    bin_color.begin(), bin_color.end());
+        }   
+    }
 
     // Add drop offs.
+    for (auto& pos : factory->get_drops())
+    {
+        num_factory_tris += 36;
+
+        // Translate the position to a coordinate.
+        int x,z;
+        pos_to_coord(&x, &z, pos, factory->get_width());
+
+         // Form vertices.
+        auto ffront = OpenGLBox::get_front_vertices(1, 1, 1, x, 0, z);
+        auto fback = OpenGLBox::get_back_vertices(1, 1, 1, x, 0, z);
+        auto ftop = OpenGLBox::get_top_vertices(1, 1, 1, x, 0, z);
+        auto fbot = OpenGLBox::get_bot_vertices(1, 1, 1, x, 0, z);
+        auto fleft = OpenGLBox::get_left_vertices(1, 1, 1, x, 0, z);
+        auto fright = OpenGLBox::get_right_vertices(1, 1, 1, x, 0, z);
+
+        // Add vertices.
+        factory_verts.insert(factory_verts.end(), ffront.begin(), ffront.end());
+        factory_verts.insert(factory_verts.end(), fback.begin(), fback.end());
+        factory_verts.insert(factory_verts.end(), ftop.begin(), ftop.end());
+        factory_verts.insert(factory_verts.end(), fbot.begin(), fbot.end());
+        factory_verts.insert(factory_verts.end(), fleft.begin(), fleft.end());
+        factory_verts.insert(factory_verts.end(), fright.begin(), fright.end());
+
+        // Form normals.
+        auto fnfront = OpenGLBox::get_front_normals();
+        auto fnback = OpenGLBox::get_back_normals();
+        auto fntop = OpenGLBox::get_top_normals();
+        auto fnbot = OpenGLBox::get_bot_normals();
+        auto fnleft = OpenGLBox::get_left_normals();
+        auto fnright = OpenGLBox::get_right_normals();
+
+        // Add the normals.
+        factory_norms.insert(factory_norms.end(), fnfront.begin(), fnfront.end());
+        factory_norms.insert(factory_norms.end(), fnback.begin(), fnback.end());
+        factory_norms.insert(factory_norms.end(), fntop.begin(), fntop.end());
+        factory_norms.insert(factory_norms.end(), fnbot.begin(), fnbot.end());
+        factory_norms.insert(factory_norms.end(), fnleft.begin(), fnleft.end());
+        factory_norms.insert(factory_norms.end(), fnright.begin(), fnright.end());
+
+        // Add colors.
+        // Insert twice for each face because each face is two triangles.
+        for (int i = 0; i < 12; i++)
+        {
+            factory_colors.insert(factory_colors.end(), 
+                    drop_color.begin(), drop_color.end());
+        }   
+    }
     
     // Store lengths index lengths.
     factory_vert_len = sizeof(&factory_verts[0]) * factory_verts.size();
@@ -495,9 +597,6 @@ void OpenGLView::initVBOs()
  */
 void OpenGLView::run()
 {
-    // Initialize the VBOs.
-    initVBOs();
-
     const double dt = 0.01;
 
     double prevTime = glfwGetTime();

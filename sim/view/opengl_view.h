@@ -16,7 +16,10 @@ class OpenGLView : public View
         OpenGLView();
         ~OpenGLView();
 
-        void run();
+        // Initialize the VBOs we will render. Must be called before run().
+        void setup() override;
+
+        void run() override;
 
         // Override from View.
         void set_factory(Factory *) override;
@@ -26,9 +29,6 @@ class OpenGLView : public View
         // Override from Thread.
         //void run() override;
         
-        // Initialize the VBOs we will render.
-        void initVBOs();
-
         // Initialize parameters.
         void init();
         // Enable OpenGL functions.
@@ -58,7 +58,7 @@ class OpenGLView : public View
         const float DEG2RAD = 3.141593f / 180;
 
         // Rotation speed of the camera.
-        const float ROTATE_SPEED = 2.0f;
+        const float ROTATE_SPEED = 1.0f;
 
         // The max speed of the camera.
         float max_speed = 6;
@@ -89,13 +89,13 @@ class OpenGLView : public View
             0.75, 0.75, 0.75
         };
         // The bin color.
-        std::vector<GLfloat> bin_color{
+        std::vector<GLfloat> drop_color{
             1, 1, 0,  
             1, 1, 0,  
             1, 1, 0
         };
         // The drop-off color.
-        std::vector<GLfloat> drop_color{
+        std::vector<GLfloat> bin_color{
             0.4, 0.2, 0,  
             0.4, 0.2, 0,  
             0.4, 0.2, 0

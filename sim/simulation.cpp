@@ -103,6 +103,7 @@ void Simulation::start()
     // Initial the render view.
     view->set_sim_params(start_time, sim_length);
     view->set_factory(&factory);
+    view->setup();
 
     // Start the simulation.
     order_gen->start();

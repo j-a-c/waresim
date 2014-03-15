@@ -15,6 +15,7 @@ class View //: public Thread
     public:
         virtual ~View();
         
+        virtual void setup() = 0;
         virtual void run() = 0;
         virtual void set_factory(Factory *) = 0;
         virtual void set_sim_params(time_t, int) = 0;

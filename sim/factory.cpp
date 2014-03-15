@@ -193,3 +193,8 @@ std::vector<int> Factory::get_walls()
 {
     return walls;
 }
+
+std::vector<int> Factory::get_drops()
+{
+    return drops;
+}
