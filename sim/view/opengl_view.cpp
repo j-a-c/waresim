@@ -114,7 +114,7 @@ void OpenGLView::enable()
     
 	// Allows z-buffering. Can chew up extra CPU time and graphics memory for 
     // very complicated scenes.
-    //glDepthMask(GL_TRUE);
+    // glDepthMask(GL_TRUE);
 
 }
 

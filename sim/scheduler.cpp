@@ -94,58 +94,49 @@ std::vector<int> Scheduler::shortest_path(int start, int end)
         /*
          * Check all neighbors. The neighbor must exist, must not already be
          * checked, and must be either and empty location or the end node.
+         * Furthermore, we do not allow bin-to-bin travel or drop-to-drop 
+         * travel.
          */
 
-        // TODO Consider WORKER_LOC and empty nodes?
+        // TODO Consider WORKER_LOC nodes?
 
         // The distance from the current vertex to its elligible neighbors.
         int new_dist = dists[min_index] + 1;
 
-        // Top neighbor.
-        int neigh_index = min_index + width;
-        if ( ((min_index / height) != (height-1)) && !checked[neigh_index] && 
-                ((layout[neigh_index] == EMPTY_LOC) || (neigh_index == end)) )
-        {
-            if (new_dist < dists[neigh_index])
-            {
-                dists[neigh_index] = new_dist;
-                previous[neigh_index] = min_index;
-            }
-        }
-        // Bottom neighbor.
-        neigh_index = min_index - width;
-        if ( (min_index >= width) && !checked[neigh_index] &&
-                ((layout[neigh_index] == EMPTY_LOC) || (neigh_index == end)) )
-        {
-            if (new_dist < dists[neigh_index])
-            {
-                dists[neigh_index] = new_dist;
-                previous[neigh_index] = min_index;
-            }
-        }
-        // Left neighbor.
-        neigh_index = min_index - 1;
-        if ( ((min_index % width) != 0) && !checked[neigh_index] && 
-                ((layout[neigh_index] == EMPTY_LOC) || (neigh_index == end)) )
-        {
-            if (new_dist < dists[neigh_index])
-            {
-                dists[neigh_index] = new_dist;
-                previous[neigh_index] = min_index;
-            }
-        }
-        // Right neighbor.
-        neigh_index = min_index + 1;
-        if ( (((min_index+1) % width) != 0) && !checked[neigh_index] && 
-                ((layout[neigh_index] == EMPTY_LOC) || (neigh_index == end)) )
-        {
-            if (new_dist < dists[neigh_index])
-            {
-                dists[neigh_index] = new_dist;
-                previous[neigh_index] = min_index;
-            }
-        }
+        std::vector<int> neighbors{};
+        // Determine this node's valid neighbors.
 
+        // Top neighbor.
+        if ((min_index / height) != (height-1))
+            neighbors.push_back(min_index + width);
+        // Bottom neighbor.
+        if (min_index >= width)
+            neighbors.push_back(min_index - width);
+        // Left neighbor.
+        if ((min_index % width) != 0)
+            neighbors.push_back(min_index - 1);
+        // Right neighbor.
+        if (((min_index+1) % width) != 0)
+            neighbors.push_back(min_index + 1);
+
+        for (auto &neigh_index : neighbors)
+        {
+            // Check if neighbor is valid.
+            if ( !checked[neigh_index] && 
+                    ((layout[neigh_index] == EMPTY_LOC) || (neigh_index == end)) &&
+                    (layout[min_index] != BIN_LOC || layout[neigh_index] != BIN_LOC) &&
+                    (layout[min_index] != DROP_LOC || layout[neigh_index] != DROP_LOC)
+                )
+            {
+                // Check if this distance is shorter than the previously found
+                // distance.
+                if (new_dist < dists[neigh_index])
+                {
+                    dists[neigh_index] = new_dist;
+                    previous[neigh_index] = min_index;
+                }
+            }
+        }
     }
 
     // Calculate the path. The path will not include the start index.
@@ -237,6 +228,9 @@ void Scheduler::run()
                 }
 
                 // TODO Check for collisions.
+
+                // TODO Check if path is empty - that means this worker was
+                // assigned to a bin it is currently on!
 
                 // Get the old position.
                 int old_pos = worker.get_pos();

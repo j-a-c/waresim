@@ -18,7 +18,7 @@ int main()
 {
     // TODO Create a config file?
     // Begin config
-    int sim_length = 10;
+    int sim_length = 25;
     std::string factory_file = "factory.txt";
     unsigned int seed = 1000;
     // End config
