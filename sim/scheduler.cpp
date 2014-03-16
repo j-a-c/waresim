@@ -178,7 +178,7 @@ void Scheduler::run()
         // Randomly shuffle the order.
         std::shuffle(sched_order.begin(), sched_order.end(), rand.get_urng());
     
-        // We now have a random order in which to process the workers. Will
+        // We now have a random order in which to process the workers. We
         // will process each worker once. Processing means moving (or deciding
         // not to move) each worker one unit in the factory.
         for (auto &index : sched_order)
@@ -202,7 +202,6 @@ void Scheduler::run()
             // order or wait somewhere.
             if (!worker.is_routed())
             {
-                // TODO 
                 std::cout << "Worker " << worker.get_id() << " is STILL NOT routed." << std::endl;
                 if (worker.get_drop_status())
                 {
@@ -227,27 +226,198 @@ void Scheduler::run()
                                 worker.get_current_order().get_pos()));
                 }
 
-                // TODO Check for collisions.
-
-                // TODO Check if path is empty - that means this worker was
-                // assigned to a bin it is currently on!
-
-                // Get the old position.
-                int old_pos = worker.get_pos();
-                // Get the path.
+                // Get the path for the worker we are scheduling.
                 auto path = worker.get_path();
+
+                // Check if path is empty - that means this worker was
+                // assigned to a bin it is currently on!
+                if (path.empty())
+                {
+                    worker.set_routed(false);
+
+                    // Update to 'drop off ready' if we reached a bin location.
+                    if (factory->get_layout()[worker.get_pos()] == BIN_LOC)
+                        worker.set_drop_status(true);
+                    // Update to 'not drop off ready' if we reached a drop off
+                    // location.
+                    if (factory->get_layout()[worker.get_pos()] == DROP_LOC)
+                        worker.set_drop_status(false);
+
+                    continue;
+                }
+ 
                 // Get the next position.
                 int next_pos = path[0];
-                // Set the worker's current position.
-                worker.set_pos(next_pos);
-                // Update and set the path.
-                path.erase(path.begin());
-                worker.set_path(path);
-                // Update the factory layout.
-                factory->move_worker(old_pos, next_pos);
+                // Get the old position.
+                int curr_pos = worker.get_pos(); 
 
-                std::cout << "Moving worker # " << index << " to position: " 
-                    << next_pos << std::endl;
+                /*
+                 * Check for collisions.
+                 */
+
+                int height = factory->get_height();
+                int width = factory->get_width();
+
+                // Marks whether we can move in this position, if the position
+                // we want to move the worker in is already occupied AND if the
+                // worker has a smaller ID than the other worker.
+                bool right_valid = false;
+                bool left_valid = false;
+                bool top_valid = false;
+                bool bot_valid = false;
+
+                // The worker occupying the spot we want to move.
+                // We set this to the curent worker for convenience because we
+                // did not specify a Worker() constructor.
+                Worker next_pos_worker = worker;
+
+                // Top neighbor.
+                if ((curr_pos / height) != (height-1))
+                    top_valid = true;
+                // Bottom neighbor.
+                if (curr_pos >= width)
+                    bot_valid = true;
+                // Left neighbor.
+                if ((curr_pos % width) != 0)
+                    left_valid = true;
+                // Right neighbor.
+                if (((curr_pos+1) % width) != 0)
+                    right_valid = true;
+
+                // Is the next position for this worker taken?
+                int next_pos_taken = false;
+
+                // Get the current worker positions.
+                // We determined which position we could move in if there is a
+                // contention for our next spot, but now we also want to check
+                // that these position are not occupied themselves.
+                // We will also check that the next position for this worker is
+                // empty.
+                for (auto it = workers.begin(); it != workers.end(); ++it)
+                {
+                    int other_pos = (*it).get_pos();
+
+                    if (top_valid && (other_pos == curr_pos+width))
+                    {
+                        top_valid = false;
+                    }
+                    else if (bot_valid && (other_pos == curr_pos-width))
+                    {
+                        bot_valid = false; 
+                    }
+                    else if (left_valid && (other_pos == curr_pos-1))
+                    {
+                        left_valid = false;
+                    }
+                    else if (right_valid && (other_pos == curr_pos+1))
+                    {
+                        right_valid = false;
+                    }
+                    
+                    if (next_pos == other_pos)
+                    {
+                        next_pos_taken = true;
+                        next_pos_worker = *it;
+                    }
+                }
+
+                // Factory position is already occupied.
+                if (next_pos_taken)
+                {
+
+                    std::cout << "Worker # " << index << 
+                        "'s next position is taken." << std::endl; 
+
+                    // Worker with the smaller ID (S) "backs off" from the worker with
+                    // the larger ID (L).
+                    if (worker.get_id() > next_pos_worker.get_id())
+                    {
+                        std::cout << "Worker # " << index << 
+                            " will NOT back off." << std::endl; 
+                        continue;
+                    }
+
+                    std::cout << "Worker # " << index << " WILL back off." 
+                        << std::endl; 
+                    // S tries left, right, back, up, in that order. Move and
+                    // insert old position to front of the current path.
+                    if (left_valid)
+                    {
+                        next_pos = curr_pos - 1;
+                        // Set the worker's current position.
+                        worker.set_pos(next_pos);
+                        // Update and set the path.
+                        path.insert(path.begin(), curr_pos);
+                        worker.set_path(path);
+                        // Update the factory layout.
+                        factory->move_worker(curr_pos, next_pos);
+
+                        std::cout << "Moving worker # " << index << " to position: " 
+                            << next_pos << std::endl;
+                    }
+                    else if (right_valid)
+                    {
+                        next_pos = curr_pos + 1;
+                        // Set the worker's current position.
+                        worker.set_pos(next_pos);
+                        // Update and set the path.
+                        path.insert(path.begin(), curr_pos);
+                        worker.set_path(path);
+                        // Update the factory layout.
+                        factory->move_worker(curr_pos, next_pos);
+
+                        std::cout << "Moving worker # " << index << " to position: " 
+                            << next_pos << std::endl;
+                    }
+                    else if (bot_valid)
+                    {
+                        next_pos = curr_pos - width;
+                        // Set the worker's current position.
+                        worker.set_pos(next_pos);
+                        // Update and set the path.
+                        path.insert(path.begin(), curr_pos);
+                        worker.set_path(path);
+                        // Update the factory layout.
+                        factory->move_worker(curr_pos, next_pos);
+
+                        std::cout << "Moving worker # " << index << " to position: " 
+                            << next_pos << std::endl;
+                    }
+                    else if (top_valid)
+                    {
+                        next_pos = curr_pos + width;
+                        // Set the worker's current position.
+                        worker.set_pos(next_pos);
+                        // Update and set the path.
+                        path.insert(path.begin(), curr_pos);
+                        worker.set_path(path);
+                        // Update the factory layout.
+                        factory->move_worker(curr_pos, next_pos);
+
+                        std::cout << "Moving worker # " << index << " to position: " 
+                            << next_pos << std::endl;
+                    }
+                    else
+                    {
+                        // TODO Contention found.
+                        std::cout << "Contention found!" << std::endl;
+                        // We will not move this turn.
+                    }
+                    // Move S and insert old position to fron of the current path.
+                }
+                else // Factory position is not occupied.
+                { 
+                    // Set the worker's current position.
+                    worker.set_pos(next_pos);
+                    // Update and set the path.
+                    path.erase(path.begin());
+                    worker.set_path(path);
+                    // Update the factory layout.
+                    factory->move_worker(curr_pos, next_pos);
+
+                    std::cout << "Moving worker # " << index << " to position: " 
+                        << next_pos << std::endl;
+                }
 
                 // Update to 'not routed' if we have reached destination.
                 if (path.empty())

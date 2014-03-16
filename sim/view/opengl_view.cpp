@@ -93,7 +93,7 @@ void OpenGLView::enable()
 	glEnable(GL_COLOR_MATERIAL);
     
     // White diffuse light.
-    GLfloat light_diffuse[] = {1.0, 1.0, 1.0, 1.0};
+    GLfloat light_diffuse[] = {1.0, 0.5, 1.0, 1.0};
 
     // Enable a single OpenGL light.
     glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
@@ -107,7 +107,7 @@ void OpenGLView::enable()
     //glCullFace(GL_BACK);
     //glCullFace(GL_FRONT);
 
-    glColorMaterial( GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE );
+    glColorMaterial(GL_FRONT_AND_BACK, GL_AMBIENT_AND_DIFFUSE);
 
     //glShadeModel(GL_FLAT);
     glShadeModel(GL_SMOOTH);
@@ -153,6 +153,7 @@ void OpenGLView::render()
     glEnableClientState(GL_COLOR_ARRAY);
     glEnableClientState(GL_VERTEX_ARRAY);
 
+
     /*
      * Render the factory.
      */
@@ -170,7 +171,6 @@ void OpenGLView::render()
     glTranslated(0,0,-factory->get_height());
     glDrawArrays(GL_TRIANGLES, 0, num_factory_tris);
     glPopMatrix();
-
     
     /*
      * Render the workers.
@@ -201,7 +201,7 @@ void OpenGLView::render()
         glDrawArrays(GL_TRIANGLES, 0, num_worker_tris);
         glPopMatrix();
     }
-
+    
     // Disable vertex arrays.
     glDisableClientState(GL_VERTEX_ARRAY);
     glDisableClientState(GL_COLOR_ARRAY);
@@ -327,6 +327,7 @@ void OpenGLView::update(double dt)
  */
 void OpenGLView::setup()
 {
+
     // Create VBOs. These need to be deleted when the program exits.
     // We put vertex, normals, and colors in the same object.
     // Calling glBufferDataARB with NULL pointer reserves only memory space.

@@ -1,7 +1,10 @@
 #ifndef RENDER_OPENGL_VIEW_H
 #define RENDER_OPENGL_VIEW_H
 
+#ifndef SIM_GL_H
+#define SIM_GL_H
 #include <GL/gl.h>
+#endif
 #include <cstddef>
 #include <vector>
 
@@ -115,6 +118,7 @@ class OpenGLView : public View
         };
         // We need 36 triangles to form a cube.
         int num_worker_tris = 36;
+
 
 };
 
