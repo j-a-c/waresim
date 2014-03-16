@@ -403,7 +403,6 @@ void Scheduler::run()
                         std::cout << "Contention found!" << std::endl;
                         // We will not move this turn.
                     }
-                    // Move S and insert old position to fron of the current path.
                 }
                 else // Factory position is not occupied.
                 { 
