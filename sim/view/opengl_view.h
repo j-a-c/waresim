@@ -119,6 +119,10 @@ class OpenGLView : public View
         // We need 36 triangles to form a cube.
         int num_worker_tris = 36;
 
+        // Bin dimensions.
+        const float BIN_X = 0.75;
+        const float BIN_Y = 0.75;
+        const float BIN_Z = 0.75;
 
 };
 

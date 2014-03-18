@@ -419,12 +419,12 @@ void OpenGLView::setup()
         pos_to_coord(&x, &z, pos, factory->get_width());
 
          // Form vertices.
-        auto ffront = OpenGLBox::get_front_vertices(1, 1, 1, x, 0, z);
-        auto fback = OpenGLBox::get_back_vertices(1, 1, 1, x, 0, z);
-        auto ftop = OpenGLBox::get_top_vertices(1, 1, 1, x, 0, z);
-        auto fbot = OpenGLBox::get_bot_vertices(1, 1, 1, x, 0, z);
-        auto fleft = OpenGLBox::get_left_vertices(1, 1, 1, x, 0, z);
-        auto fright = OpenGLBox::get_right_vertices(1, 1, 1, x, 0, z);
+        auto ffront = OpenGLBox::get_front_vertices(BIN_X, BIN_Y, BIN_Z, x, 0, z);
+        auto fback = OpenGLBox::get_back_vertices(BIN_X, BIN_Y, BIN_Z, x, 0, z);
+        auto ftop = OpenGLBox::get_top_vertices(BIN_X, BIN_Y, BIN_Z, x, 0, z);
+        auto fbot = OpenGLBox::get_bot_vertices(BIN_X, BIN_Y, BIN_Z, x, 0, z);
+        auto fleft = OpenGLBox::get_left_vertices(BIN_X, BIN_Y, BIN_Z, x, 0, z);
+        auto fright = OpenGLBox::get_right_vertices(BIN_X, BIN_Y, BIN_Z, x, 0, z);
 
         // Add vertices.
         factory_verts.insert(factory_verts.end(), ffront.begin(), ffront.end());

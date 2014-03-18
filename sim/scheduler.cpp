@@ -31,6 +31,8 @@ int Scheduler::rand_int(int i)
 /**
  * Computes the shortest path between the start and end positions using
  * Dijsktra's algorithm. Assumes all points are reachable within the factory.
+ * If two nodes have the same distance, we flip a coin to decide which one we
+ * will choose as the parent.
  *
  * TODO Implement using a faster data structure (currently uses a plain vector).
  *
@@ -129,11 +131,19 @@ std::vector<int> Scheduler::shortest_path(int start, int end)
                 )
             {
                 // Check if this distance is shorter than the previously found
-                // distance.
+                // distance. Update the min distance and the parent.
                 if (new_dist < dists[neigh_index])
                 {
                     dists[neigh_index] = new_dist;
                     previous[neigh_index] = min_index;
+                }
+                // If this distance is equal to the previous one, we flip a
+                // coin to decide whether or not to replace the old parent with
+                // the new one.
+                else if (new_dist == dists[neigh_index])
+                {
+                    if (rand.rand() > 0.5)
+                        previous[neigh_index] = min_index;
                 }
             }
         }
@@ -334,6 +344,11 @@ void Scheduler::run()
                     {
                         std::cout << "Worker # " << index << 
                             " will NOT back off." << std::endl; 
+
+                        factory->move_worker(curr_pos, curr_pos);
+                        // We mark the spot the worker attempted to move as a
+                        // contention spot.
+                        factory->mark_contention(next_pos);
                         continue;
                     }
 
@@ -399,9 +414,11 @@ void Scheduler::run()
                     }
                     else
                     {
-                        // TODO Contention found.
-                        std::cout << "Contention found!" << std::endl;
+                        // Deadlock found.
+                        std::cout << "Deadlock found!" << std::endl;
                         // We will not move this turn.
+                        factory->move_worker(curr_pos, curr_pos);
+                        factory->mark_deadlock(curr_pos);
                     }
                 }
                 else // Factory position is not occupied.
@@ -433,6 +450,9 @@ void Scheduler::run()
                 }
             }
         }
+        
+        // Tell that factory that we have finished processing all workers.
+        factory->update_iteration();
         
         barrier->arrive();
     }

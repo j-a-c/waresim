@@ -121,6 +121,18 @@ Factory Factory::parse_default_factory(std::string factory_file)
     // Set factory layout.
     factory.layout = layout;
 
+    // Reserve memory for statistics.
+    factory.heat_window.reserve(layout.size());
+    factory.heat_total.reserve(layout.size());
+
+    // Populate the array with default values.
+    int dim = factory.width * factory.height;
+    for (int i = 0; i < dim; i++)
+    {
+        factory.heat_window.push_back(0);
+        factory.heat_total.push_back(0);
+    }
+
     return factory;
 }
 
@@ -136,7 +148,77 @@ void Factory::move_worker(int start, int end)
     worker_locs.erase(it);
     // Add the end location.
     worker_locs.push_back(end);
+
+    // Update total heat map.
+    heat_total[end] = heat_total[end] + 1;
+
+    // Update statistics.
+    curr_moves.push_back(end);
 }
+
+/**
+ * Marks that all workers have been moved. This is the time to update decaying
+ * statistics.
+ */
+void Factory::update_iteration()
+{
+    // Update the heat window.
+    max_heat_window = 0;
+    // Our current position in the heat window vector.
+    int pos = 0;
+    for (auto& sum : heat_window)    
+    {
+        sum *= DECAY_FACTOR;
+
+        // If we moved to this spot this turn, we will add one to the decaying
+        // window for this spot.
+        if (std::find(curr_moves.begin(), curr_moves.end(), pos) 
+                != curr_moves.end())
+        {
+            sum += 1;
+        }
+
+        // Update the max heat window if necessary.
+        if (sum > max_heat_window)
+            max_heat_window = sum;
+
+        pos++;
+    }
+
+    curr_moves.clear();
+}
+
+/**
+ * Mark that a contention has occurred at this position. A contention is
+ * defined as a 'worker attempting to move to a position which is already
+ * occupied by another worker. When marking contentions, mark the spot the 
+ * worker attempted to move to. Contentions can be used as one interpretation 
+ * of a bottleneck in the factory.
+ *
+ * @param pos The position at which the contention occurred.
+ */
+void Factory::mark_contention(int pos)
+{
+    // Default value if not found will be 0.
+    int& val = contention_spots[pos];
+    val++;
+}
+
+/**
+ * Mark that a deadlock has occurred. A deadlock is defined as a 'worker
+ * with no option to move anywhere, and is forced to stay put.' When marking
+ * deadlock, mark the position that the worker is stuck in. Deadlocks are one
+ * interpretation of a bottleneck in the factory.
+ *
+ * @param pos The position at which the deadlock occurred.
+ */
+void Factory::mark_deadlock(int pos)
+{
+    // Default value if not found will be 0.
+    int& val = deadlock_spots[pos];
+    val++;
+}
+
 
 /**
  * Returns the workers in this factory.
@@ -197,4 +279,36 @@ std::vector<int> Factory::get_walls()
 std::vector<int> Factory::get_drops()
 {
     return drops;
+}
+
+/**
+ * Get the total heat map.
+ */
+std::vector<int> Factory::get_heat_total()
+{
+    return heat_total;
+}
+
+/**
+ * Get the decaying heat map.
+ */
+std::vector<double> Factory::get_heat_window()
+{
+    return heat_window;
+}
+
+/**
+ * Get the deadlock spots.
+ */
+std::unordered_map<int,int> Factory::get_deadlock_spots()
+{
+    return deadlock_spots;
+}
+
+/**
+ * Get the contention spots.
+ */
+std::unordered_map<int,int> Factory::get_contention_spots()
+{
+    return contention_spots;
 }
