@@ -45,6 +45,8 @@ class Factory
         std::vector<int> get_heat_total();
         // Get the decaying heat map.
         std::vector<double> get_heat_window();
+        // Get the maximum value in the heat window.
+        double get_heat_window_max();
         // Get the deadlock spots.
         std::unordered_map<int,int> get_deadlock_spots();
         // Get the contention spots.

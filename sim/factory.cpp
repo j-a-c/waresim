@@ -312,3 +312,11 @@ std::unordered_map<int,int> Factory::get_contention_spots()
 {
     return contention_spots;
 }
+
+/**
+ * r
+ */
+double Factory::get_heat_window_max()
+{
+    return max_heat_window;
+}

@@ -224,17 +224,88 @@ void OpenGLView::render()
     /*
      * Render statistics.
      */
+
+    // Determine how many points from the factory to group together, and how 
+    // many points paint at a time on the screen. We will group 'group_w'
+    // points together when calculating that color to paint 'paint_w' pixels.
+    int group_w, group_h, paint_w, paint_h;
+    int factory_w = factory->get_width();
+    int factory_h = factory->get_height();
+    if (factory_w < stat_w)
+    {
+        group_w = 1;
+        paint_w = stat_w / factory_w;
+    }
+    else
+    {
+        // TODO Implement.
+        throw "not implemented yet";
+    }
+    if (factory_h < stat_h)
+    {
+        group_h = 1;
+        paint_h = stat_h / factory_h;
+    }
+    else
+    {
+        // TODO Implement.
+        throw "not implemented yet";
+    }
     
     // Render heatmap.
-    
-    // TODO Delete this test.
-    glColor3f(1, 1, 0);
-    glBegin(GL_TRIANGLES);
-    glVertex2f(0,0);
-    glVertex2f(0, stat_h);
-    glVertex2f(stat_w, stat_h);
-    glEnd();
+    double max_heat_window = factory->get_heat_window_max();
+    auto heat_window = factory->get_heat_window();
 
+    // TODO Clean up this loop.
+    for (int x_offset = 0, num_x = 0; num_x <= ceil(1.0*factory_w / group_w); x_offset+=group_w, num_x++)
+    {
+        for (int y_offset = 0, num_y = 0; num_y <= ceil(1.0*factory_h/ group_h); y_offset+=group_h, num_y++)
+        {
+            // Start forming this group.
+            int group_size = 0;
+            double sum;
+            for (int x = 0; x < group_w && x+x_offset < factory_w; x++)
+            {
+                for (int y = 0; y < group_h && y+y_offset < factory_h; y++)
+                {
+                    group_size++;
+                    int pos = coord_to_pos(x+x_offset, y+y_offset, factory_w);
+                    sum += heat_window[pos];
+                }
+            }
+            // Calculate the average for this group and paint.
+            if (group_size > 0)
+            {
+                sum /= group_size;
+                sum /= max_heat_window;
+
+                // TODO Set color. Add more granularity. 
+                // Move to function and switch % granularity size.
+                if (0 <= sum && sum < 0.167)
+                    glColor3f(0,0,1);
+                else if (0.167 <= sum && sum < 0.334)
+                    glColor3f(0,1,1);
+                else if (0.501 <= sum && sum < 0.668)
+                    glColor3f(0,1,0);
+                else if (0.668 <= sum && sum < 0.835)
+                    glColor3f(1,1,0);
+                else if (0.835 < sum)
+                    glColor3f(1,0,0);
+
+                // TODO Optimize. Draw pre-colored VBOs instead.
+                // TODO Make sure these are being drawn in the correct positions.
+                glBegin(GL_TRIANGLES);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset+paint_h);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset);
+
+                glEnd();
+            }
+        }
+    } 
 
     glPopMatrix();
     
