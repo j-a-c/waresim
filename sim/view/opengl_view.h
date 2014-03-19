@@ -47,6 +47,13 @@ class OpenGLView : public View
         // Shut down the OpenGL view.
         void shut_down();
 
+        // Dimensions of the render view.
+        int screen_w, screen_h;
+        // Dimensions of a statistics image.
+        int stat_w, stat_h;
+        // The number of statistics we will render.
+        double NUM_STATS = 4.0;
+
         // The factory representation.
         Factory *factory;
         // The start time of the simulation.

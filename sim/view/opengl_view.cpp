@@ -12,7 +12,7 @@
 #include "opengl_view.h"
 #include "../util/util.h"
 
-// Delete after debug.
+// TODO Delete after debug.
 #include <iostream>
 
 /**
@@ -53,7 +53,10 @@ void OpenGLView::init()
     // Create a window half of the screen size.
     desktop.Width /= 2;
     desktop.Height /= 2;
-    if (glfwOpenWindow(desktop.Width, desktop.Height, 8, 8, 8, 8, 24, 8, GLFW_WINDOW) != GL_TRUE)
+    screen_w = desktop.Width;
+    screen_h = desktop.Height; 
+
+    if (glfwOpenWindow(screen_w, screen_h, 8, 8, 8, 8, 24, 8, GLFW_WINDOW) != GL_TRUE)
         shut_down();
 
     // Initialize GLEW
@@ -64,14 +67,7 @@ void OpenGLView::init()
     }
 
     glViewport(0, 0, (GLsizei)desktop.Width, (GLsizei)desktop.Height);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    // Set the perspective (angle of sight, perspective, depth)
-    gluPerspective(60, (GLfloat)desktop.Width/ (GLfloat)desktop.Height, 0.1, 100.0); 
-    glMatrixMode(GL_MODELVIEW);
-
-    // TODO Initialize position
-
+    
     glClearColor(0, 0, 0, 0);
     glClearDepth(1);
 }
@@ -87,8 +83,6 @@ void OpenGLView::enable()
 	//glHint(GL_PERSPECTIVE_CORRECTION_HINT,GL_NICEST);
     glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
 
-	glEnable(GL_DEPTH_TEST);
-
     // Keep current colors.
 	glEnable(GL_COLOR_MATERIAL);
     
@@ -96,8 +90,8 @@ void OpenGLView::enable()
     GLfloat light_diffuse[] = {1.0, 0.5, 1.0, 1.0};
 
     // Enable a single OpenGL light.
-    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
-    glEnable(GL_LIGHT0);
+    //glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+    //glEnable(GL_LIGHT0);
 
     // Automatically normalize normals.
     //glEnable(GL_NORMALIZE);
@@ -132,13 +126,21 @@ void OpenGLView::shut_down()
  */
 void OpenGLView::render()
 {
-    
+    // Prep for 3D rendering.
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    // Set the perspective (angle of sight, perspective, depth)
+    gluPerspective(60, (GLfloat)screen_w/ (GLfloat)screen_h, 0.1, 100.0); 
+    glMatrixMode(GL_MODELVIEW);
+    // Prep for 3D drawing.
+    glMatrixMode(GL_MODELVIEW);
+	glEnable(GL_DEPTH_TEST);
+    // Re-load the orientation.
+    glLoadIdentity();
+
     // Clean screen to black.
     glClearColor(0.0, 0.0, 0.0, 1.0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    // Re-load the orientation.
-    glLoadIdentity();
 
     // Vertical rotation.
     glRotatef(v_angle, 1.0, 0.0, 0.0);
@@ -201,6 +203,40 @@ void OpenGLView::render()
         glDrawArrays(GL_TRIANGLES, 0, num_worker_tris);
         glPopMatrix();
     }
+
+
+    /*
+     * Render 2D statistic projections.
+     */
+
+    // Prep for 2D rendering.
+    glDisable(GL_DEPTH_TEST);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0, screen_w, screen_h, 0, 0, 1);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glPushMatrix();
+    // Trick for exact pixelation.
+    glTranslatef(0.375, 0.375, 0);
+
+    /*
+     * Render statistics.
+     */
+    
+    // Render heatmap.
+    
+    // TODO Delete this test.
+    glColor3f(1, 1, 0);
+    glBegin(GL_TRIANGLES);
+    glVertex2f(0,0);
+    glVertex2f(0, stat_h);
+    glVertex2f(stat_w, stat_h);
+    glEnd();
+
+
+    glPopMatrix();
     
     // Disable vertex arrays.
     glDisableClientState(GL_VERTEX_ARRAY);
@@ -323,10 +359,39 @@ void OpenGLView::update(double dt)
 
 
 /**
- * Initialize all the VBOs beforehand.
+ * Set up some things beforehand.
+ * Initialize all the VBOs.
+ * Calculate the render size for on-screen statistics.
  */
 void OpenGLView::setup()
 {
+    int factory_w = factory->get_width();
+    int factory_h = factory->get_height();
+    // Allocate space to each statistic.
+    // Dedicate 1/4 of screen width to stats. 
+    // Each stat will have an equal amount of height.
+    int alloc_w = 0.25 * screen_w;
+    int alloc_h = screen_h / NUM_STATS;
+    // We need to fit the factory image to the allocated space.
+    double stat_r = alloc_w / alloc_h;
+    double factory_r = 1.0 * factory_w / factory_h;
+    std::cout << "alloc: " << alloc_w << " " << alloc_h << std::endl;
+    if (factory_r < stat_r)
+    {
+        stat_h = alloc_h;
+        stat_w = std::round(stat_h * factory_r);
+    }
+    else
+    {
+        stat_w = alloc_w;
+        stat_h = std::round(stat_w / factory_r);
+    }
+    std::cout << "fact dim: " << factory_w << " " << factory_h << std::endl; 
+    std::cout << "stat dim: " << stat_w <<  " " << stat_h << std::endl;
+    
+    // Determine the granularity for the statistics renderings.
+    // TODO
+    
 
     // Create VBOs. These need to be deleted when the program exits.
     // We put vertex, normals, and colors in the same object.
