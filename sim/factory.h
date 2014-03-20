@@ -45,8 +45,6 @@ class Factory
         std::vector<int> get_heat_total();
         // Get the decaying heat map.
         std::vector<double> get_heat_window();
-        // Get the maximum value in the heat window.
-        double get_heat_window_max();
         // Get the deadlock spots.
         std::unordered_map<int,int> get_deadlock_spots();
         // Get the contention spots.
@@ -87,10 +85,6 @@ class Factory
         std::unordered_map<int,int> deadlock_spots{};
         // Holds the total number of times a conention has occurred in a spot.
         std::unordered_map<int,int> contention_spots{};
-
-        // The maximum element in the heat window. We can use this to normalize
-        // the heat window.
-        int max_heat_window = 0;
 
         // For exponential decaying window support. Tracks the moves that have
         // been made this iteration.

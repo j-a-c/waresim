@@ -163,7 +163,6 @@ void Factory::move_worker(int start, int end)
 void Factory::update_iteration()
 {
     // Update the heat window.
-    max_heat_window = 0;
     // Our current position in the heat window vector.
     int pos = 0;
     for (auto& sum : heat_window)    
@@ -177,11 +176,7 @@ void Factory::update_iteration()
         {
             sum += 1;
         }
-
-        // Update the max heat window if necessary.
-        if (sum > max_heat_window)
-            max_heat_window = sum;
-
+    
         pos++;
     }
 
@@ -311,12 +306,4 @@ std::unordered_map<int,int> Factory::get_deadlock_spots()
 std::unordered_map<int,int> Factory::get_contention_spots()
 {
     return contention_spots;
-}
-
-/**
- * r
- */
-double Factory::get_heat_window_max()
-{
-    return max_heat_window;
 }

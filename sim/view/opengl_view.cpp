@@ -122,6 +122,47 @@ void OpenGLView::shut_down()
 }
 
 /**
+ * Sets the OpenGL color for a value mapped to a heatmap, where blue = 0.0 and
+ * red = 1.0. 
+ *
+ * @param val A double value in the range [0.0,1.0].
+ */
+void set_glColor_heat(double val)
+{
+    // Maps the RGB range (0,0,1) to (0,1,1) 
+    // for values in the range [0, 0.25).
+    if (0 <= val && val < 0.25)
+    {
+        glColor3f(0, val/0.25, 1);
+        return;
+    }
+
+    val -= 0.25;
+    // Maps the RGB range (0,1,1) to (0,1,0) 
+    // for values in the range [0.25, 0.50).
+    if (0 <= val && val < 0.25)
+    {
+        glColor3f(0, 1, 1-(val/0.25));
+        return;
+    }
+
+    val -= 0.25;
+    // Maps the RGB range (0,1,0) to (1,1,0) 
+    // for values in the range [0.50, 0.75).
+    if (0 <= val && val < 0.25)
+    {
+        glColor3f(val/0.25, 1, 0);
+        return;
+    }
+
+    val -= 0.25;
+    // Maps the RGB range (1,1,0) to (1,0,0) 
+    // for values in the range [0.75, 1).
+    glColor3f(1, 1-(val/0.25), 0);
+    return;
+}
+
+/**
  * Rendering function
  */
 void OpenGLView::render()
@@ -228,73 +269,124 @@ void OpenGLView::render()
     // Determine how many points from the factory to group together, and how 
     // many points paint at a time on the screen. We will group 'group_w'
     // points together when calculating that color to paint 'paint_w' pixels.
+    // We need to group (or spread) the points because the factory
+    // representation and the allocated space to draw the statistics are
+    // different sizes.
     int group_w, group_h, paint_w, paint_h;
     int factory_w = factory->get_width();
     int factory_h = factory->get_height();
+    
+    // There are less factory points than available points.
     if (factory_w < stat_w)
     {
         group_w = 1;
         paint_w = stat_w / factory_w;
     }
-    else
+    else // There are more factory points than available points.
     {
         // TODO Implement.
         throw "not implemented yet";
     }
+    // There are less factory points than available points. 
     if (factory_h < stat_h)
     {
         group_h = 1;
         paint_h = stat_h / factory_h;
     }
-    else
+    else // There are more factory points that available points.
     {
         // TODO Implement.
         throw "not implemented yet";
     }
     
-    // Render heatmap.
-    double max_heat_window = factory->get_heat_window_max();
+    // Track the max heat window.
+    double max_heat_window = 0;
     auto heat_window = factory->get_heat_window();
+    std::vector<double> hw_vals{};
+    
+    double max_heat_total = 0;
+    auto heat_total = factory->get_heat_total();
+    std::vector<double> ht_vals{};
 
-    // TODO Clean up this loop.
+    // TODO Clean up this loop and the following loop.
+    // TODO We run this loop twice because the first time we find the value,
+    // which we will use in the following loop to normalize the values before
+    // we render them.
     for (int x_offset = 0, num_x = 0; num_x <= ceil(1.0*factory_w / group_w); x_offset+=group_w, num_x++)
     {
         for (int y_offset = 0, num_y = 0; num_y <= ceil(1.0*factory_h/ group_h); y_offset+=group_h, num_y++)
         {
             // Start forming this group.
             int group_size = 0;
-            double sum;
+            // Sum for the heat window.
+            double hw_sum = 0;
+            // Sum for the total heat.
+            double ht_sum = 0;
+
             for (int x = 0; x < group_w && x+x_offset < factory_w; x++)
             {
                 for (int y = 0; y < group_h && y+y_offset < factory_h; y++)
                 {
                     group_size++;
                     int pos = coord_to_pos(x+x_offset, y+y_offset, factory_w);
-                    sum += heat_window[pos];
+
+                    hw_sum += heat_window[pos];
+                    ht_sum += heat_total[pos];
                 }
             }
+             
+            // Calculate the average for this group.
+            if (group_size > 0)
+            {
+                hw_sum /= group_size;
+                ht_sum /= group_size;
+
+                // Update the max values.
+                if (hw_sum > max_heat_window) max_heat_window = hw_sum;
+                if (ht_sum > max_heat_total) max_heat_total = ht_sum;
+
+                hw_vals.push_back(hw_sum);
+                ht_vals.push_back(ht_sum);
+            }
+        }
+    }
+
+    glBegin(GL_TRIANGLES);
+    int index = 0;
+    // This is the loop where we will actually render the statistics.
+    // TODO this is basically the same as the previous loop, but until we clean
+    // up the previous loop's logic we have to do this.
+    for (int x_offset = 0, num_x = 0; num_x <= ceil(1.0*factory_w / group_w); x_offset+=group_w, num_x++)
+    {
+        for (int y_offset = 0, num_y = 0; num_y <= ceil(1.0*factory_h/ group_h); y_offset+=group_h, num_y++)
+        {    
+
+            int group_size = 0;
+            for (int x = 0; x < group_w && x+x_offset < factory_w; x++)
+                for (int y = 0; y < group_h && y+y_offset < factory_h; y++)
+                    group_size++;
+
             // Calculate the average for this group and paint.
             if (group_size > 0)
             {
-                sum /= group_size;
-                sum /= max_heat_window;
 
-                // TODO Set color. Add more granularity. 
-                // Move to function and switch % granularity size.
-                if (0 <= sum && sum < 0.167)
-                    glColor3f(0,0,1);
-                else if (0.167 <= sum && sum < 0.334)
-                    glColor3f(0,1,1);
-                else if (0.501 <= sum && sum < 0.668)
-                    glColor3f(0,1,0);
-                else if (0.668 <= sum && sum < 0.835)
-                    glColor3f(1,1,0);
-                else if (0.835 < sum)
-                    glColor3f(1,0,0);
+                // Get the values.
+                double hw_sum = hw_vals[index];
+                double ht_sum = ht_vals[index];
+
+                // Normalize the values.
+                if (max_heat_window > 0)
+                    hw_sum /= max_heat_window;
+                if (max_heat_total > 0)
+                    ht_sum /= max_heat_total;
+
+                // Update the index.
+                index++;
 
                 // TODO Optimize. Draw pre-colored VBOs instead.
-                // TODO Make sure these are being drawn in the correct positions.
-                glBegin(GL_TRIANGLES);
+
+                // Draw the heat window.
+                set_glColor_heat(hw_sum); 
                 glVertex2f(paint_w*x_offset, paint_h*y_offset);
                 glVertex2f(paint_w*x_offset, paint_h*y_offset+paint_h);
                 glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h);
@@ -302,11 +394,19 @@ void OpenGLView::render()
                 glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset);
                 glVertex2f(paint_w*x_offset, paint_h*y_offset);
 
-                glEnd();
-            }
+                // Draw the total heat.
+                set_glColor_heat(ht_sum);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset + stat_h);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset+paint_h+stat_h);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+stat_h);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+stat_h);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+stat_h);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset+stat_h);
+                
+            } 
         }
     } 
-
+    glEnd();
     glPopMatrix();
     
     // Disable vertex arrays.
