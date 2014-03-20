@@ -308,6 +308,14 @@ void OpenGLView::render()
     auto heat_total = factory->get_heat_total();
     std::vector<double> ht_vals{};
 
+    double max_contentions = 0;
+    auto contentions = factory->get_contention_spots();
+    std::vector<double> cont_vals{};
+
+    double max_deadlocks = 0;
+    auto deadlocks = factory->get_deadlock_spots();
+    std::vector<double> dead_vals{};
+
     // TODO Clean up this loop and the following loop.
     // TODO We run this loop twice because the first time we find the value,
     // which we will use in the following loop to normalize the values before
@@ -318,10 +326,15 @@ void OpenGLView::render()
         {
             // Start forming this group.
             int group_size = 0;
+
             // Sum for the heat window.
             double hw_sum = 0;
             // Sum for the total heat.
             double ht_sum = 0;
+            // Sum for the contentions.
+            double cont_sum = 0;
+            // Sum for the deadlocks.
+            double dead_sum = 0;
 
             for (int x = 0; x < group_w && x+x_offset < factory_w; x++)
             {
@@ -330,23 +343,38 @@ void OpenGLView::render()
                     group_size++;
                     int pos = coord_to_pos(x+x_offset, y+y_offset, factory_w);
 
+                    // Update values.
                     hw_sum += heat_window[pos];
                     ht_sum += heat_total[pos];
+                    auto cont_it = contentions.find(pos);
+                    if (cont_it != contentions.end()) cont_sum += cont_it->second;
+                    auto dead_it = deadlocks.find(pos);
+                    if (dead_it != deadlocks.end()) dead_sum += dead_it->second;
                 }
             }
              
-            // Calculate the average for this group.
+            // Calculate values for this group.
             if (group_size > 0)
             {
+                // Average the values. We need this because if the factory size
+                // was greater than the viewing window, we will need to merge
+                // some points when rendering.
                 hw_sum /= group_size;
                 ht_sum /= group_size;
+                cont_sum /= group_size;
+                dead_sum /= group_size;
 
                 // Update the max values.
                 if (hw_sum > max_heat_window) max_heat_window = hw_sum;
                 if (ht_sum > max_heat_total) max_heat_total = ht_sum;
+                if (cont_sum > max_contentions) max_contentions = cont_sum;
+                if (dead_sum > max_deadlocks) max_deadlocks = dead_sum;
 
+                // Save the values.
                 hw_vals.push_back(hw_sum);
                 ht_vals.push_back(ht_sum);
+                cont_vals.push_back(cont_sum);
+                dead_vals.push_back(dead_sum);
             }
         }
     }
@@ -373,6 +401,8 @@ void OpenGLView::render()
                 // Get the values.
                 double hw_sum = hw_vals[index];
                 double ht_sum = ht_vals[index];
+                double cont_sum = cont_vals[index];
+                double dead_sum = dead_vals[index];
 
                 // Normalize the values.
                 if (max_heat_window > 0)
@@ -402,6 +432,24 @@ void OpenGLView::render()
                 glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+stat_h);
                 glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+stat_h);
                 glVertex2f(paint_w*x_offset, paint_h*y_offset+stat_h);
+
+                // Draw the contentions.
+                set_glColor_heat(cont_sum);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset + 2*stat_h);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset+paint_h+2*stat_h);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+2*stat_h);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+2*stat_h);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+2*stat_h);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset+2*stat_h);
+
+                // Draw the deadlocks.
+                set_glColor_heat(dead_sum);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset + 3*stat_h);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset+paint_h+3*stat_h);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+3*stat_h);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+3*stat_h);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+3*stat_h);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset+3*stat_h);
                 
             } 
         }
