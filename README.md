@@ -6,7 +6,7 @@ A warehouse simulator.
 
 Build: make
 
-Run: ./waresime
+Run: ./waresim
 
 A sample factory layout file can be found in factory.txt.
 
@@ -18,6 +18,12 @@ Dependencies
 -------
 
 C++11
+
+GLFW 2.7
+
+GLEW
+
+OpenGL 2.0+
 
 
 
