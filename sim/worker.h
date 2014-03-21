@@ -23,12 +23,18 @@ class Worker
         bool is_routed();
         // Set the worker's route status.
         void set_routed(bool);
-        // Return the orders assigned to this vector.
+        // Return the orders assigned to this worker.
         std::vector<Order> get_orders();
+        // Return the orders the worker has picked up.
+        std::vector<Order> get_ready_orders();
         // Get the current order.
         Order get_current_order();
         // Set the current order.
         void set_current_order(Order);
+        // Called when the worker has reached its order.
+        void reached_order();
+        // Called when the worker reaches a drop off location.
+        void drop_off();
         // Set the drop status.
         void set_drop_status(bool);
         // Get the drop status.
@@ -43,6 +49,12 @@ class Worker
         void set_path(std::vector<int>);
         // Get the worker's ID.
         int get_id();
+        // Get the worker's initial position in the warehouse.
+        int get_initial_pos();
+        // Set the current destination for the worker.
+        void set_current_dest(int);
+        // Get the current destination for the worker.
+        int get_current_dest();
 
     private:
         static int curr_id;
@@ -53,8 +65,12 @@ class Worker
         int initial_pos;
         // The worker's position within the factory.
         int pos;
+        // The worker's current destination.
+        int dest;
         // Orders the worker has to fulfill.
         std::vector<Order> orders{};
+        // Orders that are ready to be dropped off.
+        std::vector<Order> orders_ready{};
         // Is the worker routed?
         bool routed = false;
         // Does the worker need to drop-off orders?

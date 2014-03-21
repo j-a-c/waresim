@@ -55,6 +55,24 @@ void Worker::set_routed(bool b)
 }
 
 /**
+ * Called when a worker reaches its order.
+ * Sets its current order to the list of orders ready to be dropped off.
+ */
+void Worker::reached_order()
+{
+    orders_ready.push_back(current_order);
+}
+
+/**
+ * Called when a worker reaches a drop off location. 
+ * Clears tje list of orders the worker is holding.
+ */
+void Worker::drop_off()
+{
+    orders_ready.clear();
+}
+
+/**
  * Returns true if this worker is routed.
  */
 bool Worker::is_routed()
@@ -84,6 +102,24 @@ Order Worker::get_current_order()
 void Worker::set_current_order(Order o)
 {
     current_order = o;
+}
+
+/**
+ * Sets the current destination for this workers.
+ *
+ * @param pos The current destination for this worker.
+ */
+void Worker::set_current_dest(int pos)
+{
+    this->dest = pos;
+}
+
+/**
+ * Returns the current destination for this worker.
+ */
+int Worker::get_current_dest()
+{
+    return dest;
 }
 
 /**
@@ -140,4 +176,17 @@ void Worker::set_path(std::vector<int> new_path)
 int Worker::get_id()
 {
     return my_id;
+}
+
+std::vector<Order> Worker::get_ready_orders()
+{
+    return orders_ready;
+}
+
+/**
+ * Returns the initial position of the worker in the factory.
+ */
+int Worker::get_initial_pos()
+{
+    return initial_pos;
 }

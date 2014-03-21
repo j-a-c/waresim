@@ -18,9 +18,10 @@ int main()
 {
     // TODO Create a config file?
     // Begin config
-    int sim_length = 25;
+    int sim_length = 100;
     std::string factory_file = "factory.txt";
     unsigned int seed = 1000;
+    // wait time in between steps (in msecs)
     // End config
     
     // TODO Make a parameter.

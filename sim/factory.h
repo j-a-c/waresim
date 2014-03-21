@@ -95,7 +95,7 @@ class Factory
         // where c is a small constant such as 10^-6 or 10^-9 (see Mining of
         // Massive Datasets - RLU (2013)), but we need to tune it depending on
         // how fast we want spots to 'cool off'.
-        double DECAY_FACTOR = 1.0 - (0.000001);
+        double DECAY_FACTOR = 1.0 - (0.1);
 };
 
 #endif
