@@ -1,0 +1,3 @@
+Length:100
+Warehouse:warehouse.txt
+Seed:1000

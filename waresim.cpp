@@ -1,6 +1,8 @@
 #include <cstdlib>
+#include <iostream>
 #include <string>
 
+#include "parser/config_parser.h"
 #include "sim/algo/dispatch/dispatch_algo.h"
 #include "sim/algo/dispatch/rand_dispatch_algo.h"
 #include "sim/algo/routing/routing_algo.h"
@@ -14,15 +16,23 @@
  *
  * Driver for Waresim's simulation.
  */
-int main()
+int main(int argc, char **argv)
 {
-    // TODO Create a config file?
-    // Begin config
-    int sim_length = 100;
-    std::string factory_file = "factory.txt";
-    unsigned int seed = 1000;
+    if (argc < 2)
+    {
+        std::cout << "Usage: ./waresim config" << std::endl;
+        return 1;
+    }
+
+    // Set up the configuration file parser and parse the config file.
+    ConfigParser parser(std::string{argv[1]});
+    parser.parse();
+
+    // Get config parameters.
+    int sim_length = parser.get_sim_length();
+    std::string warehouse = parser.get_warehouse_file();
+    unsigned int seed = parser.get_seed();
     // wait time in between steps (in msecs)
-    // End config
     
     // TODO Make a parameter.
     View *view = new OpenGLView();
@@ -37,7 +47,8 @@ int main()
     // TODO Make a parameter.
     RoutingAlgo *routing_algo = new FCFSRoutingAlgo();
 
-    Simulation sim(sim_length, factory_file);
+
+    Simulation sim(sim_length, warehouse);
     sim.set_dispatch_algo(dispatch_algo);
     sim.set_routing_algo(routing_algo);
     sim.set_view(view);

@@ -35,17 +35,20 @@ std::vector<std::string> Factory::read_file(std::string filename)
 {
     // Attempts to create stream.
     std::ifstream ifs(filename);
+
     if(!ifs.good()) throw("Cannot open file.");
 
     std::vector<std::string> lines;
 
     // Continue reading lines until we cannot read any more.
-    for(;;) {
+    for (;;) 
+    {
         std::string line;
         std::getline(ifs, line);
         if(!ifs) break;
         lines.push_back(line);
     }
+
     // Check if we reached EOF before returning.
     if(!ifs.eof()) throw("Error reading file.");
 
