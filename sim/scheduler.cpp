@@ -187,6 +187,9 @@ void Scheduler::run()
         }
         // Randomly shuffle the order.
         std::shuffle(sched_order.begin(), sched_order.end(), rand.get_urng());
+        
+        // Get the factory layout.
+        auto layout = factory->get_layout();
 
         // We now have a random order in which to process the workers. We
         // will process each worker once. Processing means moving (or deciding
@@ -226,14 +229,14 @@ void Scheduler::run()
                 worker.set_routed(false);
 
                 // Update to 'drop off ready' if we reached a bin location.
-                if (factory->get_layout()[worker.get_pos()] == BIN_LOC)
+                if (layout[worker.get_pos()] == BIN_LOC)
                 {
                     worker.reached_order();
                     worker.set_drop_status(true);
                 }
                 // Update to 'not drop off ready' if we reached a drop off
                 // location.
-                if (factory->get_layout()[worker.get_pos()] == DROP_LOC)
+                if (layout[worker.get_pos()] == DROP_LOC)
                 {
                     worker.drop_off();
                     worker.set_drop_status(false);
@@ -268,16 +271,16 @@ void Scheduler::run()
             Worker next_pos_worker = worker;
 
             // Top neighbor.
-            if ((curr_pos / height) != (height-1))
+            if (((curr_pos / height) != (height-1)) && (layout[curr_pos+width] == EMPTY_LOC))
                 top_valid = true;
             // Bottom neighbor.
-            if (curr_pos >= width)
+            if ((curr_pos >= width) && (layout[curr_pos-width] == EMPTY_LOC))
                 bot_valid = true;
             // Left neighbor.
-            if ((curr_pos % width) != 0)
+            if (((curr_pos % width) != 0) && (layout[curr_pos-1] == EMPTY_LOC))
                 left_valid = true;
             // Right neighbor.
-            if (((curr_pos+1) % width) != 0)
+            if ((((curr_pos+1) % width) != 0) && (layout[curr_pos+1] == EMPTY_LOC))
                 right_valid = true;
 
             // Is the next position for this worker taken?
