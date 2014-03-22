@@ -689,7 +689,7 @@ void OpenGLView::setup()
         for (int i = 0; i < 12; i++)
         {
             factory_colors.insert(factory_colors.end(), 
-                    default_factory_color.begin(), default_factory_color.end());
+                    default_wall_color.begin(), default_wall_color.end());
         }   
     }
 
@@ -753,12 +753,12 @@ void OpenGLView::setup()
         pos_to_coord(&x, &z, pos, factory->get_width());
 
          // Form vertices.
-        auto ffront = OpenGLBox::get_front_vertices(1, 1, 1, x, 0, z);
-        auto fback = OpenGLBox::get_back_vertices(1, 1, 1, x, 0, z);
-        auto ftop = OpenGLBox::get_top_vertices(1, 1, 1, x, 0, z);
-        auto fbot = OpenGLBox::get_bot_vertices(1, 1, 1, x, 0, z);
-        auto fleft = OpenGLBox::get_left_vertices(1, 1, 1, x, 0, z);
-        auto fright = OpenGLBox::get_right_vertices(1, 1, 1, x, 0, z);
+        auto ffront = OpenGLBox::get_front_vertices(DROP_X, DROP_Y, DROP_Z, x, 0, z);
+        auto fback = OpenGLBox::get_back_vertices(DROP_X, DROP_Y, DROP_Z, x, 0, z);
+        auto ftop = OpenGLBox::get_top_vertices(DROP_X, DROP_Y, DROP_Z, x, 0, z);
+        auto fbot = OpenGLBox::get_bot_vertices(DROP_X, DROP_Y, DROP_Z, x, 0, z);
+        auto fleft = OpenGLBox::get_left_vertices(DROP_X, DROP_Y, DROP_Z, x, 0, z);
+        auto fright = OpenGLBox::get_right_vertices(DROP_X, DROP_Y, DROP_Z, x, 0, z);
 
         // Add vertices.
         factory_verts.insert(factory_verts.end(), ffront.begin(), ffront.end());

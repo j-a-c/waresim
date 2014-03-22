@@ -98,6 +98,14 @@ class OpenGLView : public View
             0.75, 0.75, 0.75,  
             0.75, 0.75, 0.75
         };
+        // The default wall color. We use a different color than the rest of
+        // the warehouse because we have not implemented shadows, so it is hard
+        // to tell the difference.
+        std::vector<GLfloat> default_wall_color{
+            0.6, 0.6, 0.6,  
+            0.6, 0.6, 0.6,  
+            0.6, 0.6, 0.6
+        };
         // The bin color.
         std::vector<GLfloat> drop_color{
             1, 1, 0,  
@@ -130,6 +138,11 @@ class OpenGLView : public View
         const float BIN_X = 0.75;
         const float BIN_Y = 0.75;
         const float BIN_Z = 0.75;
+        // Drop dimensions.
+        const float DROP_X = 0.75;
+        const float DROP_Y = 0.75;
+        const float DROP_Z = 0.75;
+
 
 };
 
