@@ -29,9 +29,9 @@ RandDispatchAlgo::~RandDispatchAlgo()
 
 }
 
-void RandDispatchAlgo::assign_order(Factory *factory, Order order)
+void RandDispatchAlgo::assign_order(Warehouse *warehouse, Order order)
 {
-    std::vector<Worker>& workers = factory->get_workers();
+    std::vector<Worker>& workers = warehouse->get_workers();
 
     int index = workers.size() * rand.rand();
 

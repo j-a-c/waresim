@@ -25,7 +25,7 @@ class OpenGLView : public View
         void run() override;
 
         // Override from View.
-        void set_factory(Factory *) override;
+        void set_warehouse(Warehouse *) override;
         // Override from View.
         void set_sim_params(time_t, int);
     private:
@@ -54,8 +54,8 @@ class OpenGLView : public View
         // The number of statistics we will render.
         double NUM_STATS = 4.0;
 
-        // The factory representation.
-        Factory *factory;
+        // The warehouse representation.
+        Warehouse *warehouse;
         // The start time of the simulation.
         time_t start_time;
         // The legnth of the simulation in seconds.
@@ -83,17 +83,17 @@ class OpenGLView : public View
         float y_pos = 5.0f;
         float z_pos = 5.0f;
 
-        // Holds the static factory VBO.
-        GLuint factoryVBO = 0; 
+        // Holds the static warehouse VBO.
+        GLuint warehouseVBO = 0; 
         // Holds the worker VBO.
         GLuint workerVBO = 0;
 
-        // Vector holding factory info.
-        std::size_t factory_vert_len;
-        std::size_t factory_norm_len;
-        std::size_t factory_color_len;
-        // The default factory color.
-        std::vector<GLfloat> default_factory_color{
+        // Vector holding warehouse info.
+        std::size_t warehouse_vert_len;
+        std::size_t warehouse_norm_len;
+        std::size_t warehouse_color_len;
+        // The default warehouse color.
+        std::vector<GLfloat> default_warehouse_color{
             0.75, 0.75, 0.75,  
             0.75, 0.75, 0.75,  
             0.75, 0.75, 0.75
@@ -118,8 +118,8 @@ class OpenGLView : public View
             0.4, 0.2, 0,  
             0.4, 0.2, 0
         };
-        // The number of triangles it took to represent the factory.
-        int num_factory_tris = 0;
+        // The number of triangles it took to represent the warehouse.
+        int num_warehouse_tris = 0;
         
         // Worker data.
         std::size_t worker_vert_len;

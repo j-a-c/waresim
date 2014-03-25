@@ -3,7 +3,7 @@
 // TODO Delete later, used for debug.
 #include <iostream>
 
-void FCFSRoutingAlgo::route_worker(Factory *factory, Worker& worker)
+void FCFSRoutingAlgo::route_worker(Warehouse *warehouse, Worker& worker)
 {
 
     // Get the orders this worker has fulfilled.
@@ -19,7 +19,7 @@ void FCFSRoutingAlgo::route_worker(Factory *factory, Worker& worker)
         // This is the logic for determining which location a worker will drop
         // off its fulfilled orders to. We will simply choose the first one for
         // ease.
-        int drop_loc = factory->get_drops()[0];
+        int drop_loc = warehouse->get_drops()[0];
         worker.set_routed(true);
         worker.set_current_dest(drop_loc);
         std::cout << "Routing to drop at: " << drop_loc << std::endl;

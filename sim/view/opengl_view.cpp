@@ -31,7 +31,7 @@ OpenGLView::~OpenGLView()
 {
     // We need to delete the VBO.
     glDeleteBuffersARB(1, &workerVBO);
-    glDeleteBuffersARB(1, &factoryVBO);
+    glDeleteBuffersARB(1, &warehouseVBO);
 
 }
 
@@ -198,21 +198,21 @@ void OpenGLView::render()
 
 
     /*
-     * Render the factory.
+     * Render the warehouse.
      */
 
-    // Bind the factory VBO.
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, factoryVBO);
+    // Bind the warehouse VBO.
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, warehouseVBO);
 
     // Set the pointers.
     glVertexPointer(3, GL_FLOAT, 0, 0);
-    glNormalPointer(GL_FLOAT, 0, (void*) factory_vert_len);
+    glNormalPointer(GL_FLOAT, 0, (void*) warehouse_vert_len);
     glColorPointer(3, GL_FLOAT, 0, 
-            (void*) (factory_vert_len + factory_norm_len));
+            (void*) (warehouse_vert_len + warehouse_norm_len));
 
     glPushMatrix();
-    glTranslated(0,0,-factory->get_height());
-    glDrawArrays(GL_TRIANGLES, 0, num_factory_tris);
+    glTranslated(0,0,-warehouse->get_height());
+    glDrawArrays(GL_TRIANGLES, 0, num_warehouse_tris);
     glPopMatrix();
     
     /*
@@ -229,14 +229,14 @@ void OpenGLView::render()
             (void*) (worker_vert_len + worker_norm_len));
 
     // Render the workers.
-    for (auto& pos : factory->get_worker_locs())
+    for (auto& pos : warehouse->get_worker_locs())
     {
         // Translate the worker's position to a coordinate.
         int x,z;
-        pos_to_coord(&x, &z, pos, factory->get_width());
+        pos_to_coord(&x, &z, pos, warehouse->get_width());
  
         // Translate the 'y' coordinate to OpenGL's z coordinate.
-        z -= factory->get_height();
+        z -= warehouse->get_height();
         
         // Move to the worker's location and draw the worker.
         glPushMatrix();
@@ -266,34 +266,34 @@ void OpenGLView::render()
      * Render statistics.
      */
 
-    // Determine how many points from the factory to group together, and how 
+    // Determine how many points from the warehouse to group together, and how 
     // many points paint at a time on the screen. We will group 'group_w'
     // points together when calculating that color to paint 'paint_w' pixels.
-    // We need to group (or spread) the points because the factory
+    // We need to group (or spread) the points because the warehouse
     // representation and the allocated space to draw the statistics are
     // different sizes.
     int group_w, group_h, paint_w, paint_h;
-    int factory_w = factory->get_width();
-    int factory_h = factory->get_height();
+    int warehouse_w = warehouse->get_width();
+    int warehouse_h = warehouse->get_height();
     
-    // There are less factory points than available points.
-    if (factory_w < stat_w)
+    // There are less warehouse points than available points.
+    if (warehouse_w < stat_w)
     {
         group_w = 1;
-        paint_w = stat_w / factory_w;
+        paint_w = stat_w / warehouse_w;
     }
-    else // There are more factory points than available points.
+    else // There are more warehouse points than available points.
     {
         // TODO Implement.
         throw "not implemented yet";
     }
-    // There are less factory points than available points. 
-    if (factory_h < stat_h)
+    // There are less warehouse points than available points. 
+    if (warehouse_h < stat_h)
     {
         group_h = 1;
-        paint_h = stat_h / factory_h;
+        paint_h = stat_h / warehouse_h;
     }
-    else // There are more factory points that available points.
+    else // There are more warehouse points that available points.
     {
         // TODO Implement.
         throw "not implemented yet";
@@ -301,28 +301,28 @@ void OpenGLView::render()
     
     // Track the max heat window.
     double max_heat_window = 0;
-    auto heat_window = factory->get_heat_window();
+    auto heat_window = warehouse->get_heat_window();
     std::vector<double> hw_vals{};
     
     double max_heat_total = 0;
-    auto heat_total = factory->get_heat_total();
+    auto heat_total = warehouse->get_heat_total();
     std::vector<double> ht_vals{};
 
     double max_contentions = 0;
-    auto contentions = factory->get_contention_spots();
+    auto contentions = warehouse->get_contention_spots();
     std::vector<double> cont_vals{};
 
     double max_deadlocks = 0;
-    auto deadlocks = factory->get_deadlock_spots();
+    auto deadlocks = warehouse->get_deadlock_spots();
     std::vector<double> dead_vals{};
 
     // TODO Clean up this loop and the following loop.
     // TODO We run this loop twice because the first time we find the value,
     // which we will use in the following loop to normalize the values before
     // we render them.
-    for (int x_offset = 0, num_x = 0; num_x <= ceil(1.0*factory_w / group_w); x_offset+=group_w, num_x++)
+    for (int x_offset = 0, num_x = 0; num_x <= ceil(1.0*warehouse_w / group_w); x_offset+=group_w, num_x++)
     {
-        for (int y_offset = 0, num_y = 0; num_y <= ceil(1.0*factory_h/ group_h); y_offset+=group_h, num_y++)
+        for (int y_offset = 0, num_y = 0; num_y <= ceil(1.0*warehouse_h/ group_h); y_offset+=group_h, num_y++)
         {
             // Start forming this group.
             int group_size = 0;
@@ -336,12 +336,12 @@ void OpenGLView::render()
             // Sum for the deadlocks.
             double dead_sum = 0;
 
-            for (int x = 0; x < group_w && x+x_offset < factory_w; x++)
+            for (int x = 0; x < group_w && x+x_offset < warehouse_w; x++)
             {
-                for (int y = 0; y < group_h && y+y_offset < factory_h; y++)
+                for (int y = 0; y < group_h && y+y_offset < warehouse_h; y++)
                 {
                     group_size++;
-                    int pos = coord_to_pos(x+x_offset, y+y_offset, factory_w);
+                    int pos = coord_to_pos(x+x_offset, y+y_offset, warehouse_w);
 
                     // Update values.
                     hw_sum += heat_window[pos];
@@ -356,7 +356,7 @@ void OpenGLView::render()
             // Calculate values for this group.
             if (group_size > 0)
             {
-                // Average the values. We need this because if the factory size
+                // Average the values. We need this because if the warehouse size
                 // was greater than the viewing window, we will need to merge
                 // some points when rendering.
                 hw_sum /= group_size;
@@ -384,14 +384,14 @@ void OpenGLView::render()
     // This is the loop where we will actually render the statistics.
     // TODO this is basically the same as the previous loop, but until we clean
     // up the previous loop's logic we have to do this.
-    for (int x_offset = 0, num_x = 0; num_x <= ceil(1.0*factory_w / group_w); x_offset+=group_w, num_x++)
+    for (int x_offset = 0, num_x = 0; num_x <= ceil(1.0*warehouse_w / group_w); x_offset+=group_w, num_x++)
     {
-        for (int y_offset = 0, num_y = 0; num_y <= ceil(1.0*factory_h/ group_h); y_offset+=group_h, num_y++)
+        for (int y_offset = 0, num_y = 0; num_y <= ceil(1.0*warehouse_h/ group_h); y_offset+=group_h, num_y++)
         {    
 
             int group_size = 0;
-            for (int x = 0; x < group_w && x+x_offset < factory_w; x++)
-                for (int y = 0; y < group_h && y+y_offset < factory_h; y++)
+            for (int x = 0; x < group_w && x+x_offset < warehouse_w; x++)
+                for (int y = 0; y < group_h && y+y_offset < warehouse_h; y++)
                     group_size++;
 
             // Calculate the average for this group and paint.
@@ -584,28 +584,28 @@ void OpenGLView::update(double dt)
  */
 void OpenGLView::setup()
 {
-    int factory_w = factory->get_width();
-    int factory_h = factory->get_height();
+    int warehouse_w = warehouse->get_width();
+    int warehouse_h = warehouse->get_height();
     // Allocate space to each statistic.
     // Dedicate 1/4 of screen width to stats. 
     // Each stat will have an equal amount of height.
     int alloc_w = 0.25 * screen_w;
     int alloc_h = screen_h / NUM_STATS;
-    // We need to fit the factory image to the allocated space.
+    // We need to fit the warehouse image to the allocated space.
     double stat_r = alloc_w / alloc_h;
-    double factory_r = 1.0 * factory_w / factory_h;
+    double warehouse_r = 1.0 * warehouse_w / warehouse_h;
     std::cout << "alloc: " << alloc_w << " " << alloc_h << std::endl;
-    if (factory_r < stat_r)
+    if (warehouse_r < stat_r)
     {
         stat_h = alloc_h;
-        stat_w = std::round(stat_h * factory_r);
+        stat_w = std::round(stat_h * warehouse_r);
     }
     else
     {
         stat_w = alloc_w;
-        stat_h = std::round(stat_w / factory_r);
+        stat_h = std::round(stat_w / warehouse_r);
     }
-    std::cout << "fact dim: " << factory_w << " " << factory_h << std::endl; 
+    std::cout << "fact dim: " << warehouse_w << " " << warehouse_h << std::endl; 
     std::cout << "stat dim: " << stat_w <<  " " << stat_h << std::endl;
     
     // Determine the granularity for the statistics renderings.
@@ -616,41 +616,41 @@ void OpenGLView::setup()
     // We put vertex, normals, and colors in the same object.
     // Calling glBufferDataARB with NULL pointer reserves only memory space.
 
-    // Create the factory VBO.
-    glGenBuffersARB(1, &factoryVBO);
-    glBindBufferARB(GL_ARRAY_BUFFER_ARB, factoryVBO);
+    // Create the warehouse VBO.
+    glGenBuffersARB(1, &warehouseVBO);
+    glBindBufferARB(GL_ARRAY_BUFFER_ARB, warehouseVBO);
 
-    std::vector<GLfloat> factory_verts{};
-    std::vector<GLfloat> factory_norms{};
-    std::vector<GLfloat> factory_colors{};
+    std::vector<GLfloat> warehouse_verts{};
+    std::vector<GLfloat> warehouse_norms{};
+    std::vector<GLfloat> warehouse_colors{};
 
-    // Add the factory floor. We use 'top' so we can see the floor.
+    // Add the warehouse floor. We use 'top' so we can see the floor.
     // We move the top -1 units down (so it acts as a floor) and re-align it.
-    auto floor = OpenGLBox::get_top_vertices(factory->get_width(), 
-            1, factory->get_height(), factory->get_width()/2.0f-0.5f, -1, 
-            factory->get_height()/2.0f-0.5f);
-    factory_verts.insert(factory_verts.end(), floor.begin(), floor.end());
+    auto floor = OpenGLBox::get_top_vertices(warehouse->get_width(), 
+            1, warehouse->get_height(), warehouse->get_width()/2.0f-0.5f, -1, 
+            warehouse->get_height()/2.0f-0.5f);
+    warehouse_verts.insert(warehouse_verts.end(), floor.begin(), floor.end());
     auto floorn = OpenGLBox::get_top_normals();
-    factory_norms.insert(factory_norms.end(), floorn.begin(), floorn.end());
+    warehouse_norms.insert(warehouse_norms.end(), floorn.begin(), floorn.end());
     for (int i = 0; i < 2; i++)
     {
-        factory_colors.insert(factory_colors.end(), default_factory_color.begin(), 
-                default_factory_color.end());
+        warehouse_colors.insert(warehouse_colors.end(), default_warehouse_color.begin(), 
+                default_warehouse_color.end());
     }
-    num_factory_tris += 2;
+    num_warehouse_tris += 2;
 
     // Note: the loops for adding the walls, bins, and drop locs is very
     // similar. However, we leave them separated in case we decide to render
     // each entity with a different representation than a box.
 
     // Add each wall.
-    for (auto& pos : factory->get_walls())
+    for (auto& pos : warehouse->get_walls())
     {
-        num_factory_tris += 36;
+        num_warehouse_tris += 36;
 
         // Translate the position to a coordinate.
         int x,z;
-        pos_to_coord(&x, &z, pos, factory->get_width());
+        pos_to_coord(&x, &z, pos, warehouse->get_width());
 
          // Form vertices.
         auto ffront = OpenGLBox::get_front_vertices(1, 1, 1, x, 0, z);
@@ -661,12 +661,12 @@ void OpenGLView::setup()
         auto fright = OpenGLBox::get_right_vertices(1, 1, 1, x, 0, z);
 
         // Add the vertices.
-        factory_verts.insert(factory_verts.end(), ffront.begin(), ffront.end());
-        factory_verts.insert(factory_verts.end(), fback.begin(), fback.end());
-        factory_verts.insert(factory_verts.end(), ftop.begin(), ftop.end());
-        factory_verts.insert(factory_verts.end(), fbot.begin(), fbot.end());
-        factory_verts.insert(factory_verts.end(), fleft.begin(), fleft.end());
-        factory_verts.insert(factory_verts.end(), fright.begin(), fright.end());
+        warehouse_verts.insert(warehouse_verts.end(), ffront.begin(), ffront.end());
+        warehouse_verts.insert(warehouse_verts.end(), fback.begin(), fback.end());
+        warehouse_verts.insert(warehouse_verts.end(), ftop.begin(), ftop.end());
+        warehouse_verts.insert(warehouse_verts.end(), fbot.begin(), fbot.end());
+        warehouse_verts.insert(warehouse_verts.end(), fleft.begin(), fleft.end());
+        warehouse_verts.insert(warehouse_verts.end(), fright.begin(), fright.end());
 
         // Form normals.
         auto fnfront = OpenGLBox::get_front_normals();
@@ -677,30 +677,30 @@ void OpenGLView::setup()
         auto fnright = OpenGLBox::get_right_normals();
 
         // Add the normals.
-        factory_norms.insert(factory_norms.end(), fnfront.begin(), fnfront.end());
-        factory_norms.insert(factory_norms.end(), fnback.begin(), fnback.end());
-        factory_norms.insert(factory_norms.end(), fntop.begin(), fntop.end());
-        factory_norms.insert(factory_norms.end(), fnbot.begin(), fnbot.end());
-        factory_norms.insert(factory_norms.end(), fnleft.begin(), fnleft.end());
-        factory_norms.insert(factory_norms.end(), fnright.begin(), fnright.end());
+        warehouse_norms.insert(warehouse_norms.end(), fnfront.begin(), fnfront.end());
+        warehouse_norms.insert(warehouse_norms.end(), fnback.begin(), fnback.end());
+        warehouse_norms.insert(warehouse_norms.end(), fntop.begin(), fntop.end());
+        warehouse_norms.insert(warehouse_norms.end(), fnbot.begin(), fnbot.end());
+        warehouse_norms.insert(warehouse_norms.end(), fnleft.begin(), fnleft.end());
+        warehouse_norms.insert(warehouse_norms.end(), fnright.begin(), fnright.end());
 
         // Add the colors.
         // Insert twice for each face because each face is two triangles.
         for (int i = 0; i < 12; i++)
         {
-            factory_colors.insert(factory_colors.end(), 
+            warehouse_colors.insert(warehouse_colors.end(), 
                     default_wall_color.begin(), default_wall_color.end());
         }   
     }
 
     // Add each bin.
-    for (auto& pos : factory->get_bins())
+    for (auto& pos : warehouse->get_bins())
     {
-        num_factory_tris += 36;
+        num_warehouse_tris += 36;
 
         // Translate the position to a coordinate.
         int x,z;
-        pos_to_coord(&x, &z, pos, factory->get_width());
+        pos_to_coord(&x, &z, pos, warehouse->get_width());
 
          // Form vertices.
         auto ffront = OpenGLBox::get_front_vertices(BIN_X, BIN_Y, BIN_Z, x, 0, z);
@@ -711,12 +711,12 @@ void OpenGLView::setup()
         auto fright = OpenGLBox::get_right_vertices(BIN_X, BIN_Y, BIN_Z, x, 0, z);
 
         // Add vertices.
-        factory_verts.insert(factory_verts.end(), ffront.begin(), ffront.end());
-        factory_verts.insert(factory_verts.end(), fback.begin(), fback.end());
-        factory_verts.insert(factory_verts.end(), ftop.begin(), ftop.end());
-        factory_verts.insert(factory_verts.end(), fbot.begin(), fbot.end());
-        factory_verts.insert(factory_verts.end(), fleft.begin(), fleft.end());
-        factory_verts.insert(factory_verts.end(), fright.begin(), fright.end());
+        warehouse_verts.insert(warehouse_verts.end(), ffront.begin(), ffront.end());
+        warehouse_verts.insert(warehouse_verts.end(), fback.begin(), fback.end());
+        warehouse_verts.insert(warehouse_verts.end(), ftop.begin(), ftop.end());
+        warehouse_verts.insert(warehouse_verts.end(), fbot.begin(), fbot.end());
+        warehouse_verts.insert(warehouse_verts.end(), fleft.begin(), fleft.end());
+        warehouse_verts.insert(warehouse_verts.end(), fright.begin(), fright.end());
 
         // Form normals.
         auto fnfront = OpenGLBox::get_front_normals();
@@ -727,30 +727,30 @@ void OpenGLView::setup()
         auto fnright = OpenGLBox::get_right_normals();
 
         // Add the normals.
-        factory_norms.insert(factory_norms.end(), fnfront.begin(), fnfront.end());
-        factory_norms.insert(factory_norms.end(), fnback.begin(), fnback.end());
-        factory_norms.insert(factory_norms.end(), fntop.begin(), fntop.end());
-        factory_norms.insert(factory_norms.end(), fnbot.begin(), fnbot.end());
-        factory_norms.insert(factory_norms.end(), fnleft.begin(), fnleft.end());
-        factory_norms.insert(factory_norms.end(), fnright.begin(), fnright.end());
+        warehouse_norms.insert(warehouse_norms.end(), fnfront.begin(), fnfront.end());
+        warehouse_norms.insert(warehouse_norms.end(), fnback.begin(), fnback.end());
+        warehouse_norms.insert(warehouse_norms.end(), fntop.begin(), fntop.end());
+        warehouse_norms.insert(warehouse_norms.end(), fnbot.begin(), fnbot.end());
+        warehouse_norms.insert(warehouse_norms.end(), fnleft.begin(), fnleft.end());
+        warehouse_norms.insert(warehouse_norms.end(), fnright.begin(), fnright.end());
 
         // Add colors.
         // Insert twice for each face because each face is two triangles.
         for (int i = 0; i < 12; i++)
         {
-            factory_colors.insert(factory_colors.end(), 
+            warehouse_colors.insert(warehouse_colors.end(), 
                     bin_color.begin(), bin_color.end());
         }   
     }
 
     // Add drop offs.
-    for (auto& pos : factory->get_drops())
+    for (auto& pos : warehouse->get_drops())
     {
-        num_factory_tris += 36;
+        num_warehouse_tris += 36;
 
         // Translate the position to a coordinate.
         int x,z;
-        pos_to_coord(&x, &z, pos, factory->get_width());
+        pos_to_coord(&x, &z, pos, warehouse->get_width());
 
          // Form vertices.
         auto ffront = OpenGLBox::get_front_vertices(DROP_X, DROP_Y, DROP_Z, x, 0, z);
@@ -761,12 +761,12 @@ void OpenGLView::setup()
         auto fright = OpenGLBox::get_right_vertices(DROP_X, DROP_Y, DROP_Z, x, 0, z);
 
         // Add vertices.
-        factory_verts.insert(factory_verts.end(), ffront.begin(), ffront.end());
-        factory_verts.insert(factory_verts.end(), fback.begin(), fback.end());
-        factory_verts.insert(factory_verts.end(), ftop.begin(), ftop.end());
-        factory_verts.insert(factory_verts.end(), fbot.begin(), fbot.end());
-        factory_verts.insert(factory_verts.end(), fleft.begin(), fleft.end());
-        factory_verts.insert(factory_verts.end(), fright.begin(), fright.end());
+        warehouse_verts.insert(warehouse_verts.end(), ffront.begin(), ffront.end());
+        warehouse_verts.insert(warehouse_verts.end(), fback.begin(), fback.end());
+        warehouse_verts.insert(warehouse_verts.end(), ftop.begin(), ftop.end());
+        warehouse_verts.insert(warehouse_verts.end(), fbot.begin(), fbot.end());
+        warehouse_verts.insert(warehouse_verts.end(), fleft.begin(), fleft.end());
+        warehouse_verts.insert(warehouse_verts.end(), fright.begin(), fright.end());
 
         // Form normals.
         auto fnfront = OpenGLBox::get_front_normals();
@@ -777,39 +777,39 @@ void OpenGLView::setup()
         auto fnright = OpenGLBox::get_right_normals();
 
         // Add the normals.
-        factory_norms.insert(factory_norms.end(), fnfront.begin(), fnfront.end());
-        factory_norms.insert(factory_norms.end(), fnback.begin(), fnback.end());
-        factory_norms.insert(factory_norms.end(), fntop.begin(), fntop.end());
-        factory_norms.insert(factory_norms.end(), fnbot.begin(), fnbot.end());
-        factory_norms.insert(factory_norms.end(), fnleft.begin(), fnleft.end());
-        factory_norms.insert(factory_norms.end(), fnright.begin(), fnright.end());
+        warehouse_norms.insert(warehouse_norms.end(), fnfront.begin(), fnfront.end());
+        warehouse_norms.insert(warehouse_norms.end(), fnback.begin(), fnback.end());
+        warehouse_norms.insert(warehouse_norms.end(), fntop.begin(), fntop.end());
+        warehouse_norms.insert(warehouse_norms.end(), fnbot.begin(), fnbot.end());
+        warehouse_norms.insert(warehouse_norms.end(), fnleft.begin(), fnleft.end());
+        warehouse_norms.insert(warehouse_norms.end(), fnright.begin(), fnright.end());
 
         // Add colors.
         // Insert twice for each face because each face is two triangles.
         for (int i = 0; i < 12; i++)
         {
-            factory_colors.insert(factory_colors.end(), 
+            warehouse_colors.insert(warehouse_colors.end(), 
                     drop_color.begin(), drop_color.end());
         }   
     }
     
     // Store lengths index lengths.
-    factory_vert_len = sizeof(&factory_verts[0]) * factory_verts.size();
-    factory_norm_len = sizeof(&factory_norms[0]) * factory_norms.size();
-    factory_color_len = sizeof(&factory_colors[0]) * factory_colors.size();
+    warehouse_vert_len = sizeof(&warehouse_verts[0]) * warehouse_verts.size();
+    warehouse_norm_len = sizeof(&warehouse_norms[0]) * warehouse_norms.size();
+    warehouse_color_len = sizeof(&warehouse_colors[0]) * warehouse_colors.size();
 
     // Target, size, data, usage.
     glBufferDataARB(GL_ARRAY_BUFFER_ARB, 
-            factory_vert_len + factory_norm_len + factory_color_len, 
+            warehouse_vert_len + warehouse_norm_len + warehouse_color_len, 
             0, GL_STATIC_DRAW_ARB);
     // Copy vertices starting from 0 offest.
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, factory_vert_len, &factory_verts[0]); 
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, 0, warehouse_vert_len, &warehouse_verts[0]); 
     // Copy normals after vertices.
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, factory_vert_len, factory_norm_len, 
-            &factory_norms[0]); 
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, warehouse_vert_len, warehouse_norm_len, 
+            &warehouse_norms[0]); 
     // Copy colors after normals.
-    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, factory_vert_len + factory_norm_len, 
-            factory_color_len, &factory_colors[0]);
+    glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, warehouse_vert_len + warehouse_norm_len, 
+            warehouse_color_len, &warehouse_colors[0]);
 
 
     // Create the worker VBO.
@@ -920,12 +920,12 @@ void OpenGLView::run()
 }
 
 /**
- * Set the factory representation.
- * We also build the static factory layout before returning.
+ * Set the warehouse representation.
+ * We also build the static warehouse layout before returning.
  */
-void OpenGLView::set_factory(Factory *factory)
+void OpenGLView::set_warehouse(Warehouse *warehouse)
 {
-    this->factory = factory;
+    this->warehouse = warehouse;
 }
 
 /**

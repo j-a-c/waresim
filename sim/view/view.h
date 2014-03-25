@@ -3,7 +3,7 @@
 
 #include <ctime>
 
-#include "../factory.h"
+#include "../warehouse.h"
 #include "../thread/thread.h"
 
 /**
@@ -17,10 +17,10 @@ class View //: public Thread
         
         virtual void setup() = 0;
         virtual void run() = 0;
-        virtual void set_factory(Factory *) = 0;
+        virtual void set_warehouse(Warehouse *) = 0;
         virtual void set_sim_params(time_t, int) = 0;
     private:
-        Factory *factory = nullptr;
+        Warehouse *warehouse = nullptr;
         time_t start_time;
         int sim_length;
 

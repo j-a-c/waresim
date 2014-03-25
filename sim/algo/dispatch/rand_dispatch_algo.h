@@ -5,7 +5,7 @@
 #include "../../rand/rand.h"
 
 /**
- * Encapsulates an algorithm that randomly selects a worker in the factory to
+ * Encapsulates an algorithm that randomly selects a worker in the warehouse to
  * process the order.
  */
 class RandDispatchAlgo : public DispatchAlgo
@@ -15,7 +15,7 @@ class RandDispatchAlgo : public DispatchAlgo
         RandDispatchAlgo(Rand);
         ~RandDispatchAlgo();
 
-        void assign_order(Factory *, Order) override;
+        void assign_order(Warehouse *, Order) override;
     private:
         Rand rand;
 };

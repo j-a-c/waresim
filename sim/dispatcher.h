@@ -5,7 +5,7 @@
 
 #include "algo/dispatch/dispatch_algo.h"
 #include "concurrent/barrier.h"
-#include "factory.h"
+#include "warehouse.h"
 #include "order_generator.h"
 #include "thread/thread.h"
 
@@ -19,8 +19,8 @@ class Dispatcher : public Thread
     public:
         Dispatcher(time_t, int);
 
-        // Set the factory.
-        void set_factory(Factory *);
+        // Set the warehouse.
+        void set_warehouse(Warehouse *);
         // Set the order generator.
         void set_order_generator(OrderGenerator *);
         // Set the barrier.
@@ -35,8 +35,8 @@ class Dispatcher : public Thread
         time_t start_time;
         // The length of the simulation in seconds.
         int sim_length;
-        // The factory;
-        Factory *factory = nullptr;
+        // The warehouse;
+        Warehouse *warehouse = nullptr;
         // The order generator.
         OrderGenerator *order_gen = nullptr;
         // The barrier.

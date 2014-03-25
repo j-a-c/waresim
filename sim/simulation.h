@@ -9,7 +9,7 @@
 #include "algo/routing/routing_algo.h"
 #include "concurrent/barrier.h"
 #include "dispatcher.h"
-#include "factory.h"
+#include "warehouse.h"
 #include "order_generator.h"
 #include "scheduler.h"
 #include "view/view.h"
@@ -50,15 +50,15 @@ class Simulation
         Dispatcher *dispatcher = nullptr;
         // Scheduler for the simulation.
         Scheduler *scheduler = nullptr;
-        // Factory that the dispatcher will use.
-        Factory factory;
+        // Warehouse that the dispatcher will use.
+        Warehouse warehouse;
         // The barrier.
         Barrier *barrier = nullptr;
         // The dispatch algorithm.
         DispatchAlgo *dispatch_algo = nullptr;
         // The routing algorithm.
         RoutingAlgo *routing_algo = nullptr;
-        // The view to render the factory.
+        // The view to render the warehouse.
         View *view = nullptr;
 };
 

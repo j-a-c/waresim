@@ -6,20 +6,20 @@
 
 #include "algo/routing/routing_algo.h"
 #include "concurrent/barrier.h"
-#include "factory.h"
+#include "warehouse.h"
 #include "rand/rand.h"
 #include "thread/thread.h"
 
 /**
- * Reponsible for scheduling the worker's movements in the factory.
+ * Reponsible for scheduling the worker's movements in the warehouse.
  */
 class Scheduler : public Thread
 {
     public:
         Scheduler(time_t, int);
 
-        // Set the factory.
-        void set_factory(Factory *);
+        // Set the warehouse.
+        void set_warehouse(Warehouse *);
         // Set the barrier.
         void set_barrier(Barrier *);
         // Set the random number generator.
@@ -39,8 +39,8 @@ class Scheduler : public Thread
         time_t start_time;
         // The length of the simulation.
         int sim_length;
-        // The factory.
-        Factory *factory = nullptr;
+        // The warehouse.
+        Warehouse *warehouse = nullptr;
         // The barrier.
         Barrier *barrier = nullptr;
         // The random number generator.

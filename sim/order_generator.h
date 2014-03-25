@@ -7,7 +7,7 @@
 #include <queue>
 
 #include "concurrent/barrier.h"
-#include "factory.h"
+#include "warehouse.h"
 #include "order.h"
 #include "rand/rand.h"
 #include "thread/thread.h"
@@ -26,8 +26,8 @@ class OrderGenerator : public Thread
         void set_barrier(Barrier *);
         // Set the random number generator.
         void set_rand(Rand);
-        // Set the factory.
-        void set_factory(Factory *);
+        // Set the warehouse.
+        void set_warehouse(Warehouse *);
         // Returns true if there is an order available.
         bool has_order();
         // Returns the next order or blocks if there are no orders.
@@ -53,8 +53,8 @@ class OrderGenerator : public Thread
         Barrier *barrier = nullptr;
         // The random number generator.
         Rand rand;
-        // The factory to choose bins from.
-        Factory *factory;
+        // The warehouse to choose bins from.
+        Warehouse *warehouse;
 };
 
 #endif

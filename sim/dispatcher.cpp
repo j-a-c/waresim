@@ -31,7 +31,7 @@ void Dispatcher::run()
         if (order_gen->has_order())
         {
             std::cout << "Dispatch found new order." << std::endl;
-            algo->assign_order(this->factory, order_gen->get_order());
+            algo->assign_order(this->warehouse, order_gen->get_order());
         }
         
         barrier->arrive();
@@ -39,11 +39,11 @@ void Dispatcher::run()
 }
 
 /**
- * Sets the factory used by the dispatcher.
+ * Sets the warehouse used by the dispatcher.
  */
-void Dispatcher::set_factory(Factory * f)
+void Dispatcher::set_warehouse(Warehouse * f)
 {
-    this->factory = f;
+    this->warehouse = f;
 }
 
 /**

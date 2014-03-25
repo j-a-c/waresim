@@ -15,13 +15,13 @@
  * Constructor.
  *
  * @param sim_length The length of the simulation in seconds.
- * @param factory_file The file containing the factory representation.
+ * @param warehouse_file The file containing the warehouse representation.
  */
-Simulation::Simulation(int sim_length, std::string factory_file) 
+Simulation::Simulation(int sim_length, std::string warehouse_file) 
 {
     this->sim_length = sim_length;
 
-    this->factory = Factory::parse_default_factory(factory_file);
+    this->warehouse = Warehouse::parse_default_warehouse(warehouse_file);
 }
 
 /**
@@ -82,27 +82,27 @@ void Simulation::start()
     order_gen = new OrderGenerator(start_time, sim_length);
     order_gen->set_barrier(barrier);
     order_gen->set_rand(Rand(std::rand()));
-    order_gen->set_factory(&factory);
+    order_gen->set_warehouse(&warehouse);
     // Initialize workers.
 
     // Initialize dispatcher.
     dispatcher = new Dispatcher(start_time, sim_length);
     dispatcher->set_barrier(barrier);
-    dispatcher->set_factory(&factory);
+    dispatcher->set_warehouse(&warehouse);
     dispatcher->set_order_generator(order_gen);
     dispatcher->set_algo(dispatch_algo);
 
     // Initialize the scheduler.
     scheduler = new Scheduler(start_time, sim_length);
     scheduler->set_barrier(barrier);
-    scheduler->set_factory(&factory);
+    scheduler->set_warehouse(&warehouse);
     scheduler->set_rand(Rand(std::rand()));
     scheduler->set_algo(routing_algo);
 
 
     // Initial the render view.
     view->set_sim_params(start_time, sim_length);
-    view->set_factory(&factory);
+    view->set_warehouse(&warehouse);
     view->setup();
 
     // Start the simulation.

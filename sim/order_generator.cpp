@@ -31,7 +31,7 @@ void OrderGenerator::run()
 
         if (d < 0.50)
         {
-            auto bins = factory->get_bins();
+            auto bins = warehouse->get_bins();
 
             int index = rand.rand() * bins.size();
 
@@ -106,7 +106,7 @@ void OrderGenerator::set_rand(Rand rand)
     this->rand = rand;
 }
 
-void OrderGenerator::set_factory(Factory *factory)
+void OrderGenerator::set_warehouse(Warehouse *warehouse)
 {
-    this->factory = factory;
+    this->warehouse = warehouse;
 }

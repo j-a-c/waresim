@@ -30,7 +30,7 @@ int Scheduler::rand_int(int i)
 
 /**
  * Computes the shortest path between the start and end positions using
- * Dijsktra's algorithm. Assumes all points are reachable within the factory.
+ * Dijsktra's algorithm. Assumes all points are reachable within the warehouse.
  * If two nodes have the same distance, we flip a coin to decide which one we
  * will choose as the parent.
  *
@@ -51,7 +51,7 @@ std::vector<int> Scheduler::shortest_path(int start, int end)
     int UNDEFINED = -1;
 
     // Create a copy of the layout to work with.
-    auto layout = factory->get_layout();
+    auto layout = warehouse->get_layout();
 
     // The vertices we have checked.
     std::vector<bool> checked(layout.size(), false);
@@ -63,12 +63,12 @@ std::vector<int> Scheduler::shortest_path(int start, int end)
     // Holds the previous nodes so we can calculate the path.
     std::vector<int> previous(layout.size(), UNDEFINED);
 
-    // Get the factory dimensions.
-    int width = factory->get_width();
-    int height = factory->get_height();
+    // Get the warehouse dimensions.
+    int width = warehouse->get_width();
+    int height = warehouse->get_height();
 
     // We will loop until we find the shortest path to 'end'.
-    // We are assuming all points are reachable in the factory with this while
+    // We are assuming all points are reachable in the warehouse with this while
     // loop condition.
     while(true)
     {
@@ -173,8 +173,8 @@ void Scheduler::run()
     // Continue simulation until sim_length seconds have elapsed.
     while (difftime(time(nullptr), start_time) < sim_length)
     {
-        // Get the factory workers.
-        std::vector<Worker>& workers = factory->get_workers();
+        // Get the warehouse workers.
+        std::vector<Worker>& workers = warehouse->get_workers();
 
         // Create a randomized scheduling order. This simulates a bunch of
         // multithreaded workers.
@@ -188,12 +188,12 @@ void Scheduler::run()
         // Randomly shuffle the order.
         std::shuffle(sched_order.begin(), sched_order.end(), rand.get_urng());
         
-        // Get the factory layout.
-        auto layout = factory->get_layout();
+        // Get the warehouse layout.
+        auto layout = warehouse->get_layout();
 
         // We now have a random order in which to process the workers. We
         // will process each worker once. Processing means moving (or deciding
-        // not to move) each worker one unit in the factory.
+        // not to move) each worker one unit in the warehouse.
         for (auto &index : sched_order)
         {
             Worker& worker = workers[index]; 
@@ -204,7 +204,7 @@ void Scheduler::run()
             if (!worker.is_routed())
             {
                 std::cout << "Worker " << worker.get_id() << " is NOT routed." << std::endl;
-                routing_algo->route_worker(factory, worker);
+                routing_algo->route_worker(warehouse, worker);
             }
             else
             {
@@ -254,8 +254,8 @@ void Scheduler::run()
              * Check for collisions.
              */
 
-            int height = factory->get_height();
-            int width = factory->get_width();
+            int height = warehouse->get_height();
+            int width = warehouse->get_width();
 
             // Marks whether we can move in this position, if the position
             // we want to move the worker in is already occupied AND if the
@@ -320,7 +320,7 @@ void Scheduler::run()
                 }
             }
 
-            // Factory position is already occupied.
+            // Warehouse position is already occupied.
             if (next_pos_taken)
             {
 
@@ -334,10 +334,10 @@ void Scheduler::run()
                     std::cout << "Worker # " << index << 
                         " will NOT back off." << std::endl; 
 
-                    factory->move_worker(curr_pos, curr_pos);
+                    warehouse->move_worker(curr_pos, curr_pos);
                     // We mark the spot the worker attempted to move as a
                     // contention spot.
-                    factory->mark_contention(next_pos);
+                    warehouse->mark_contention(next_pos);
                     continue;
                 }
 
@@ -353,8 +353,8 @@ void Scheduler::run()
                     // Update and set the path.
                     path.insert(path.begin(), curr_pos);
                     worker.set_path(path);
-                    // Update the factory layout.
-                    factory->move_worker(curr_pos, next_pos);
+                    // Update the warehouse layout.
+                    warehouse->move_worker(curr_pos, next_pos);
 
                     std::cout << "Moving worker # " << index << " to position: " 
                         << next_pos << std::endl;
@@ -367,8 +367,8 @@ void Scheduler::run()
                     // Update and set the path.
                     path.insert(path.begin(), curr_pos);
                     worker.set_path(path);
-                    // Update the factory layout.
-                    factory->move_worker(curr_pos, next_pos);
+                    // Update the warehouse layout.
+                    warehouse->move_worker(curr_pos, next_pos);
 
                     std::cout << "Moving worker # " << index << " to position: " 
                         << next_pos << std::endl;
@@ -381,8 +381,8 @@ void Scheduler::run()
                     // Update and set the path.
                     path.insert(path.begin(), curr_pos);
                     worker.set_path(path);
-                    // Update the factory layout.
-                    factory->move_worker(curr_pos, next_pos);
+                    // Update the warehouse layout.
+                    warehouse->move_worker(curr_pos, next_pos);
 
                     std::cout << "Moving worker # " << index << " to position: " 
                         << next_pos << std::endl;
@@ -395,8 +395,8 @@ void Scheduler::run()
                     // Update and set the path.
                     path.insert(path.begin(), curr_pos);
                     worker.set_path(path);
-                    // Update the factory layout.
-                    factory->move_worker(curr_pos, next_pos);
+                    // Update the warehouse layout.
+                    warehouse->move_worker(curr_pos, next_pos);
 
                     std::cout << "Moving worker # " << index << " to position: " 
                         << next_pos << std::endl;
@@ -406,19 +406,19 @@ void Scheduler::run()
                     // Deadlock found.
                     std::cout << "Deadlock found!" << std::endl;
                     // We will not move this turn.
-                    factory->move_worker(curr_pos, curr_pos);
-                    factory->mark_deadlock(curr_pos);
+                    warehouse->move_worker(curr_pos, curr_pos);
+                    warehouse->mark_deadlock(curr_pos);
                 }
             }
-            else // Factory position is not occupied.
+            else // Warehouse position is not occupied.
             { 
                 // Set the worker's current position.
                 worker.set_pos(next_pos);
                 // Update and set the path.
                 path.erase(path.begin());
                 worker.set_path(path);
-                // Update the factory layout.
-                factory->move_worker(curr_pos, next_pos);
+                // Update the warehouse layout.
+                warehouse->move_worker(curr_pos, next_pos);
 
                 std::cout << "Moving worker # " << index << " to position: " 
                     << next_pos << std::endl;
@@ -430,14 +430,14 @@ void Scheduler::run()
                 worker.set_routed(false);
 
                 // Update to 'drop off ready' if we reached a bin location.
-                if (factory->get_layout()[next_pos] == BIN_LOC)
+                if (warehouse->get_layout()[next_pos] == BIN_LOC)
                 {
                     worker.reached_order();
                     worker.set_drop_status(true);
                 }
                 // Update to 'not drop off ready' if we reached a drop off
                 // location.
-                if (factory->get_layout()[next_pos] == DROP_LOC)
+                if (warehouse->get_layout()[next_pos] == DROP_LOC)
                 {
                     worker.drop_off();
                     worker.set_drop_status(false);
@@ -446,21 +446,21 @@ void Scheduler::run()
 
         }// End worker for loop
 
-        // Tell that factory that we have finished processing all workers.
-        factory->update_iteration();
+        // Tell that warehouse that we have finished processing all workers.
+        warehouse->update_iteration();
 
         barrier->arrive();
     }// End while loop
 }
 
 /**
- * Assign the factory used in the simulation.
+ * Assign the warehouse used in the simulation.
  *
- * @param factory The factory to use.
+ * @param warehouse The warehouse to use.
  */
-void Scheduler::set_factory(Factory *factory)
+void Scheduler::set_warehouse(Warehouse *warehouse)
 {
-    this->factory = factory;
+    this->warehouse = warehouse;
 }
 
 
