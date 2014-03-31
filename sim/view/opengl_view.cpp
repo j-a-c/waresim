@@ -50,9 +50,9 @@ void OpenGLView::init()
     // Create a full-screen window.
     //if (glfwOpenWindow(desktop.Width, desktop.Height, 8, 8, 8, 8, 24, 8, GLFW_FULLSCREEN) != GL_TRUE)
 
-    // Create a window half of the screen size.
-    desktop.Width /= 2;
-    desktop.Height /= 2;
+    // Create a window 80% of the screen.
+    desktop.Width *= 0.8;
+    desktop.Height *= 0.8;
     screen_w = desktop.Width;
     screen_h = desktop.Height; 
 
@@ -426,30 +426,30 @@ void OpenGLView::render()
 
                 // Draw the total heat.
                 set_glColor_heat(ht_sum);
-                glVertex2f(paint_w*x_offset, paint_h*y_offset + stat_h);
-                glVertex2f(paint_w*x_offset, paint_h*y_offset+paint_h+stat_h);
-                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+stat_h);
-                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+stat_h);
-                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+stat_h);
-                glVertex2f(paint_w*x_offset, paint_h*y_offset+stat_h);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset + stat_h + STAT_SEP);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset+paint_h+stat_h + STAT_SEP);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+stat_h + STAT_SEP);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+stat_h + STAT_SEP);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+stat_h + STAT_SEP);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset+stat_h + STAT_SEP);
 
                 // Draw the contentions.
                 set_glColor_heat(cont_sum);
-                glVertex2f(paint_w*x_offset, paint_h*y_offset + 2*stat_h);
-                glVertex2f(paint_w*x_offset, paint_h*y_offset+paint_h+2*stat_h);
-                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+2*stat_h);
-                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+2*stat_h);
-                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+2*stat_h);
-                glVertex2f(paint_w*x_offset, paint_h*y_offset+2*stat_h);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset + 2*stat_h + 2*STAT_SEP);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset+paint_h+2*stat_h + 2*STAT_SEP);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+2*stat_h + 2*STAT_SEP);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+2*stat_h + 2*STAT_SEP);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+2*stat_h + 2*STAT_SEP);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset+2*stat_h + 2*STAT_SEP);
 
                 // Draw the deadlocks.
                 set_glColor_heat(dead_sum);
-                glVertex2f(paint_w*x_offset, paint_h*y_offset + 3*stat_h);
-                glVertex2f(paint_w*x_offset, paint_h*y_offset+paint_h+3*stat_h);
-                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+3*stat_h);
-                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+3*stat_h);
-                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+3*stat_h);
-                glVertex2f(paint_w*x_offset, paint_h*y_offset+3*stat_h);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset + 3*stat_h + 3*STAT_SEP);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset+paint_h+3*stat_h + 3*STAT_SEP);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+3*stat_h + 3*STAT_SEP);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+paint_h+3*stat_h + 3*STAT_SEP);
+                glVertex2f(paint_w*x_offset+paint_w, paint_h*y_offset+3*stat_h + 3*STAT_SEP);
+                glVertex2f(paint_w*x_offset, paint_h*y_offset+3*stat_h + 3*STAT_SEP);
                 
             } 
         }
@@ -590,21 +590,41 @@ void OpenGLView::setup()
     // Dedicate 1/4 of screen width to stats. 
     // Each stat will have an equal amount of height.
     int alloc_w = 0.25 * screen_w;
-    int alloc_h = screen_h / NUM_STATS;
+    int alloc_h = (screen_h - (STAT_SEP * (NUM_STATS-1))) / NUM_STATS;
     // We need to fit the warehouse image to the allocated space.
     double stat_r = alloc_w / alloc_h;
     double warehouse_r = 1.0 * warehouse_w / warehouse_h;
-    std::cout << "alloc: " << alloc_w << " " << alloc_h << std::endl;
     if (warehouse_r < stat_r)
     {
         stat_h = alloc_h;
         stat_w = std::round(stat_h * warehouse_r);
+
+        double scale = 1.0;
+        while (stat_w > alloc_w)
+        {
+            scale -= 0.05;
+            stat_h = scale * alloc_h;
+            stat_w = scale * std::round(stat_h * warehouse_r);
+        }
     }
     else
     {
         stat_w = alloc_w;
         stat_h = std::round(stat_w / warehouse_r);
+
+        // We need to re-scale if stat_h is bigger than the dimension allocated.
+        double scale = 1.0;
+        while (stat_h > alloc_h)
+        {
+            scale -= 0.05;
+            stat_w = scale * alloc_w;
+            stat_h = scale * std::round(stat_w / warehouse_r);
+
+        }
     }
+
+    std::cout << "tot: " << screen_w << " " << screen_h << std::endl;
+    std::cout << "alloc: " << alloc_w << " " << alloc_h << std::endl;
     std::cout << "fact dim: " << warehouse_w << " " << warehouse_h << std::endl; 
     std::cout << "stat dim: " << stat_w <<  " " << stat_h << std::endl;
     

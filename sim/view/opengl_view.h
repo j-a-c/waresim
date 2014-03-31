@@ -53,6 +53,8 @@ class OpenGLView : public View
         int stat_w, stat_h;
         // The number of statistics we will render.
         double NUM_STATS = 4.0;
+        // The separator (in pixels) between stats.
+        double STAT_SEP = 5.0;
 
         // The warehouse representation.
         Warehouse *warehouse;
