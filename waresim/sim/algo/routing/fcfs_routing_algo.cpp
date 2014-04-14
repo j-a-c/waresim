@@ -3,6 +3,12 @@
 // TODO Delete later, used for debug.
 #include <iostream>
 
+/**
+ * Routes the specified worker.
+ *
+ * @param warehouse The warehouse for the simulation.
+ * @param worker A reference to the worker to route.
+ */
 void FCFSRoutingAlgo::route_worker(Warehouse *warehouse, Worker& worker)
 {
 

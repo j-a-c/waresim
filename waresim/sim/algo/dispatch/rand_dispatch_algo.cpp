@@ -29,10 +29,18 @@ RandDispatchAlgo::~RandDispatchAlgo()
 
 }
 
+/**
+ * Assigns the order to one of the workers in the warehouse. This
+ * implementation selects a worker at random and assigns the order to it.
+ *
+ * @param warehouse The warehouse for the simulation.
+ * @param order The order to assign.
+ */
 void RandDispatchAlgo::assign_order(Warehouse *warehouse, Order order)
 {
     std::vector<Worker>& workers = warehouse->get_workers();
 
+    // Select a random worker index.
     int index = workers.size() * rand.rand();
 
     std::cout << "Assigned to worker # " << workers[index].get_id() << std::endl;

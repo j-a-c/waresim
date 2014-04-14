@@ -579,13 +579,14 @@ void OpenGLView::update(double dt)
 
 /**
  * Set up some things beforehand.
- * Initialize all the VBOs.
+ * Initialize all the VBOs for the workers and warehouse.
  * Calculate the render size for on-screen statistics.
  */
 void OpenGLView::setup()
 {
     int warehouse_w = warehouse->get_width();
     int warehouse_h = warehouse->get_height();
+
     // Allocate space to each statistic.
     // Dedicate 1/4 of screen width to stats. 
     // Each stat will have an equal amount of height.
@@ -594,12 +595,16 @@ void OpenGLView::setup()
     // We need to fit the warehouse image to the allocated space.
     double stat_r = alloc_w / alloc_h;
     double warehouse_r = 1.0 * warehouse_w / warehouse_h;
+    
+    // These two cases determine which axis we should scale the warehouse by.
     if (warehouse_r < stat_r)
     {
         stat_h = alloc_h;
         stat_w = std::round(stat_h * warehouse_r);
 
         double scale = 1.0;
+        // We need to rescale if the warehouse statistic allocation is larger
+        // than the allocated space.
         while (stat_w > alloc_w)
         {
             scale -= 0.05;
@@ -614,6 +619,8 @@ void OpenGLView::setup()
 
         // We need to re-scale if stat_h is bigger than the dimension allocated.
         double scale = 1.0;
+        // We need to rescale if the warehouse statistic allocation is larger
+        // than the allocated space.
         while (stat_h > alloc_h)
         {
             scale -= 0.05;
@@ -622,16 +629,7 @@ void OpenGLView::setup()
 
         }
     }
-
-    std::cout << "tot: " << screen_w << " " << screen_h << std::endl;
-    std::cout << "alloc: " << alloc_w << " " << alloc_h << std::endl;
-    std::cout << "fact dim: " << warehouse_w << " " << warehouse_h << std::endl; 
-    std::cout << "stat dim: " << stat_w <<  " " << stat_h << std::endl;
-    
-    // Determine the granularity for the statistics renderings.
-    // TODO
-    
-
+        
     // Create VBOs. These need to be deleted when the program exits.
     // We put vertex, normals, and colors in the same object.
     // Calling glBufferDataARB with NULL pointer reserves only memory space.
@@ -933,7 +931,6 @@ void OpenGLView::run()
             shut_down();
             break;
         }
-
 
         render(); 
     }

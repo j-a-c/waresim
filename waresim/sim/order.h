@@ -17,6 +17,7 @@ class Order
         int get_pos();
 
     private:
+        // We will use this to create unique IDs for each order.
         static int curr_id;
         // ID of this order.
         int my_id;

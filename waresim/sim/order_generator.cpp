@@ -4,7 +4,7 @@
 #include <iostream>
 
 /**
- * Constructor.
+ * Constructor. Sets the start time and length for the simulation.
  *
  * @param start_time The simulation's start time.
  * @param length The length of the simulation in seconds.
@@ -17,6 +17,8 @@ OrderGenerator::OrderGenerator(time_t start_time, int sim_length)
 
 /**
  * Encapsulates the order generation so it can be run in a separate thread.
+ * The default order generator has a 50% chance of generating a new order each
+ * time step.
  */
 void OrderGenerator::run()
 {
@@ -29,14 +31,18 @@ void OrderGenerator::run()
         double d = rand.rand();
         std::cout << "Order rand: " << d << std::endl;
 
+        // Each time step we have a 50% chance of generating a new order.
         if (d < 0.50)
         {
+            // Get the location of all the bins in the warehouse.
             auto bins = warehouse->get_bins();
 
+            // Select a random bin index.
             int index = rand.rand() * bins.size();
 
             std::cout << "Creating new order: " << bins[index] << std::endl;
 
+            // Add a new order with the selected bin's location.
             add_order(Order(bins[index]));
         }
 
@@ -47,11 +53,14 @@ void OrderGenerator::run()
 
 /**
  * Returns true if there is an order available.
+ *
+ * @return true if there is an order available.
  */
 bool OrderGenerator::has_order()
 {
     orders_mutex.lock();
     
+    // Get the return value.
     bool ret = !orders.empty();
 
     orders_mutex.unlock();
@@ -92,6 +101,8 @@ void OrderGenerator::add_order(const Order order)
 
 /**
  * Set the barrier to synchronize on.
+ *
+ * @param b The barrier to synchronize on.
  */
 void OrderGenerator::set_barrier(Barrier *b)
 {
@@ -100,12 +111,19 @@ void OrderGenerator::set_barrier(Barrier *b)
 
 /**
  * Set the random number generator.
+ *
+ * @param rand The random number generator.
  */
 void OrderGenerator::set_rand(Rand rand)
 {
     this->rand = rand;
 }
 
+/**
+ * Set the warehouse used by simulation.
+ *
+ * @param warehouse The warehouse used by simulation.
+ */
 void OrderGenerator::set_warehouse(Warehouse *warehouse)
 {
     this->warehouse = warehouse;

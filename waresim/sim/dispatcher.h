@@ -39,7 +39,7 @@ class Dispatcher : public Thread
         Warehouse *warehouse = nullptr;
         // The order generator.
         OrderGenerator *order_gen = nullptr;
-        // The barrier.
+        // The barrier to synchronize on.
         Barrier *barrier = nullptr;
         // Dispatching algorithm.
         DispatchAlgo *algo = nullptr;

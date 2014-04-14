@@ -8,7 +8,7 @@
 #include <unistd.h>
 
 /**
- * Implementation for Simulation.
+ * Implementation for the simulation.
  */
 
 /**
@@ -26,6 +26,8 @@ Simulation::Simulation(int sim_length, std::string warehouse_file)
 
 /**
  * Sets the dispatch algorithm to be used in this simulation.
+ *
+ * @param dispatch_algo The dispatch algorithm to be used in this simulation.
  */
 void Simulation::set_dispatch_algo(DispatchAlgo* dispatch_algo)
 {
@@ -34,6 +36,8 @@ void Simulation::set_dispatch_algo(DispatchAlgo* dispatch_algo)
 
 /**
  * Sets the routing algorithm to be used in the simulation.
+ *
+ * @routing_algo The routing algorithm to be used in this simulation.
  */
 void Simulation::set_routing_algo(RoutingAlgo *routing_algo)
 {
@@ -50,9 +54,9 @@ void Simulation::set_view(View * view)
  */
 Simulation::~Simulation()
 {
+    // Delete memory this object allocated.
     delete barrier;
     delete order_gen;
-    delete dispatcher;
     delete scheduler;
 }
 
@@ -62,7 +66,7 @@ Simulation::~Simulation()
  */
 int Simulation::num_threads()
 {
-    // TODO
+    // TODO Make this neater.
     // Order generator, dispatcher, scheduler.
     return 1 + 1 + 1;
 }
@@ -73,6 +77,9 @@ int Simulation::num_threads()
 void Simulation::start()
 {
 
+    // This is the barrier the different components in the simulation will
+    // synchronize upon. We use a barrier to simulate 'time steps' within the
+    // warehouse.
     barrier = new Barrier(num_threads());
 
     // Set the start time for this simulation.
@@ -83,7 +90,6 @@ void Simulation::start()
     order_gen->set_barrier(barrier);
     order_gen->set_rand(Rand(std::rand()));
     order_gen->set_warehouse(&warehouse);
-    // Initialize workers.
 
     // Initialize dispatcher.
     dispatcher = new Dispatcher(start_time, sim_length);
@@ -98,7 +104,6 @@ void Simulation::start()
     scheduler->set_warehouse(&warehouse);
     scheduler->set_rand(Rand(std::rand()));
     scheduler->set_algo(routing_algo);
-
 
     // Initial the render view.
     view->set_sim_params(start_time, sim_length);

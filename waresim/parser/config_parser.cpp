@@ -25,17 +25,23 @@ ConfigParser::~ConfigParser()
  */
 void ConfigParser::parse()
 {
+    // Read teh lines in the file.
     auto lines = read_file(config);
+    // Parse each line.
     for (auto& line : lines)
     {
+        // Split the line by the delimiter.
         auto parts = split_string(line, ':');
 
+        // If there are more parts that we expected, we will skip this continue
+        // and continue.
         if (parts.size() != 2)
         {
             std::cout << "Invalid format for: " << line << std::endl;
             continue;
         }
 
+        // Rename the parts.
         std::string key = parts[0];
         std::string value = parts[1];
 
@@ -53,23 +59,32 @@ void ConfigParser::parse()
             // extra space.
             seed = std::stol(value);
         }
-        else
+        else // Print a simple error if we do not recognize this parameter.
         {
             std::cout << "Unrecognized var: " << parts[0] << std::endl;
         }
     }
 }
 
+/**
+ * Returns the simulation length parsed from the configuration file.
+ */
 int ConfigParser::get_sim_length()
 {
     return this->sim_length;
 }
 
+/**
+ * Returns the warehouse file location parsed from the configuration file.
+ */
 std::string ConfigParser::get_warehouse_file()
 {
     return this->warehouse;
 }
 
+/**
+ * Returns the seed parsed from the configuration file.
+ */
 unsigned int ConfigParser::get_seed()
 {
     return this->seed;

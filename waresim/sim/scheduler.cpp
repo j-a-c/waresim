@@ -22,6 +22,8 @@ Scheduler::Scheduler(time_t start_time, int sim_length)
 
 /**
  * Returns a random integer in the rand [0,i).
+ *
+ * @param i The upper bound for the randomly generated integer.
  */
 int Scheduler::rand_int(int i)
 {
@@ -157,6 +159,7 @@ std::vector<int> Scheduler::shortest_path(int start, int end)
         curr_index = previous[curr_index];
     }
 
+    // Debug statement.
     std::cout << "Path found: (" << start << "," << end << ")" << std::endl;
     for (auto &step : path)
         std::cout << "\t" << step << std::endl;
@@ -296,6 +299,8 @@ void Scheduler::run()
             {
                 int other_pos = (*it).get_pos();
 
+                // This set of statements will determine which of neighboring
+                // positions currently have a worker on them.
                 if (top_valid && (other_pos == curr_pos+width))
                 {
                     top_valid = false;
@@ -313,6 +318,8 @@ void Scheduler::run()
                     right_valid = false;
                 }
 
+                // This statement will check if the position we intend to move
+                // to next already has a worker on it.
                 if (next_pos == other_pos)
                 {
                     next_pos_taken = true;
@@ -343,6 +350,7 @@ void Scheduler::run()
 
                 std::cout << "Worker # " << index << " WILL back off." 
                     << std::endl; 
+
                 // S tries left, right, back, up, in that order. Move and
                 // insert old position to front of the current path.
                 if (left_valid)
@@ -466,6 +474,8 @@ void Scheduler::set_warehouse(Warehouse *warehouse)
 
 /**
  * Set the barrier to synchronize on.
+ *
+ * @param barrier The barrier to synchronize on.
  */
 void Scheduler::set_barrier(Barrier *barrier)
 {
@@ -474,6 +484,8 @@ void Scheduler::set_barrier(Barrier *barrier)
 
 /**
  * Set the random number generator.
+ *
+ * @param rand The random number generator.
  */
 void Scheduler::set_rand(Rand rand)
 {
@@ -482,6 +494,8 @@ void Scheduler::set_rand(Rand rand)
 
 /**
  * Set the routing algorithm.
+ *
+ * @param routing_algo The routing algorithm to use.
  */
 void Scheduler::set_algo(RoutingAlgo *routing_algo)
 {

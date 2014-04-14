@@ -12,22 +12,34 @@
 class OpenGLBox
 {
     public:
+        // Returns the top vertices for the box.
         static std::vector<GLfloat> get_top_vertices(float, float, float, float, float, float);
+        // Returns the top normal for the box.
         static std::vector<GLfloat> get_top_normals();
 
+        // Returns the bottom vertices for the box.
         static std::vector<GLfloat> get_bot_vertices(float, float, float, float, float, float);
+        // Returns the bottom normal for the box.
         static std::vector<GLfloat> get_bot_normals();
 
+        // Returns the front vertices for the box.
         static std::vector<GLfloat> get_front_vertices(float, float, float, float, float, float);
+        // Returns the from normal for the box.
         static std::vector<GLfloat> get_front_normals();
 
+        // Returns the back vertices for the box.
         static std::vector<GLfloat> get_back_vertices(float, float, float, float, float, float);
+        // Returns the back normal for the box.
         static std::vector<GLfloat> get_back_normals();
 
+        // Returns the left vertices for the box.
         static std::vector<GLfloat> get_left_vertices(float, float, float, float, float, float);
+        // Returns the left normals for the box.
         static std::vector<GLfloat> get_left_normals();
 
+        // Returns the right vertices for the box.
         static std::vector<GLfloat> get_right_vertices(float, float, float, float, float, float);
+        // Returns the right normals for the box.
         static std::vector<GLfloat> get_right_normals();
 
     private:

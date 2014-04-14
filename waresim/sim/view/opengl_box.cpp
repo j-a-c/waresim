@@ -1,5 +1,9 @@
 #include "opengl_box.h"
 
+/*
+ * What follows are the fix faces defined for a cube.
+ */
+
 std::vector<GLfloat> OpenGLBox::front_vertices{ 
      0.5, 0.5, 0.5, -0.5, 0.5, 0.5,  -0.5,-0.5, 0.5,
     -0.5,-0.5, 0.5,  0.5,-0.5, 0.5,   0.5, 0.5, 0.5
@@ -21,8 +25,8 @@ std::vector<GLfloat> OpenGLBox::left_vertices{
 };
 
 std::vector<GLfloat> OpenGLBox::bot_vertices{ 
-   -0.5,-0.5,-0.5,   0.5,-0.5,-0.5,   0.5,-0.5, 0.5,      // v7-v4-v3 (bottom)
-    0.5,-0.5, 0.5,  -0.5,-0.5, 0.5,  -0.5,-0.5,-0.5,      // v3-v2-v7
+   -0.5,-0.5,-0.5,   0.5,-0.5,-0.5,   0.5,-0.5, 0.5, 
+    0.5,-0.5, 0.5,  -0.5,-0.5, 0.5,  -0.5,-0.5,-0.5,
 };
 
 std::vector<GLfloat> OpenGLBox::back_vertices{ 
@@ -30,7 +34,10 @@ std::vector<GLfloat> OpenGLBox::back_vertices{
    -0.5, 0.5,-0.5,   0.5, 0.5,-0.5,   0.5,-0.5,-0.5
 };
 
-// Normal array for a cube.
+/*
+ * What follows are six normal vectors defined for the various faces of a cube.
+ */
+
 std::vector<GLfloat> OpenGLBox::front_normals{ 
     0, 0, 1,   0, 0, 1,   0, 0, 1,
     0, 0, 1,   0, 0, 1,   0, 0, 1

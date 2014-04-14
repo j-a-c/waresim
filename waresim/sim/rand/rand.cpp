@@ -43,6 +43,8 @@ void Rand::seed(unsigned int seed)
 
 /**
  * Returns the next double in the sequence.
+ *
+ * @return The next double in the sequence.
  */
 double Rand::rand()
 {
@@ -51,6 +53,8 @@ double Rand::rand()
 
 /**
  * Returns the underlying URNG.
+ *
+ * @return The underlying URNG.
  */
 std::mt19937 Rand::get_urng()
 {

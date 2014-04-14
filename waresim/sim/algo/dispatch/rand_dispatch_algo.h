@@ -15,6 +15,7 @@ class RandDispatchAlgo : public DispatchAlgo
         RandDispatchAlgo(Rand);
         ~RandDispatchAlgo();
 
+        // Assignes an order to one of the workers in the warehouse.
         void assign_order(Warehouse *, Order) override;
     private:
         Rand rand;

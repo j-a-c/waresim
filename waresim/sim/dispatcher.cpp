@@ -40,14 +40,18 @@ void Dispatcher::run()
 
 /**
  * Sets the warehouse used by the dispatcher.
+ *
+ * @param w The warehouse to be used by the dispatcher.
  */
-void Dispatcher::set_warehouse(Warehouse * f)
+void Dispatcher::set_warehouse(Warehouse * w)
 {
-    this->warehouse = f;
+    this->warehouse = w;
 }
 
 /**
  * Sets the order generator used by the dispatcher.
+ *
+ * @param o The order generator to be used by the dispatcher.
  */
 void Dispatcher::set_order_generator(OrderGenerator *o)
 {
@@ -56,12 +60,19 @@ void Dispatcher::set_order_generator(OrderGenerator *o)
 
 /**
  * Sets the barrier to synchronize upon.
+ *
+ * @param b The barrier to synchronize on.
  */
 void Dispatcher::set_barrier(Barrier * b)
 {
     this->barrier = b;
 }
 
+/**
+ * Sets the dispatch algorithm to be used by the dispatcher.
+ *
+ * @param a The dispatch algorithm to be used by the dispatcher.
+ */
 void Dispatcher::set_algo(DispatchAlgo* a)
 {
     this->algo = a;

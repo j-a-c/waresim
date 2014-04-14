@@ -10,6 +10,7 @@
 class FCFSRoutingAlgo : public RoutingAlgo
 {
     public:
+        // Route the worker.
         void route_worker(Warehouse *, Worker&) override;
     private:
 };

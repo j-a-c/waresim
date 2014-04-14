@@ -87,6 +87,9 @@ Warehouse Warehouse::parse_default_warehouse(std::string warehouse_file)
 
             int pos = coord_to_pos(x, y, warehouse.width);
 
+            // Depending on which marker we encounter, we will do a different a
+            // initialization step for the warehouse. Markers are defined in
+            // constants.h
             switch (marker)
             {
                 case EMPTY_MARKER:
@@ -94,22 +97,28 @@ Warehouse Warehouse::parse_default_warehouse(std::string warehouse_file)
                     break;
                 case BIN_MARKER:
                     layout[pos] = BIN_LOC;
+                    // Push back a new bin location.
                     warehouse.bins.push_back(pos);
                     break;
                 case DROP_MARKER:
                     layout[pos] = DROP_LOC;
+                    // Push back a new drop location.
                     warehouse.drops.push_back(pos);
                     break;
                 case WORKER_MARKER:
                     layout[pos] = WORKER_LOC;
+                    // Push back a new worker at this location.
                     warehouse.worker_locs.push_back(pos);
                     warehouse.workers.push_back(Worker(pos));
                     break;
                 case WALL_MARKER:
                     layout[pos] = WALL_LOC;
+                    // Push back a new wall at this location.
                     warehouse.walls.push_back(pos);
                     break;
                 default:
+                    // If we find an invalid marker, we will ignore it and continue.
+                    // We will print a small message though.
                     std::string msg{"Invalid marker at: ("};
                     msg += x;
                     msg += ",";
@@ -220,6 +229,8 @@ void Warehouse::mark_deadlock(int pos)
 
 /**
  * Returns the workers in this warehouse.
+ *
+ * @return A reference to the workers in the warehouse.
  */
 std::vector<Worker>& Warehouse::get_workers()
 {
@@ -228,6 +239,8 @@ std::vector<Worker>& Warehouse::get_workers()
 
 /**
  * Returns the bins locations in this warehouse.
+ *
+ * @return The bin locations in the warehouse.
  */
 std::vector<int> Warehouse::get_bins()
 {
@@ -236,6 +249,8 @@ std::vector<int> Warehouse::get_bins()
 
 /**
  * Returns the layout for the warehouse.
+ *
+ * @return The layout of the warehouse.
  */
 std::vector<int> Warehouse::get_layout()
 {
@@ -244,6 +259,8 @@ std::vector<int> Warehouse::get_layout()
 
 /**
  * Returns the height of the warehouse.
+ *
+ * @return The height of the warehouse.
  */
 int Warehouse::get_height()
 {
@@ -252,6 +269,8 @@ int Warehouse::get_height()
 
 /**
  * Returns the width of the warehouse.
+ *
+ * @return The width of the warehouse.
  */
 int Warehouse::get_width()
 {
@@ -260,6 +279,8 @@ int Warehouse::get_width()
 
 /**
  * Returns the worker locations.
+ *
+ * @return The locations of the workers in the warehouse.
  */
 std::vector<int> Warehouse::get_worker_locs()
 {
@@ -268,12 +289,19 @@ std::vector<int> Warehouse::get_worker_locs()
 
 /**
  * Return the wall locations.
+ *
+ * @return The locations of the walls in the warehouse.
  */
 std::vector<int> Warehouse::get_walls()
 {
     return walls;
 }
 
+/**
+ * Returns the drop locations in the warehouse.
+ *
+ * @return The drop locations in the warehouse.
+ */
 std::vector<int> Warehouse::get_drops()
 {
     return drops;
@@ -281,6 +309,8 @@ std::vector<int> Warehouse::get_drops()
 
 /**
  * Get the total heat map.
+ *
+ * @return The total heat map.
  */
 std::vector<int> Warehouse::get_heat_total()
 {
@@ -289,6 +319,8 @@ std::vector<int> Warehouse::get_heat_total()
 
 /**
  * Get the decaying heat map.
+ *
+ * @param The heat window.
  */
 std::vector<double> Warehouse::get_heat_window()
 {
@@ -297,6 +329,8 @@ std::vector<double> Warehouse::get_heat_window()
 
 /**
  * Get the deadlock spots.
+ *
+ * @param The deadlock spots.
  */
 std::unordered_map<int,int> Warehouse::get_deadlock_spots()
 {
@@ -305,6 +339,8 @@ std::unordered_map<int,int> Warehouse::get_deadlock_spots()
 
 /**
  * Get the contention spots.
+ *
+ * @return The contention spots.
  */
 std::unordered_map<int,int> Warehouse::get_contention_spots()
 {

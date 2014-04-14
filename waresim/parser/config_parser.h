@@ -7,7 +7,6 @@
 
 /**
  * A simple parser to parse the configuration file.
-#include <iostream>
  */
 class ConfigParser : public Parser
 {

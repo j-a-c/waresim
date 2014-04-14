@@ -61,7 +61,9 @@ class Worker
 
         // The worker's ID.
         int my_id;
-        // The worker's initial position within the factory.
+        // The worker's initial position within the factory. It is assumed that
+        // the inital position for the worker is a holding bay that the worker
+        // can always return to if it has nothing to do.
         int initial_pos;
         // The worker's position within the factory.
         int pos;

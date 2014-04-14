@@ -15,9 +15,13 @@
  * @author Joshua A. Campbell
  *
  * Driver for Waresim's simulation.
+ * This is where execution will start.
+ * There should be one argument that contains the location of the config file
+ * to parse.
  */
 int main(int argc, char **argv)
 {
+    // Simple argument check.
     if (argc < 2)
     {
         std::cout << "Usage: ./waresim config" << std::endl;
@@ -42,20 +46,26 @@ int main(int argc, char **argv)
     // view might set the seed for itself.
     std::srand(seed);
 
+    /*
+     * If you are setting custom dispatch and routing algorithms, edit below.
+     */
+
     // TODO Make a parameter.
     DispatchAlgo *dispatch_algo = new RandDispatchAlgo(Rand(std::rand()));
     // TODO Make a parameter.
     RoutingAlgo *routing_algo = new FCFSRoutingAlgo();
 
-
+    // Set up the simulation.
     Simulation sim(sim_length, warehouse);
     sim.set_dispatch_algo(dispatch_algo);
     sim.set_routing_algo(routing_algo);
     sim.set_view(view);
 
+    // Start the simulation and wait for it to finish.
     sim.start();
     sim.join();
 
+    // Delete allocated memory.
     delete dispatch_algo;
     delete routing_algo;
     delete view;

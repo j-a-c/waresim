@@ -1,6 +1,10 @@
 #ifndef SIM_CONSTANTS_H
 #define SIM_CONSTANTS_H
 
+/*
+ * This file contains some generic constants.
+ */
+
 // Markers used in the Warehouse layout vector.
 const int EMPTY_LOC         = 0;
 const int BIN_LOC           = -1;
