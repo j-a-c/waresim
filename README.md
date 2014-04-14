@@ -6,13 +6,12 @@ A warehouse simulator.
 
 Build: make
 
-Run: ./waresim
+Run: ./waresim.out CONFIG
 
-A sample factory layout file can be found in factory.txt.
+Two sample config files and their corresponding warehouse layout files are included. warehouse.txt and config.txt correspond to a simple 5x5 warehouse. big__config and big_warehouse.txt correspond to a 92x101 warehouse.
 
 'B' represents a bin, '.' represents an empty location, 'W' represents a worker pod, 'D' represents a drop-off location, and 'X' represents a wall.
 
-There is no error checking to ensure that the factory has correct dimensions.
 
 Dependencies
 -------
