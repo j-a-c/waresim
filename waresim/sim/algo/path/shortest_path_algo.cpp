@@ -28,6 +28,7 @@ ShortestPathAlgo::~ShortestPathAlgo()
  *
  * TODO Implement using a faster data structure (currently uses a plain vector).
  *
+ * @param warehouse The warehouse to use.
  * @param start The starting position.
  * @param end The ending position.
  */
