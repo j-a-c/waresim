@@ -3,3 +3,4 @@ Warehouse:warehouse.txt
 Seed:1000
 Log:logs
 View:OpenGL
+Wait:2000

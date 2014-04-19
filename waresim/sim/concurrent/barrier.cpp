@@ -10,10 +10,14 @@
 
 /**
  * Constructor.
+ *
+ * @param total The total number of threads using this barrier.
+ * @param time The wait time before starting the next iteration.
  */
-Barrier::Barrier(int total)
+Barrier::Barrier(int total, int time)
 {
     this->total = total;
+    this->wait_time = time;
 }
 
 /**
@@ -42,7 +46,7 @@ void Barrier::arrive()
         // TODO Delete. Creates time between steps. This is not necessary for
         // the correctness of the algorithm. It is simply so the human eye can
         // perceive changes on the view.
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(wait_time));
 
         // Reset the number of arrived threads.
         arrived = 0;

@@ -67,6 +67,10 @@ void ConfigParser::parse()
         {
             view = value;
         }
+        else if (key == "Wait")
+        {
+            wait_time = std::stoi(value);
+        }
         else // Print a simple error if we do not recognize this parameter.
         {
             std::cout << "Unrecognized var: " << parts[0] << std::endl;
@@ -112,4 +116,9 @@ std::string ConfigParser::get_log_dir()
 std::string ConfigParser::get_view()
 {
     return view;
+}
+
+int ConfigParser::get_wait_time()
+{
+    return wait_time;
 }

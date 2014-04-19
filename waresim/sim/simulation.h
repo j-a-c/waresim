@@ -38,6 +38,8 @@ class Simulation
         void set_view(View *);
         // Set the log file directory.
         void set_log_dir(std::string dir);
+        // Set the wait time between steps.
+        void set_wait_time(int);
 
     private:
         // Returns the number of threads that need to by synchronized.
@@ -67,6 +69,8 @@ class Simulation
         View *view = nullptr;
         // The log file directory.
         std::string log_dir;
+        // The wait time between steps.
+        int wait_time = 1000;
 };
 
 #endif

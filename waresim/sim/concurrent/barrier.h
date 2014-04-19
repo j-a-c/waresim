@@ -5,18 +5,21 @@
 #include <mutex>
 
 /**
- * A cyclic barrier.
+ * A cyclic barrier with the option to wait before starting the next iteration.
  */
 class Barrier
 {
     public:
-        Barrier(int);
+        Barrier(int, int);
         ~Barrier();
 
         void arrive();
     private:
+        // The wait time (in milliseconds) before starting the next iteration.
+        int wait_time;
         // Used when entering the barrier.
         int total;
+        // How many threads have arrived at the barrier.
         int arrived = 0;
         // Used to prevent thread from leaving the barrier.
         int release = 0;

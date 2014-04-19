@@ -80,7 +80,7 @@ void Simulation::start()
     // This is the barrier the different components in the simulation will
     // synchronize upon. We use a barrier to simulate 'time steps' within the
     // warehouse.
-    barrier = new Barrier(num_threads());
+    barrier = new Barrier(num_threads(), wait_time);
 
     // Set the start time for this simulation.
     start_time = time(nullptr);
@@ -129,6 +129,16 @@ void Simulation::set_log_dir(std::string dir)
 {
     this->log_dir = dir;
     log_dir.append("/");
+}
+
+/**
+ * Sets the wait time.
+ *
+ * @param time The wait time, in milliseconds.
+ */
+void Simulation::set_wait_time(int time)
+{
+    this->wait_time = time;
 }
 
 /**

@@ -39,6 +39,7 @@ int main(int argc, char **argv)
     unsigned int seed = parser.get_seed();
     std::string log_dir = parser.get_log_dir();
     std::string view_param = parser.get_view();
+    int wait_time = parser.get_wait_time();
     
     // Set up the view.
     View *view;
@@ -67,6 +68,7 @@ int main(int argc, char **argv)
     sim.set_routing_algo(routing_algo);
     sim.set_view(view);
     sim.set_log_dir(log_dir);
+    sim.set_wait_time(wait_time);
 
     // Start the simulation and wait for it to finish.
     sim.start();
