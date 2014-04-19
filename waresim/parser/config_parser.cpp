@@ -63,6 +63,10 @@ void ConfigParser::parse()
         {
             log_dir = value;
         }
+        else if (key == "View")
+        {
+            view = value;
+        }
         else // Print a simple error if we do not recognize this parameter.
         {
             std::cout << "Unrecognized var: " << parts[0] << std::endl;
@@ -100,4 +104,12 @@ unsigned int ConfigParser::get_seed()
 std::string ConfigParser::get_log_dir()
 {
     return log_dir;
+}
+
+/**
+ * Returns the view to use.
+ */
+std::string ConfigParser::get_view()
+{
+    return view;
 }

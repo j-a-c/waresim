@@ -25,6 +25,8 @@ class ConfigParser : public Parser
         unsigned int get_seed();
         // Returns the log directory.
         std::string get_log_dir();
+        // Returns the view to use.
+        std::string get_view();
     private:
         // The configuration file to parse.
         std::string config{"config"};
@@ -36,6 +38,8 @@ class ConfigParser : public Parser
         std::string warehouse{"warehouse"};
         // The directory to contain the log files.
         std::string log_dir;
+        // The view to use. The default is no view.
+        std::string view = "None";
 };
 
 #endif

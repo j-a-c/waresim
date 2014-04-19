@@ -8,6 +8,7 @@
 #include "sim/algo/routing/routing_algo.h"
 #include "sim/algo/routing/fcfs_routing_algo.h"
 #include "sim/simulation.h"
+#include "sim/view/empty_view.h"
 #include "sim/view/opengl_view.h"
 #include "sim/view/view.h"
 
@@ -37,9 +38,14 @@ int main(int argc, char **argv)
     std::string warehouse = parser.get_warehouse_file();
     unsigned int seed = parser.get_seed();
     std::string log_dir = parser.get_log_dir();
+    std::string view_param = parser.get_view();
     
-    // TODO Make a parameter.
-    View *view = new OpenGLView();
+    // Set up the view.
+    View *view;
+    if (view_param == "OpenGL")
+        view = new OpenGLView();
+    else
+        view = new EmptyView();
 
     // Set random seed. All other random generators should be seeded in a
     // deterministic order using std::rand(). We reset the seed because the

@@ -27,7 +27,7 @@ class OpenGLView : public View
         // Override from View.
         void set_warehouse(Warehouse *) override;
         // Override from View.
-        void set_sim_params(time_t, int);
+        void set_sim_params(time_t, int) override;
     private:
         // Override from Thread.
         //void run() override;
