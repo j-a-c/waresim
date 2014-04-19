@@ -59,6 +59,10 @@ void ConfigParser::parse()
             // extra space.
             seed = std::stol(value);
         }
+        else if (key == "Log")
+        {
+            log_dir = value;
+        }
         else // Print a simple error if we do not recognize this parameter.
         {
             std::cout << "Unrecognized var: " << parts[0] << std::endl;
@@ -88,4 +92,12 @@ std::string ConfigParser::get_warehouse_file()
 unsigned int ConfigParser::get_seed()
 {
     return this->seed;
+}
+
+/**
+ * Returns the log directory.
+ */
+std::string ConfigParser::get_log_dir()
+{
+    return log_dir;
 }

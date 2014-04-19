@@ -36,7 +36,7 @@ int main(int argc, char **argv)
     int sim_length = parser.get_sim_length();
     std::string warehouse = parser.get_warehouse_file();
     unsigned int seed = parser.get_seed();
-    // wait time in between steps (in msecs)
+    std::string log_dir = parser.get_log_dir();
     
     // TODO Make a parameter.
     View *view = new OpenGLView();
@@ -60,6 +60,7 @@ int main(int argc, char **argv)
     sim.set_dispatch_algo(dispatch_algo);
     sim.set_routing_algo(routing_algo);
     sim.set_view(view);
+    sim.set_log_dir(log_dir);
 
     // Start the simulation and wait for it to finish.
     sim.start();

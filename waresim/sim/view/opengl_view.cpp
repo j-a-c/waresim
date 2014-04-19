@@ -87,7 +87,7 @@ void OpenGLView::enable()
 	glEnable(GL_COLOR_MATERIAL);
     
     // White diffuse light.
-    GLfloat light_diffuse[] = {1.0, 0.5, 1.0, 1.0};
+    //GLfloat light_diffuse[] = {1.0, 0.5, 1.0, 1.0};
 
     // Enable a single OpenGL light.
     //glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);

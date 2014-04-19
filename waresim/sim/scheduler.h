@@ -2,6 +2,7 @@
 #define SIM_SCHEDULER_H
 
 #include <ctime>
+#include <string>
 #include <vector>
 
 #include "algo/routing/routing_algo.h"
@@ -9,6 +10,7 @@
 #include "warehouse.h"
 #include "rand/rand.h"
 #include "thread/thread.h"
+#include "../logger/logger.h"
 
 /**
  * Reponsible for scheduling the worker's movements in the warehouse.
@@ -26,7 +28,8 @@ class Scheduler : public Thread
         void set_rand(Rand);
         // Set the routing algorithm.
         void set_algo(RoutingAlgo *);
-
+        // Set the log file directory.
+        void set_log_dir(std::string dir);
     private:
         // Override from Thread
         void run() override;
@@ -47,6 +50,8 @@ class Scheduler : public Thread
         Rand rand;
         // Routing algorithm.
         RoutingAlgo *routing_algo = nullptr;
+        // The logger.
+        Logger logger;
 
 };
 

@@ -30,9 +30,14 @@ class Simulation
         // Waits for the simulation thread to finish.
         void join();
 
+        // Set the dispatch algorithm to use.
         void set_dispatch_algo(DispatchAlgo *);
+        // Set the routing algorithm to use.
         void set_routing_algo(RoutingAlgo *);
+        // Set the view to render the simulation.
         void set_view(View *);
+        // Set the log file directory.
+        void set_log_dir(std::string dir);
 
     private:
         // Returns the number of threads that need to by synchronized.
@@ -60,6 +65,8 @@ class Simulation
         RoutingAlgo *routing_algo = nullptr;
         // The view to render the warehouse.
         View *view = nullptr;
+        // The log file directory.
+        std::string log_dir;
 };
 
 #endif

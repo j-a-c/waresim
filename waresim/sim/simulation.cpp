@@ -104,6 +104,7 @@ void Simulation::start()
     scheduler->set_warehouse(&warehouse);
     scheduler->set_rand(Rand(std::rand()));
     scheduler->set_algo(routing_algo);
+    scheduler->set_log_dir(log_dir + "scheduler.txt");
 
     // Initial the render view.
     view->set_sim_params(start_time, sim_length);
@@ -115,6 +116,17 @@ void Simulation::start()
     dispatcher->start();
     scheduler->start();
     view->run();
+}
+
+/**
+ * Set the log file directory.
+ *
+ * @param dir The log file directory to use.
+ */
+void Simulation::set_log_dir(std::string dir)
+{
+    this->log_dir = dir;
+    log_dir.append("/");
 }
 
 /**

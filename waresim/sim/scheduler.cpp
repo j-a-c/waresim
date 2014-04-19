@@ -5,9 +5,6 @@
 #include "constants.h"
 #include "scheduler.h"
 
-// TODO Delete later, used for debug.
-#include <iostream>
-
 /**
  * Constructor.
  *
@@ -160,9 +157,18 @@ std::vector<int> Scheduler::shortest_path(int start, int end)
     }
 
     // Debug statement.
-    std::cout << "Path found: (" << start << "," << end << ")" << std::endl;
+    std::string log_msg{"Path found: ("};
+    log_msg.append(std::to_string(start));
+    log_msg.append(",");
+    log_msg.append(std::to_string(end));
+    if (path.size() > 0)
+        log_msg.append(")\n");
     for (auto &step : path)
-        std::cout << "\t" << step << std::endl;
+    {
+        log_msg.append("\t");
+        log_msg.append(std::to_string(step));
+    }
+    logger.log(log_msg);
 
     return path;
 }
@@ -173,6 +179,9 @@ std::vector<int> Scheduler::shortest_path(int start, int end)
  */
 void Scheduler::run()
 {
+    // Will be used for logging purposes.
+    std::string log_msg;
+
     // Continue simulation until sim_length seconds have elapsed.
     while (difftime(time(nullptr), start_time) < sim_length)
     {
@@ -201,17 +210,29 @@ void Scheduler::run()
         {
             Worker& worker = workers[index]; 
 
-            std::cout << "Scheduling worker: " << worker.get_id() << std::endl;
+            // Log message.
+            log_msg = std::string{"Scheduling worker: "};
+            log_msg.append(std::to_string(worker.get_id()));
+            logger.log(log_msg);
 
             // If worker is not on a path, try apply routing policy.
             if (!worker.is_routed())
             {
-                std::cout << "Worker " << worker.get_id() << " is NOT routed." << std::endl;
+                // Log message.
+                log_msg = std::string{"Worker "};
+                log_msg.append(std::to_string(worker.get_id()));
+                log_msg.append(" is NOT routed.");
+                logger.log(log_msg);
+
+                // Route the worker.
                 routing_algo->route_worker(warehouse, worker);
             }
             else
             {
-                std::cout << "Worker " << worker.get_id() << " is routed already." << std::endl;
+                // Log message.
+                log_msg = std::string{"Worker "};
+                log_msg.append(std::to_string(worker.get_id()));
+                log_msg.append(" is routed already.");
             }
 
             // If worker does not have a path, calculate one. 
@@ -330,16 +351,21 @@ void Scheduler::run()
             // Warehouse position is already occupied.
             if (next_pos_taken)
             {
-
-                std::cout << "Worker # " << index << 
-                    "'s next position is taken." << std::endl; 
+                // Log some details.
+                log_msg = std::string{"Worker # "};
+                log_msg.append(std::to_string(index));
+                log_msg.append("'s next position is taken.");
+                logger.log(log_msg);
 
                 // Worker with the smaller ID (S) "backs off" from the worker with
                 // the larger ID (L).
                 if (worker.get_id() > next_pos_worker.get_id())
                 {
-                    std::cout << "Worker # " << index << 
-                        " will NOT back off." << std::endl; 
+                    // Log some details.
+                    log_msg = std::string{"Worker # "};
+                    log_msg.append(std::to_string(index)); 
+                    log_msg.append(" will NOT back off.");
+                    logger.log(log_msg);
 
                     warehouse->move_worker(curr_pos, curr_pos);
                     // We mark the spot the worker attempted to move as a
@@ -348,8 +374,11 @@ void Scheduler::run()
                     continue;
                 }
 
-                std::cout << "Worker # " << index << " WILL back off." 
-                    << std::endl; 
+                // Log some details.
+                log_msg = std::string{"Worker # "};
+                log_msg.append(std::to_string(index));
+                log_msg.append(" WILL back off.");
+                logger.log(log_msg);
 
                 // S tries left, right, back, up, in that order. Move and
                 // insert old position to front of the current path.
@@ -364,8 +393,11 @@ void Scheduler::run()
                     // Update the warehouse layout.
                     warehouse->move_worker(curr_pos, next_pos);
 
-                    std::cout << "Moving worker # " << index << " to position: " 
-                        << next_pos << std::endl;
+                    // Log the next position.
+                    log_msg = std::string("Moving worker # ");
+                    log_msg.append(std::to_string(index));
+                    log_msg.append(" to position: ");
+                    log_msg.append(std::to_string(next_pos));
                 }
                 else if (right_valid)
                 {
@@ -377,9 +409,13 @@ void Scheduler::run()
                     worker.set_path(path);
                     // Update the warehouse layout.
                     warehouse->move_worker(curr_pos, next_pos);
+                    
+                    // Log the next position.
+                    log_msg = std::string("Moving worker # ");
+                    log_msg.append(std::to_string(index));
+                    log_msg.append(" to position: ");
+                    log_msg.append(std::to_string(next_pos));
 
-                    std::cout << "Moving worker # " << index << " to position: " 
-                        << next_pos << std::endl;
                 }
                 else if (bot_valid)
                 {
@@ -392,8 +428,11 @@ void Scheduler::run()
                     // Update the warehouse layout.
                     warehouse->move_worker(curr_pos, next_pos);
 
-                    std::cout << "Moving worker # " << index << " to position: " 
-                        << next_pos << std::endl;
+                    // Log the next position.
+                    log_msg = std::string("Moving worker # ");
+                    log_msg.append(std::to_string(index));
+                    log_msg.append(" to position: ");
+                    log_msg.append(std::to_string(next_pos));
                 }
                 else if (top_valid)
                 {
@@ -406,13 +445,22 @@ void Scheduler::run()
                     // Update the warehouse layout.
                     warehouse->move_worker(curr_pos, next_pos);
 
-                    std::cout << "Moving worker # " << index << " to position: " 
-                        << next_pos << std::endl;
+                    // Log the next position.
+                    log_msg = std::string("Moving worker # ");
+                    log_msg.append(std::to_string(index));
+                    log_msg.append(" to position: ");
+                    log_msg.append(std::to_string(next_pos));
                 }
                 else
                 {
-                    // Deadlock found.
-                    std::cout << "Deadlock found!" << std::endl;
+                    // We have experience a deadlock because of the scheduling
+                    // protocol. This means that the scheduling protocol is not
+                    // 'correct'.
+
+                    // Log a warning.
+                    log_msg = std::string{"Deadlock found!"};
+                    logger.log(log_msg, LogLevel::Warning);
+                    
                     // We will not move this turn.
                     warehouse->move_worker(curr_pos, curr_pos);
                     warehouse->mark_deadlock(curr_pos);
@@ -490,6 +538,16 @@ void Scheduler::set_barrier(Barrier *barrier)
 void Scheduler::set_rand(Rand rand)
 {
     this->rand = rand;
+}
+
+/**
+ * Set the log file directory.
+ *
+ * @param dir The new log file directory.
+ */
+void Scheduler::set_log_dir(std::string dir)
+{
+    logger.set_up(dir);
 }
 
 /**

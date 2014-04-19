@@ -23,6 +23,8 @@ class ConfigParser : public Parser
         std::string get_warehouse_file();
         // Returns the specified seed.
         unsigned int get_seed();
+        // Returns the log directory.
+        std::string get_log_dir();
     private:
         // The configuration file to parse.
         std::string config{"config"};
@@ -32,6 +34,8 @@ class ConfigParser : public Parser
         int sim_length = 10;
         // The warehouse layout specified in the config file.
         std::string warehouse{"warehouse"};
+        // The directory to contain the log files.
+        std::string log_dir;
 };
 
 #endif

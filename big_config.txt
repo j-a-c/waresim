@@ -1,3 +1,4 @@
 Length:1000
 Warehouse:big_warehouse.txt
 Seed:1000
+Log:logs
