@@ -38,12 +38,12 @@ Routing:FCFS
 3. _Seed_: The master seed for the simulation.
 4. _Log_: Directory for the log files.
 5. _View_: The simulation view to use. Currently supported values are 'OpenGL' and 'None'.
-⋅⋅* OpenGL: A real-time warehouse rendering using OpenGL.
-⋅⋅* None: No rendering will be displayed.
+  * OpenGL: A real-time warehouse rendering using OpenGL.
+  * None: No rendering will be displayed.
 6. _Dispatch_: The dispatch algorithm to use. The only supported value is 'Rand'.
-⋅⋅* Rand: Orders are randomly assigned to workers.
+  * Rand: Orders are randomly assigned to workers.
 7. _Routing_: The routing algorithm to use. The only supported value is 'FCFS'
-⋅⋅* FCFS: A first-come first served algorithm, where order are processed in the order they were assigned to the worker.
+  * FCFS: A first-come first served algorithm, where order are processed in the order they were assigned to the worker.
 
 Dependencies
 -------
