@@ -71,6 +71,14 @@ void ConfigParser::parse()
         {
             wait_time = std::stoi(value);
         }
+        else if (key == "Dispatch")
+        {
+            dispatch = value;
+        }
+        else if (key == "Routing")
+        {
+            routing = value;
+        }
         else // Print a simple error if we do not recognize this parameter.
         {
             std::cout << "Unrecognized var: " << parts[0] << std::endl;
@@ -121,4 +129,14 @@ std::string ConfigParser::get_view()
 int ConfigParser::get_wait_time()
 {
     return wait_time;
+}
+
+std::string ConfigParser::get_dispatch_algo()
+{
+    return dispatch;
+}
+
+std::string ConfigParser::get_routing_algo()
+{
+    return routing;
 }

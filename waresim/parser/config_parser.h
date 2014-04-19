@@ -29,6 +29,10 @@ class ConfigParser : public Parser
         std::string get_view();
         // Returns the wait time in between steps.
         int get_wait_time();
+        // Returns the dispatch algorithm.
+        std::string get_dispatch_algo();
+        // Returns the routing algorithm.
+        std::string get_routing_algo();
     private:
         // The configuration file to parse.
         std::string config{"config"};
@@ -44,6 +48,10 @@ class ConfigParser : public Parser
         std::string view = "None";
         // The wait time between steps in milliseconds. Default is 1000 ms.
         int wait_time = 1000;
+        // The dispatch algorithm.
+        std::string dispatch;
+        // The routing algorithm.
+        std::string routing;
 };
 
 #endif

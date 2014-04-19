@@ -34,12 +34,16 @@ int main(int argc, char **argv)
     parser.parse();
 
     // Get config parameters.
-    int sim_length = parser.get_sim_length();
-    std::string warehouse = parser.get_warehouse_file();
-    unsigned int seed = parser.get_seed();
-    std::string log_dir = parser.get_log_dir();
-    std::string view_param = parser.get_view();
-    int wait_time = parser.get_wait_time();
+    // These should be self-explanatory, but for more details see
+    // config_parser.h
+    int sim_length              = parser.get_sim_length();
+    std::string warehouse       = parser.get_warehouse_file();
+    unsigned int seed           = parser.get_seed();
+    std::string log_dir         = parser.get_log_dir();
+    std::string view_param      = parser.get_view();
+    int wait_time               = parser.get_wait_time();
+    std::string dispatch_param  = parser.get_dispatch_algo();
+    std::string routing_param   = parser.get_routing_algo();
     
     // Set up the view.
     View *view;
@@ -53,13 +57,10 @@ int main(int argc, char **argv)
     // view might set the seed for itself.
     std::srand(seed);
 
-    /*
-     * If you are setting custom dispatch and routing algorithms, edit below.
-     */
-
-    // TODO Make a parameter.
+    // Add statements as more algorithms are added.
     DispatchAlgo *dispatch_algo = new RandDispatchAlgo(Rand(std::rand()));
-    // TODO Make a parameter.
+
+    // Add statements as more algorithms are added.
     RoutingAlgo *routing_algo = new FCFSRoutingAlgo();
 
     // Set up the simulation.
