@@ -4,9 +4,6 @@
 
 #include "barrier.h"
 
-// TODO Delete later, used for debug.
-#include <iostream>
-
 /**
  * Implementation of a cyclic non-spinning barrier.
  */
@@ -42,7 +39,6 @@ void Barrier::arrive()
 
     if (arrived == total)
     {
-        std::cout << "=== Ending Step ===" << std::endl;
         // TODO Delete. Creates time between steps. This is not necessary for
         // the correctness of the algorithm. It is simply so the human eye can
         // perceive changes on the view.

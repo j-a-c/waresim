@@ -1,7 +1,6 @@
 #include "order_generator.h"
 
-// TODO For debug purposes. Delete later.
-#include <iostream>
+#include <string>
 
 /**
  * Constructor. Sets the start time and length for the simulation.
@@ -22,14 +21,18 @@ OrderGenerator::OrderGenerator(time_t start_time, int sim_length)
  */
 void OrderGenerator::run()
 {
+    // Will be used for logging message.
+    std::string log_msg;
+
     // Continue simulation until sim_length seconds have elapsed.
     while (difftime(time(nullptr), start_time) < sim_length)
     { 
 
-        // TODO Add a random scheme.
-        // Generate a new order every time step.
+        // Log the current random double that we are using.
         double d = rand.rand();
-        std::cout << "Order rand: " << d << std::endl;
+        log_msg = std::string("Order rand: ");
+        log_msg.append(std::to_string(d));
+        logger.log(log_msg);
 
         // Each time step we have a 50% chance of generating a new order.
         if (d < 0.50)
@@ -40,7 +43,8 @@ void OrderGenerator::run()
             // Select a random bin index.
             int index = rand.rand() * bins.size();
 
-            std::cout << "Creating new order: " << bins[index] << std::endl;
+            log_msg = std::string("Creating new order: ");
+            log_msg.append(std::to_string(bins[index]));
 
             // Add a new order with the selected bin's location.
             add_order(Order(bins[index]));
@@ -127,4 +131,14 @@ void OrderGenerator::set_rand(Rand rand)
 void OrderGenerator::set_warehouse(Warehouse *warehouse)
 {
     this->warehouse = warehouse;
+}
+
+/**
+ * Set the log file directory.
+ *
+ * @param dir The new log file directory.
+ */
+void OrderGenerator::set_log_dir(std::string dir)
+{
+    logger.set_up(dir);
 }

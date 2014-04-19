@@ -1,7 +1,6 @@
 #include "rand_dispatch_algo.h"
 
-// TODO Delete later, used for debug.
-#include <iostream>
+#include <string>
 
 /**
  * Default constructor.
@@ -35,17 +34,20 @@ RandDispatchAlgo::~RandDispatchAlgo()
  *
  * @param warehouse The warehouse for the simulation.
  * @param order The order to assign.
+ *
+ * @return The id of the worker that was assigned the order.
  */
-void RandDispatchAlgo::assign_order(Warehouse *warehouse, Order order)
+int RandDispatchAlgo::assign_order(Warehouse *warehouse, Order order)
 {
     std::vector<Worker>& workers = warehouse->get_workers();
 
     // Select a random worker index.
     int index = workers.size() * rand.rand();
-
-    std::cout << "Assigned to worker # " << workers[index].get_id() << std::endl;
-    
+ 
     // Assign job to the worker.
     Worker& worker = workers[index];
     worker.assign(order);
+
+
+    return worker.get_id();
 }

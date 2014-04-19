@@ -11,6 +11,7 @@
 #include "order.h"
 #include "rand/rand.h"
 #include "thread/thread.h"
+#include "../logger/logger.h"
 
 /**
  * @author Joshua A. Campbell
@@ -32,6 +33,8 @@ class OrderGenerator : public Thread
         bool has_order();
         // Returns the next order or blocks if there are no orders.
         Order get_order();
+        // Set the log file directory.
+        void set_log_dir(std::string dir);
     private:
         // Override from Thread.
         void run() override;
@@ -55,6 +58,8 @@ class OrderGenerator : public Thread
         Rand rand;
         // The warehouse to choose bins from.
         Warehouse *warehouse;
+        // The logger.
+        Logger logger;
 };
 
 #endif

@@ -90,6 +90,7 @@ void Simulation::start()
     order_gen->set_barrier(barrier);
     order_gen->set_rand(Rand(std::rand()));
     order_gen->set_warehouse(&warehouse);
+    order_gen->set_log_dir(log_dir + "order_gen.txt");
 
     // Initialize dispatcher.
     dispatcher = new Dispatcher(start_time, sim_length);
@@ -97,6 +98,7 @@ void Simulation::start()
     dispatcher->set_warehouse(&warehouse);
     dispatcher->set_order_generator(order_gen);
     dispatcher->set_algo(dispatch_algo);
+    dispatcher->set_log_dir(log_dir + "dispatcher.txt");
 
     // Initialize the scheduler.
     scheduler = new Scheduler(start_time, sim_length);

@@ -2,9 +2,6 @@
 
 #include "dispatcher.h"
 
-// TODO For debug purposes. (Delete later)
-#include <iostream>
-
 /**
  * Constructor.
  *
@@ -24,14 +21,21 @@ Dispatcher::Dispatcher(time_t start_time, int sim_length)
  */
 void Dispatcher::run()
 {
+    // Will be used for logging message.
+    std::string log_msg;
+
     // Continue simulation until sim_length seconds have elapsed.
     while (difftime(time(nullptr), start_time) < sim_length)
     {
-        // TODO Implement simulation stuff.
         if (order_gen->has_order())
         {
-            std::cout << "Dispatch found new order." << std::endl;
-            algo->assign_order(this->warehouse, order_gen->get_order());
+            // Log that we have a new order.
+            log_msg = std::string{"Dispach has new order. Assigned to worker #: "};
+
+            int id = algo->assign_order(this->warehouse, order_gen->get_order());
+
+            log_msg.append(std::to_string(id));
+            logger.log(log_msg);
         }
         
         barrier->arrive();
@@ -76,4 +80,14 @@ void Dispatcher::set_barrier(Barrier * b)
 void Dispatcher::set_algo(DispatchAlgo* a)
 {
     this->algo = a;
+}
+
+/**
+ * Set the log file directory.
+ *
+ * @param dir The new log file directory.
+ */
+void Dispatcher::set_log_dir(std::string dir)
+{
+    logger.set_up(dir);
 }

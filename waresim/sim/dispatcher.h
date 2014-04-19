@@ -8,6 +8,7 @@
 #include "warehouse.h"
 #include "order_generator.h"
 #include "thread/thread.h"
+#include "../logger/logger.h"
 
 /**
  * @author Joshua A. Campbell
@@ -27,6 +28,8 @@ class Dispatcher : public Thread
         void set_barrier(Barrier *);
         // Set the dispatch algorithm.
         void set_algo(DispatchAlgo *);
+        // Set the log file directory.
+        void set_log_dir(std::string dir);
     private:
         // Override from Thread.
         void run() override;
@@ -43,6 +46,8 @@ class Dispatcher : public Thread
         Barrier *barrier = nullptr;
         // Dispatching algorithm.
         DispatchAlgo *algo = nullptr;
+        // The logger.
+        Logger logger;
 };
 
 #endif
