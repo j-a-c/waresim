@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "algo/path/path_algo.h"
 #include "algo/routing/routing_algo.h"
 #include "concurrent/barrier.h"
 #include "warehouse.h"
@@ -27,7 +28,9 @@ class Scheduler : public Thread
         // Set the random number generator.
         void set_rand(Rand);
         // Set the routing algorithm.
-        void set_algo(RoutingAlgo *);
+        void set_routing_algo(RoutingAlgo *);
+        // Set the pathfinding algorithm.
+        void set_path_algo(PathAlgo *);
         // Set the log file directory.
         void set_log_dir(std::string dir);
     private:
@@ -52,6 +55,7 @@ class Scheduler : public Thread
         RoutingAlgo *routing_algo = nullptr;
         // The logger.
         Logger logger;
+        PathAlgo *path_algo = nullptr;
 
 };
 

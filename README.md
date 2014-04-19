@@ -31,19 +31,23 @@ Dispatch:Rand
 
 Routing:FCFS
 
+Path:Shortest
+
 ---
 
 1. _Length_: The length of the simulation in seconds.
 2. _Warehouse_: The location of the warehouse layout file.
-3. _Seed_: The master seed for the simulation.
+3. _Seed_: The master seed for the simulation. Must be an integer.
 4. _Log_: Directory for the log files.
 5. _View_: The simulation view to use. Currently supported values are 'OpenGL' and 'None'.
-  * OpenGL: A real-time warehouse rendering using OpenGL.
-  * None: No rendering will be displayed.
+  * _OpenGL_: A real-time warehouse rendering using OpenGL.
+  * _None_: No rendering will be displayed.
 6. _Dispatch_: The dispatch algorithm to use. The only supported value is 'Rand'.
-  * Rand: Orders are randomly assigned to workers.
+  * _Rand_: Orders are randomly assigned to workers.
 7. _Routing_: The routing algorithm to use. The only supported value is 'FCFS'
-  * FCFS: A first-come first served algorithm, where order are processed in the order they were assigned to the worker.
+  * _FCFS_: A first-come first served algorithm, where order are processed in the order they were assigned to the worker.
+8. _Path_: The pathfinding algorithm to use. The only supported value is 'Shortest'.
+  * _Shortest_: An implementation of Dijkstra's algorithm.
 
 Dependencies
 -------

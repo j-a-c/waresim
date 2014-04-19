@@ -5,3 +5,4 @@ Log:logs
 View:OpenGL
 Dispatch:Rand
 Routing:FCFS
+Path:Shortest

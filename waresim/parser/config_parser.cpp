@@ -79,6 +79,10 @@ void ConfigParser::parse()
         {
             routing = value;
         }
+        else if (key == "Path")
+        {
+            path_algo = value;
+        }
         else // Print a simple error if we do not recognize this parameter.
         {
             std::cout << "Unrecognized var: " << parts[0] << std::endl;
@@ -126,17 +130,35 @@ std::string ConfigParser::get_view()
     return view;
 }
 
+/**
+ * Returns the wait time found by the parser.
+ */
 int ConfigParser::get_wait_time()
 {
     return wait_time;
 }
 
+/**
+ * Returns the dispatch algorithm found by the parser.
+ */
 std::string ConfigParser::get_dispatch_algo()
 {
     return dispatch;
 }
 
+/**
+ * Returns the routing algorithm found by the parser.
+ */
 std::string ConfigParser::get_routing_algo()
 {
     return routing;
 }
+
+/**
+ * Returns the path algorithm found by the parser.
+ */
+std::string ConfigParser::get_path_algo()
+{
+    return path_algo;
+}
+    

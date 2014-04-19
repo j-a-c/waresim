@@ -25,31 +25,6 @@ Simulation::Simulation(int sim_length, std::string warehouse_file)
 }
 
 /**
- * Sets the dispatch algorithm to be used in this simulation.
- *
- * @param dispatch_algo The dispatch algorithm to be used in this simulation.
- */
-void Simulation::set_dispatch_algo(DispatchAlgo* dispatch_algo)
-{
-    this->dispatch_algo = dispatch_algo;
-}
-
-/**
- * Sets the routing algorithm to be used in the simulation.
- *
- * @routing_algo The routing algorithm to be used in this simulation.
- */
-void Simulation::set_routing_algo(RoutingAlgo *routing_algo)
-{
-    this->routing_algo = routing_algo;
-}
-
-void Simulation::set_view(View * view)
-{
-    this->view = view;
-}
-
-/**
  * Destructor.
  */
 Simulation::~Simulation()
@@ -105,7 +80,8 @@ void Simulation::start()
     scheduler->set_barrier(barrier);
     scheduler->set_warehouse(&warehouse);
     scheduler->set_rand(Rand(std::rand()));
-    scheduler->set_algo(routing_algo);
+    scheduler->set_routing_algo(routing_algo);
+    scheduler->set_path_algo(path_algo);
     scheduler->set_log_dir(log_dir + "scheduler.txt");
 
     // Initial the render view.
@@ -118,6 +94,60 @@ void Simulation::start()
     dispatcher->start();
     scheduler->start();
     view->run();
+}
+
+
+/**
+ * Waits for the simulation to finish its execution.
+ * Should only be called after run().
+ */
+void Simulation::join()
+{
+    order_gen->join();
+    dispatcher->join();
+    scheduler->join();
+    //view->join();
+}
+
+
+/**
+ * Sets the dispatch algorithm to be used in this simulation.
+ *
+ * @param dispatch_algo The dispatch algorithm to be used in this simulation.
+ */
+void Simulation::set_dispatch_algo(DispatchAlgo* dispatch_algo)
+{
+    this->dispatch_algo = dispatch_algo;
+}
+
+/**
+ * Sets the routing algorithm to be used in the simulation.
+ *
+ * @routing_algo The routing algorithm to be used in this simulation.
+ */
+void Simulation::set_routing_algo(RoutingAlgo *routing_algo)
+{
+    this->routing_algo = routing_algo;
+}
+
+/**
+ * Set the view to use.
+ *
+ * @param view The view to use for the simulation.
+ */
+void Simulation::set_view(View * view)
+{
+    this->view = view;
+}
+
+/**
+ * Set the pathfinding algorithm.
+ *
+ * @param algo The pathfinding algorithm to use.
+ */
+void Simulation::set_path_algo(PathAlgo * algo)
+{
+    this->path_algo = algo;
 }
 
 /**
@@ -140,16 +170,3 @@ void Simulation::set_wait_time(int time)
 {
     this->wait_time = time;
 }
-
-/**
- * Waits for the simulation to finish its execution.
- * Should only be called after run().
- */
-void Simulation::join()
-{
-    order_gen->join();
-    dispatcher->join();
-    scheduler->join();
-    //view->join();
-}
-
