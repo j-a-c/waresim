@@ -625,7 +625,6 @@ void OpenGLView::render()
     render_text("Contentions", -1 + text_x_align * sx, 1 - (2*stat_h + 25) * sy, sx, sy);
     // Deadlock's text.
     render_text("Deadlocks", -1 + text_x_align * sx, 1 - (3*stat_h + 25) * sy, sx, sy);
-    glPopMatrix();
 
     // Stop using the text shader.
     glUseProgram(0);
