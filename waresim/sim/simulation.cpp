@@ -65,7 +65,7 @@ void Simulation::start()
     // Initialize the order generator.
     order_gen = new OrderGenerator(start_time, sim_length);
     order_gen->set_barrier(barrier);
-    order_gen->set_rand(Rand(std::rand()));
+    order_gen->set_order_algo(order_algo);
     order_gen->set_warehouse(&warehouse);
     order_gen->set_log_dir(log_dir + "order_gen.txt");
 
@@ -150,6 +150,16 @@ void Simulation::set_view(View * view)
 void Simulation::set_path_algo(PathAlgo * algo)
 {
     this->path_algo = algo;
+}
+
+/**
+ * Set the order generating algorithm to use.
+ *
+ * @param algo The order generating algorithm to use.
+ */
+void Simulation::set_order_algo(OrderAlgo *algo)
+{
+    this->order_algo = algo;
 }
 
 /**

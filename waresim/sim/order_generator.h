@@ -6,10 +6,10 @@
 #include <mutex>
 #include <queue>
 
+#include "algo/ordering/order_algo.h"
 #include "concurrent/barrier.h"
 #include "warehouse.h"
 #include "order.h"
-#include "rand/rand.h"
 #include "thread/thread.h"
 #include "../logger/logger.h"
 
@@ -25,8 +25,8 @@ class OrderGenerator : public Thread
  
         // Set the barrier.
         void set_barrier(Barrier *);
-        // Set the random number generator.
-        void set_rand(Rand);
+        // Set the order generating algorithm.
+        void set_order_algo(OrderAlgo *);
         // Set the warehouse.
         void set_warehouse(Warehouse *);
         // Returns true if there is an order available.
@@ -54,8 +54,8 @@ class OrderGenerator : public Thread
         std::condition_variable order_condition;
         // The barrier.
         Barrier *barrier = nullptr;
-        // The random number generator.
-        Rand rand;
+        // The ordering generating algorithm to use.
+        OrderAlgo * order_algo;
         // The warehouse to choose bins from.
         Warehouse *warehouse;
         // The logger.

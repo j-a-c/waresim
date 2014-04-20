@@ -5,6 +5,8 @@
 #include "parser/config_parser.h"
 #include "sim/algo/dispatch/dispatch_algo.h"
 #include "sim/algo/dispatch/rand_dispatch_algo.h"
+#include "sim/algo/ordering/order_algo.h"
+#include "sim/algo/ordering/rand_order_algo.h"
 #include "sim/algo/path/path_algo.h"
 #include "sim/algo/path/shortest_path_algo.h"
 #include "sim/algo/routing/routing_algo.h"
@@ -47,6 +49,7 @@ int main(int argc, char **argv)
     std::string dispatch_param  = parser.get_dispatch_algo();
     std::string routing_param   = parser.get_routing_algo();
     std::string path_param      = parser.get_path_algo();
+    std::string order_param     = parser.get_order_algo();
     double decay_factor         = parser.get_decay_factor();
     
     // Set up the view.
@@ -61,19 +64,23 @@ int main(int argc, char **argv)
     // view might set the seed for itself.
     std::srand(seed);
 
-    // Add statements as more algorithms are added.
+    // Add statements as more dispatch algorithms are added.
     DispatchAlgo *dispatch_algo = new RandDispatchAlgo(Rand(std::rand()));
 
-    // Add statements as more algorithms are added.
+    // Add statements as more routing algorithms are added.
     RoutingAlgo *routing_algo = new FCFSRoutingAlgo();
 
-    // Add statements as more algorithms are added.
+    // Add statements as more pathfinding algorithms are added.
     PathAlgo *path_algo = new ShortestPathAlgo(Rand(std::rand()));
+
+    // Add statements as more ordering algorithms are added.
+    OrderAlgo *order_algo = new RandOrderAlgo(Rand(std::rand()));
 
     // Set up the simulation.
     Simulation sim(sim_length, warehouse);
     sim.set_dispatch_algo(dispatch_algo);
     sim.set_routing_algo(routing_algo);
+    sim.set_order_algo(order_algo);
     sim.set_path_algo(path_algo);
     sim.set_view(view);
     sim.set_log_dir(log_dir);
@@ -88,6 +95,7 @@ int main(int argc, char **argv)
     delete dispatch_algo;
     delete routing_algo;
     delete path_algo;
+    delete order_algo;
     delete view;
 
     return 0;

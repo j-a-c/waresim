@@ -23,6 +23,7 @@ void Dispatcher::run()
 {
     // Will be used for logging message.
     std::string log_msg;
+    std::string log_iter_end = std::string("=====");
 
     // Continue simulation until sim_length seconds have elapsed.
     while (difftime(time(nullptr), start_time) < sim_length)
@@ -38,6 +39,8 @@ void Dispatcher::run()
             logger.log(log_msg);
         }
         
+        logger.log(log_iter_end);
+
         barrier->arrive();
     }
 }

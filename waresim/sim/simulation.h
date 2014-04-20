@@ -6,6 +6,7 @@
 #include <string>
 
 #include "algo/dispatch/dispatch_algo.h"
+#include "algo/ordering/order_algo.h"
 #include "algo/path/path_algo.h"
 #include "algo/routing/routing_algo.h"
 #include "concurrent/barrier.h"
@@ -39,6 +40,8 @@ class Simulation
         void set_view(View *);
         // Set the pathfinding algorithm to use.
         void set_path_algo(PathAlgo *);
+        // Set the order generating algorithm to use.
+        void set_order_algo(OrderAlgo *);
         // Set the log file directory.
         void set_log_dir(std::string dir);
         // Set the wait time between steps.
@@ -72,6 +75,8 @@ class Simulation
         RoutingAlgo *routing_algo = nullptr;
         // The pathfinding algorithm.
         PathAlgo *path_algo = nullptr;
+        // The order generating algorithm to use.
+        OrderAlgo *order_algo = nullptr;
         // The view to render the warehouse.
         View *view = nullptr;
         // The log file directory.

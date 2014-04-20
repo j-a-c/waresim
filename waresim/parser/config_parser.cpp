@@ -88,6 +88,10 @@ void ConfigParser::parse()
         {
             decay_factor = strtod(value.c_str(), nullptr);
         }
+        else if (key == "Order")
+        {
+            order_algo = value;
+        }
         else // Print a simple error if we do not recognize this parameter.
         {
             std::cout << "Unrecognized var: " << parts[0] << std::endl;
@@ -166,7 +170,18 @@ std::string ConfigParser::get_path_algo()
 {
     return path_algo;
 }
+
+/**
+ * Returns the ordering algorithm found by the parser.
+ */
+std::string ConfigParser::get_order_algo()
+{
+    return order_algo;
+}
     
+/**
+ * Returns the decay factor.
+ */
 double ConfigParser::get_decay_factor()
 {
     return decay_factor;

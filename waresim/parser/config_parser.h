@@ -35,6 +35,8 @@ class ConfigParser : public Parser
         std::string get_routing_algo();
         // Returns the pathfinding algorithm.
         std::string get_path_algo();
+        // Returns the ordering algorithm.
+        std::string get_order_algo();
         // Returns the decay factor.
         double get_decay_factor();
     private:
@@ -59,6 +61,8 @@ class ConfigParser : public Parser
         std::string routing = "Default";
         // The pathfinding algorithm.
         std::string path_algo = "Default";
+        // The ordering algorithm.
+        std::string order_algo = "Rand";
         // The decay factor to use for the heat window.
         double decay_factor = 0.9;
 };

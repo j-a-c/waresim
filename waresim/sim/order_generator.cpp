@@ -24,31 +24,27 @@ void OrderGenerator::run()
     // Will be used for logging message.
     std::string log_msg;
 
+    std::string log_iter_end = std::string("=====");
+
     // Continue simulation until sim_length seconds have elapsed.
     while (difftime(time(nullptr), start_time) < sim_length)
     { 
 
-        // Log the current random double that we are using.
-        double d = rand.rand();
-        log_msg = std::string("Order rand: ");
-        log_msg.append(std::to_string(d));
-        logger.log(log_msg);
-
-        // Each time step we have a 50% chance of generating a new order.
-        if (d < 0.50)
+        if (order_algo->order_ready())
         {
-            // Get the location of all the bins in the warehouse.
-            auto bins = warehouse->get_bins();
+            // Get the new order.
+            Order order = order_algo->get_new_order(warehouse);
 
-            // Select a random bin index.
-            int index = rand.rand() * bins.size();
+            // Log that a new order is ready.
+            log_msg = std::string("A new order is ready at :");
+            log_msg.append(std::to_string(order.get_pos()));
+            logger.log(log_msg);
 
-            log_msg = std::string("Creating new order: ");
-            log_msg.append(std::to_string(bins[index]));
-
-            // Add a new order with the selected bin's location.
-            add_order(Order(bins[index]));
+            // Add the order to the queue.
+            add_order(order);
         }
+
+        logger.log(log_iter_end);
 
         barrier->arrive();
     }
@@ -114,13 +110,13 @@ void OrderGenerator::set_barrier(Barrier *b)
 }
 
 /**
- * Set the random number generator.
+ * Set the order generating algorithm to use.
  *
- * @param rand The random number generator.
+ * @param algo The order generating algorithm to use.
  */
-void OrderGenerator::set_rand(Rand rand)
+void OrderGenerator::set_order_algo(OrderAlgo *algo)
 {
-    this->rand = rand;
+    this->order_algo = algo;
 }
 
 /**

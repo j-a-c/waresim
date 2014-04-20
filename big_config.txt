@@ -6,4 +6,5 @@ View:OpenGL
 Dispatch:Rand
 Routing:FCFS
 Path:Shortest
+Order:Rand
 Decay:0.99

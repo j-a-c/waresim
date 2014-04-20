@@ -34,6 +34,7 @@ void Scheduler::run()
 {
     // Will be used for logging purposes.
     std::string log_msg;
+    std::string log_iter_end = std::string("=====");
 
     // Continue simulation until sim_length seconds have elapsed.
     while (difftime(time(nullptr), start_time) < sim_length)
@@ -360,6 +361,8 @@ void Scheduler::run()
 
         // Tell that warehouse that we have finished processing all workers.
         warehouse->update_iteration();
+
+        logger.log(log_iter_end);
 
         barrier->arrive();
     }// End while loop
