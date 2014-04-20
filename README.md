@@ -35,6 +35,8 @@ Path:Shortest
 
 Order:Rand
 
+Contention:Rand
+
 Decay:0.99
 
 ---
@@ -54,7 +56,9 @@ Decay:0.99
   * _Shortest_: An implementation of Dijkstra's algorithm.
 9. _Order_: The order generation algorithm to use.
   * _Rand_: An random algorithm that has a 50% chance of generating an order, and selects a random bin from which that order must be fulfilled.
-10. _Decay_: Decay factory for the heat window. Should be (1-c), where c is a small constant such as 10^-6 or 10^-9 (see Mining of Massive Datasets - RLU (2013)). Tune depending on on fast spots should 'cool off'.
+10. _Contention_: The contention handling algorithm to use.
+  * _Backoff_: Selects the worker with the smaller ID to back off from the worker with the larger ID.
+11. _Decay_: Decay factory for the heat window. Should be (1-c), where c is a small constant such as 10^-6 or 10^-9 (see Mining of Massive Datasets - RLU (2013)). Tune depending on on fast spots should 'cool off'.
 
 Dependencies
 -------

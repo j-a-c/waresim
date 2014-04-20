@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "algo/contention/contention_algo.h"
 #include "algo/path/path_algo.h"
 #include "algo/routing/routing_algo.h"
 #include "concurrent/barrier.h"
@@ -31,6 +32,8 @@ class Scheduler : public Thread
         void set_routing_algo(RoutingAlgo *);
         // Set the pathfinding algorithm.
         void set_path_algo(PathAlgo *);
+        // Set the contention algorithm.
+        void set_contention_algo(ContentionAlgo *);
         // Set the log file directory.
         void set_log_dir(std::string dir);
     private:
@@ -53,10 +56,12 @@ class Scheduler : public Thread
         Rand rand;
         // Routing algorithm.
         RoutingAlgo *routing_algo = nullptr;
+        // The pathfinding algorithm.
+        PathAlgo *path_algo = nullptr;
+        // The contention algorithm.
+        ContentionAlgo *contention_algo = nullptr;
         // The logger.
         Logger logger;
-        PathAlgo *path_algo = nullptr;
-
 };
 
 #endif

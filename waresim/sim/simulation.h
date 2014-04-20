@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "algo/contention/contention_algo.h"
 #include "algo/dispatch/dispatch_algo.h"
 #include "algo/ordering/order_algo.h"
 #include "algo/path/path_algo.h"
@@ -42,6 +43,8 @@ class Simulation
         void set_path_algo(PathAlgo *);
         // Set the order generating algorithm to use.
         void set_order_algo(OrderAlgo *);
+        // Set the contention algorithm to use.
+        void set_contention_algo(ContentionAlgo *);
         // Set the log file directory.
         void set_log_dir(std::string dir);
         // Set the wait time between steps.
@@ -75,6 +78,8 @@ class Simulation
         RoutingAlgo *routing_algo = nullptr;
         // The pathfinding algorithm.
         PathAlgo *path_algo = nullptr;
+        // The contention algorithm to use.
+        ContentionAlgo *contention_algo = nullptr;
         // The order generating algorithm to use.
         OrderAlgo *order_algo = nullptr;
         // The view to render the warehouse.

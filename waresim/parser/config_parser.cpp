@@ -92,6 +92,10 @@ void ConfigParser::parse()
         {
             order_algo = value;
         }
+        else if (key == "Contention")
+        {
+            contention_algo = value;
+        }
         else // Print a simple error if we do not recognize this parameter.
         {
             std::cout << "Unrecognized var: " << parts[0] << std::endl;
@@ -177,6 +181,14 @@ std::string ConfigParser::get_path_algo()
 std::string ConfigParser::get_order_algo()
 {
     return order_algo;
+}
+
+/**
+ * Returns the contention algorithm found by the parser.
+ */
+std::string ConfigParser::get_contention_algo()
+{
+    return contention_algo;
 }
     
 /**

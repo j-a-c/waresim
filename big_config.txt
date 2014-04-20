@@ -7,4 +7,5 @@ Dispatch:Rand
 Routing:FCFS
 Path:Shortest
 Order:Rand
+Contention:Backoff
 Decay:0.99

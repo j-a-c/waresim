@@ -3,6 +3,8 @@
 #include <string>
 
 #include "parser/config_parser.h"
+#include "sim/algo/contention/backoff_algo.h"
+#include "sim/algo/contention/contention_algo.h"
 #include "sim/algo/dispatch/dispatch_algo.h"
 #include "sim/algo/dispatch/rand_dispatch_algo.h"
 #include "sim/algo/ordering/order_algo.h"
@@ -50,6 +52,7 @@ int main(int argc, char **argv)
     std::string routing_param   = parser.get_routing_algo();
     std::string path_param      = parser.get_path_algo();
     std::string order_param     = parser.get_order_algo();
+    std::string contention      = parser.get_contention_algo();
     double decay_factor         = parser.get_decay_factor();
     
     // Set up the view.
@@ -76,8 +79,12 @@ int main(int argc, char **argv)
     // Add statements as more ordering algorithms are added.
     OrderAlgo *order_algo = new RandOrderAlgo(Rand(std::rand()));
 
+    // Add statements as more contention algorithms are added.
+    ContentionAlgo *contention_algo = new BackoffAlgo();
+
     // Set up the simulation.
     Simulation sim(sim_length, warehouse);
+    sim.set_contention_algo(contention_algo);
     sim.set_dispatch_algo(dispatch_algo);
     sim.set_routing_algo(routing_algo);
     sim.set_order_algo(order_algo);
@@ -96,6 +103,7 @@ int main(int argc, char **argv)
     delete routing_algo;
     delete path_algo;
     delete order_algo;
+    delete contention_algo;
     delete view;
 
     return 0;

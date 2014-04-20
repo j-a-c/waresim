@@ -84,6 +84,7 @@ void Simulation::start()
     scheduler->set_rand(Rand(std::rand()));
     scheduler->set_routing_algo(routing_algo);
     scheduler->set_path_algo(path_algo);
+    scheduler->set_contention_algo(contention_algo);
     scheduler->set_log_dir(log_dir + "scheduler.txt");
 
     // Initial the render view.
@@ -160,6 +161,16 @@ void Simulation::set_path_algo(PathAlgo * algo)
 void Simulation::set_order_algo(OrderAlgo *algo)
 {
     this->order_algo = algo;
+}
+
+/**
+ * Set the contention algorithm to use.
+ *
+ * @param algo The contention algorithm to use.
+ */
+void Simulation::set_contention_algo(ContentionAlgo *algo)
+{
+    this->contention_algo = algo;
 }
 
 /**
