@@ -1,4 +1,4 @@
-Length:1000
+Length:10000
 Warehouse:big_warehouse.txt
 Seed:1000
 Log:logs
@@ -6,4 +6,4 @@ View:OpenGL
 Dispatch:Rand
 Routing:FCFS
 Path:Shortest
-Decay:0.9
+Decay:0.99

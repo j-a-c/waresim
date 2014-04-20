@@ -329,8 +329,11 @@ void Scheduler::run()
                 // Update the warehouse layout.
                 warehouse->move_worker(curr_pos, next_pos);
 
-                std::cout << "Moving worker # " << index << " to position: " 
-                    << next_pos << std::endl;
+                log_msg = std::string{"Moving worker # "}; 
+                log_msg.append(std::to_string(index));
+                log_msg.append(" to position: ");
+                log_msg.append(std::to_string(next_pos));
+                logger.log(log_msg);
             }
 
             // Update to 'not routed' if we have reached destination.

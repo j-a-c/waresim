@@ -28,7 +28,7 @@ void FCFSRoutingAlgo::route_worker(Warehouse *warehouse, Worker& worker)
         int drop_loc = warehouse->get_drops()[0];
         worker.set_routed(true);
         worker.set_current_dest(drop_loc);
-        std::cout << "Routing to drop at: " << drop_loc << std::endl;
+        //std::cout << "Routing to drop at: " << drop_loc << std::endl;
         return;
     }
  
@@ -36,7 +36,7 @@ void FCFSRoutingAlgo::route_worker(Warehouse *warehouse, Worker& worker)
     // oldest one (FCFS).
     if (!orders.empty())
     {
-        std::cout << "Routing to " << orders[0].get_pos() << std::endl;
+        //std::cout << "Routing to " << orders[0].get_pos() << std::endl;
         // Set the current order for the worker.
         worker.set_current_order(orders[0]);
         // Set the current destination for the worker.
@@ -50,7 +50,7 @@ void FCFSRoutingAlgo::route_worker(Warehouse *warehouse, Worker& worker)
     
     // At this point the worker has nothing to do, so we will route it back to
     // its initial location.
-    std::cout << "Routing to initial pos at: " << worker.get_initial_pos() << std::endl;
+    //std::cout << "Routing to initial pos at: " << worker.get_initial_pos() << std::endl;
     worker.set_current_dest(worker.get_initial_pos());
     worker.set_routed(true);
     return;
