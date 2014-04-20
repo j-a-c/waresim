@@ -35,7 +35,7 @@ Path:Shortest
 
 Order:Rand
 
-Contention:Rand
+Contention:Backoff
 
 Decay:0.99
 
