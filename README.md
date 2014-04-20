@@ -48,6 +48,7 @@ Path:Shortest
   * _FCFS_: A first-come first served algorithm, where order are processed in the order they were assigned to the worker.
 8. _Path_: The pathfinding algorithm to use. The only supported value is 'Shortest'.
   * _Shortest_: An implementation of Dijkstra's algorithm.
+9. _Decay_: Decay factory for the heat window. Should be (1-c), where c is a small constant such as 10^-6 or 10^-9 (see Mining of Massive Datasets - RLU (2013)). Tune depending on on fast spots should 'cool off'.
 
 Dependencies
 -------

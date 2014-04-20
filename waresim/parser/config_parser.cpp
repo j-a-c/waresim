@@ -1,5 +1,6 @@
 #include "config_parser.h"
 
+#include <cstdlib>
 #include <iostream>
 
 /**
@@ -83,6 +84,10 @@ void ConfigParser::parse()
         {
             path_algo = value;
         }
+        else if (key == "Decay")
+        {
+            decay_factor = strtod(value.c_str(), nullptr);
+        }
         else // Print a simple error if we do not recognize this parameter.
         {
             std::cout << "Unrecognized var: " << parts[0] << std::endl;
@@ -162,3 +167,7 @@ std::string ConfigParser::get_path_algo()
     return path_algo;
 }
     
+double ConfigParser::get_decay_factor()
+{
+    return decay_factor;
+}

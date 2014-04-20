@@ -7,3 +7,4 @@ Wait:1000
 Dispatch:Rand
 Routing:FCFS
 Path:Shortest
+Decay:0.9

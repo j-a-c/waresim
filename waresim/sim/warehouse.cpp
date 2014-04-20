@@ -179,7 +179,7 @@ void Warehouse::update_iteration()
     int pos = 0;
     for (auto& sum : heat_window)    
     {
-        sum *= DECAY_FACTOR;
+        sum *= decay_factor;
 
         // If we moved to this spot this turn, we will add one to the decaying
         // window for this spot.
@@ -345,4 +345,14 @@ std::unordered_map<int,int> Warehouse::get_deadlock_spots()
 std::unordered_map<int,int> Warehouse::get_contention_spots()
 {
     return contention_spots;
+}
+
+/**
+ * Set the decay factory used for the heat window.
+ *
+ * @param factor The decay factor to use.
+ */
+void Warehouse::set_decay_factor(double factor)
+{
+    this->decay_factor = factor;
 }

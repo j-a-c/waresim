@@ -47,6 +47,7 @@ int main(int argc, char **argv)
     std::string dispatch_param  = parser.get_dispatch_algo();
     std::string routing_param   = parser.get_routing_algo();
     std::string path_param      = parser.get_path_algo();
+    double decay_factor         = parser.get_decay_factor();
     
     // Set up the view.
     View *view;
@@ -77,6 +78,7 @@ int main(int argc, char **argv)
     sim.set_view(view);
     sim.set_log_dir(log_dir);
     sim.set_wait_time(wait_time);
+    sim.set_decay_factor(decay_factor);
 
     // Start the simulation and wait for it to finish.
     sim.start();

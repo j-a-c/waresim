@@ -51,6 +51,8 @@ int Simulation::num_threads()
  */
 void Simulation::start()
 {
+    // Set the decay factor for the warehouse.
+    this->warehouse.set_decay_factor(decay_factor);
 
     // This is the barrier the different components in the simulation will
     // synchronize upon. We use a barrier to simulate 'time steps' within the
@@ -169,4 +171,14 @@ void Simulation::set_log_dir(std::string dir)
 void Simulation::set_wait_time(int time)
 {
     this->wait_time = time;
+}
+
+/**
+ * Set the decay factor for windows.
+ *
+ * @param d The new decay factor.
+ */
+void Simulation::set_decay_factor(double d)
+{
+    this->decay_factor = d;
 }

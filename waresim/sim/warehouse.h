@@ -49,6 +49,8 @@ class Warehouse
         std::unordered_map<int,int> get_deadlock_spots();
         // Get the contention spots.
         std::unordered_map<int,int> get_contention_spots();
+        // Set the decay factor for the heat window.
+        void set_decay_factor(double);
 
         // Mark that all workers have been moved.
         void update_iteration();
@@ -91,11 +93,11 @@ class Warehouse
         std::vector<int> curr_moves{};
 
         // Decay factor for heat window. Every iteration, each element will be
-        // multiplied by this constant. The decay warehouse should be (1-c),
+        // multiplied by this constant. The decay factor should be (1-c),
         // where c is a small constant such as 10^-6 or 10^-9 (see Mining of
         // Massive Datasets - RLU (2013)), but we need to tune it depending on
         // how fast we want spots to 'cool off'.
-        double DECAY_FACTOR = 1.0 - (0.1);
+        double decay_factor = 1.0 - (0.1);
 };
 
 #endif

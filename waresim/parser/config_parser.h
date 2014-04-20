@@ -35,6 +35,8 @@ class ConfigParser : public Parser
         std::string get_routing_algo();
         // Returns the pathfinding algorithm.
         std::string get_path_algo();
+        // Returns the decay factor.
+        double get_decay_factor();
     private:
         // The configuration file to parse.
         std::string config{"config"};
@@ -57,6 +59,8 @@ class ConfigParser : public Parser
         std::string routing = "Default";
         // The pathfinding algorithm.
         std::string path_algo = "Default";
+        // The decay factor to use for the heat window.
+        double decay_factor = 0.9;
 };
 
 #endif

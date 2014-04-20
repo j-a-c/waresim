@@ -43,6 +43,8 @@ class Simulation
         void set_log_dir(std::string dir);
         // Set the wait time between steps.
         void set_wait_time(int);
+        // Set the decay factor.
+        void set_decay_factor(double);
 
     private:
         // Returns the number of threads that need to by synchronized.
@@ -76,6 +78,8 @@ class Simulation
         std::string log_dir;
         // The wait time between steps.
         int wait_time = 1000;
+        // The decay factor for windows.
+        double decay_factor = 0.9;
 };
 
 #endif
