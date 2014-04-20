@@ -33,6 +33,8 @@ Routing:FCFS
 
 Path:Shortest
 
+Decay:0.99
+
 ---
 
 1. _Length_: The length of the simulation in seconds.
