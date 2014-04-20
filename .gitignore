@@ -13,7 +13,7 @@
 *.a
 
 # Binary
-waresim.out
+waresim-run
 
 # Notes
 _*

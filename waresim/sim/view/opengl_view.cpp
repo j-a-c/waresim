@@ -6,6 +6,12 @@
 #include <GL/glfw.h>
 #include <cmath>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
+
+#include "shader_utils.h"
 
 #include "opengl_box.h"
 #include "glext.h"
@@ -66,11 +72,120 @@ void OpenGLView::init()
         // TODO
     }
 
+    // Initialize FreeType.
+    FT_Library ft;
+     
+    if (FT_Init_FreeType(&ft)) 
+    {
+        // TODO Unable to initialize the FreeType library.
+        std::cout << "Unable to load FreeType library" << std::endl;
+    }
+
+    // Load a font.
+    if (FT_New_Face(ft, "fonts/FreeSans.ttf", 0, &face)) 
+    {
+        // TODO Unable to load font.
+        std::cout << "Unable to load font." << std::endl;
+    }
+
+    // Set the pixel size.
+    FT_Set_Pixel_Sizes(face, 0, 14);
+
+    // Create the text shader.
+	textProgram = create_program("shaders/text.v.glsl", "shaders/text.f.glsl");
+	if(textProgram == 0)
+        std::cout << "Error creating program." << std::endl;
+
+    // Get various attributes.
+	attribute_coord = get_attrib(textProgram, "coord");
+	uniform_tex = get_uniform(textProgram, "tex");
+	uniform_color = get_uniform(textProgram, "color");
+
+    // Check that the attributes are set.
+	if(attribute_coord == -1 || uniform_tex == -1 || uniform_color == -1)
+		std::cout << "Error setting shader attributes." << std::endl;
+
+	// Create the vertex buffer object for the text.
+	glGenBuffers(1, &textVBO);
+
+    // Set the viewing size.
     glViewport(0, 0, (GLsizei)desktop.Width, (GLsizei)desktop.Height);
     
+    // Clear stuff before rendering.
     glClearColor(0, 0, 0, 0);
     glClearDepth(1);
 }
+
+/**
+ * Render text using the currently loaded font and currently set font size.
+ * Rendering starts at coordinates (x, y), z is always 0.
+ * The pixel coordinates that the FreeType2 library uses are scaled by (sx, sy).
+ */
+void OpenGLView::render_text(const char *text, float x, float y, float sx, float sy) 
+{
+	const char *p;
+	FT_GlyphSlot g = face->glyph;
+
+	/* Create a texture that will be used to hold one "glyph" */
+	GLuint tex;
+
+	glActiveTexture(GL_TEXTURE0);
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glUniform1i(uniform_tex, 0);
+
+	/* We require 1 byte alignment when uploading texture data */
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	/* Clamping to edges is important to prevent artifacts when scaling */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	/* Linear filtering usually looks best for text */
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	/* Set up the VBO for our vertex data */
+	glEnableVertexAttribArray(attribute_coord);
+	glBindBuffer(GL_ARRAY_BUFFER, textVBO);
+	glVertexAttribPointer(attribute_coord, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+	/* Loop through all characters */
+	for (p = text; *p; p++) 
+    {
+		/* Try to load and render the character */
+		if (FT_Load_Char(face, *p, FT_LOAD_RENDER))
+			continue;
+
+		/* Upload the "bitmap", which contains an 8-bit grayscale image, as an alpha texture */
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, g->bitmap.width, g->bitmap.rows, 0, GL_ALPHA, GL_UNSIGNED_BYTE, g->bitmap.buffer);
+
+		/* Calculate the vertex and texture coordinates */
+		float x2 = x + g->bitmap_left * sx;
+		float y2 = -y - g->bitmap_top * sy;
+		float w = g->bitmap.width * sx;
+		float h = g->bitmap.rows * sy;
+
+		point box[4] = {
+			{x2, -y2, 0, 0},
+			{x2 + w, -y2, 1, 0},
+			{x2, -y2 - h, 0, 1},
+			{x2 + w, -y2 - h, 1, 1},
+		};
+
+		/* Draw the character on the screen */
+		glBufferData(GL_ARRAY_BUFFER, sizeof box, box, GL_DYNAMIC_DRAW);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		/* Advance the cursor to the start of the next character */
+		x += (g->advance.x >> 6) * sx;
+		y += (g->advance.y >> 6) * sy;
+	}
+
+	glDisableVertexAttribArray(attribute_coord);
+	glDeleteTextures(1, &tex);
+}
+
 
 /**
  * Enable OpenGL options.
@@ -379,6 +494,11 @@ void OpenGLView::render()
         }
     }
 
+    // We need to align the text based on the last point where pixels were
+    // painted for the statistics. I didn't have time to derive the equation
+    // for this so I will calculate it at runtime.
+    int text_x_align = 0;
+
     glBegin(GL_TRIANGLES);
     int index = 0;
     // This is the loop where we will actually render the statistics.
@@ -414,6 +534,10 @@ void OpenGLView::render()
                 index++;
 
                 // TODO Optimize. Draw pre-colored VBOs instead.
+
+                // Update where the text needs to be aligned. This corresponds
+                // to the right-most pixel that was painted.
+                text_x_align = paint_w * x_offset + paint_w;
 
                 // Draw the heat window.
                 set_glColor_heat(hw_sum); 
@@ -464,6 +588,48 @@ void OpenGLView::render()
 
     // Release VBOs after use.
     glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+
+    /*
+     * Render text for the statistics.
+     */
+
+    // Scale for the text.
+    float sx = 2.0 / screen_w;
+	float sy = 2.0 / screen_h;
+
+    // Shader for text.
+	glUseProgram(textProgram);
+
+	// Enable blending, necessary for our alpha texture.
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    // We will color the font white.
+	GLfloat white[4] = { 1, 1, 1, 1 };
+
+	// Set font size to, set the color.
+    FT_Set_Pixel_Sizes(face, 0, 24);
+	glUniform4fv(uniform_color, 1, white);
+
+    // Render the actual text. Each text needs to be aligned with the top of
+    // its corresponding stat rendering and then moved down a tab.
+    // TODO Rotate 90 degrees for a nicer rendering.
+
+    // We will offset the text from the statistics by 5 pixels so it looks nicer.
+    text_x_align += STAT_SEP;
+	// Heat window's text.
+    render_text("Heat window", -1 + text_x_align * sx, 1 - (0 + 25) * sy, sx, sy);
+    // Total heat's text.
+    render_text("Total heat", -1 + text_x_align * sx, 1 - (stat_h + 25) * sy, sx, sy);
+    // Contention's text.
+    render_text("Contentions", -1 + text_x_align * sx, 1 - (2*stat_h + 25) * sy, sx, sy);
+    // Deadlock's text.
+    render_text("Deadlocks", -1 + text_x_align * sx, 1 - (3*stat_h + 25) * sy, sx, sy);
+    glPopMatrix();
+
+    // Stop using the text shader.
+    glUseProgram(0);
+
 
     // Swap back and front buffers
     glfwSwapBuffers();

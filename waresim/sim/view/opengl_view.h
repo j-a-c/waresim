@@ -1,6 +1,10 @@
 #ifndef RENDER_OPENGL_VIEW_H
 #define RENDER_OPENGL_VIEW_H
 
+// Include FreeType headers.
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 #ifndef SIM_GL_H
 #define SIM_GL_H
 #include <GL/gl.h>
@@ -40,6 +44,8 @@ class OpenGLView : public View
         void update(double);
         // Render the view.
         void render();
+        // Render text.
+        void render_text(const char *, float, float, float, float);
         // Handle mouse events.
         void look_around();
         // Move the camera.
@@ -55,6 +61,9 @@ class OpenGLView : public View
         double NUM_STATS = 4.0;
         // The separator (in pixels) between stats.
         double STAT_SEP = 5.0;
+
+        // Used for rendering fonts.
+        FT_Face face;
 
         // The warehouse representation.
         Warehouse *warehouse;
@@ -145,7 +154,27 @@ class OpenGLView : public View
         const float DROP_Y = 0.75;
         const float DROP_Z = 0.75;
 
+        /*
+         * The following are used for text rendering.
+         */
 
+        // The shader for the text.
+        GLuint textProgram;
+        // Attributes for the text shader.
+        GLint attribute_coord;
+        GLint uniform_tex;
+        GLint uniform_color;
+
+        // A helpful struct.
+        struct point {
+            GLfloat x;
+            GLfloat y;
+            GLfloat s;
+            GLfloat t;
+        };
+
+        // The text vertex buffer object.
+        GLuint textVBO;
 };
 
 #endif
